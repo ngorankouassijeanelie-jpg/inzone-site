@@ -91,7 +91,8 @@ def init_db():
         """
     )
     for col in ("description TEXT", "acces TEXT", "sol TEXT", "riverains TEXT",
-                "reseaux TEXT", "source_prix TEXT", "gps TEXT"):
+                "reseaux TEXT", "source_prix TEXT", "gps TEXT",
+                "lat REAL", "lon REAL"):
         try:
             c.execute(f"ALTER TABLE terrains ADD COLUMN {col}")
         except sqlite3.OperationalError:

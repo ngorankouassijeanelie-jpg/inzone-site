@@ -72,6 +72,25 @@ pdf(os.path.join(UP, "demo-bulletin-0.pdf"), [
 
 con = sqlite3.connect(DB)
 c = con.cursor()
+try:
+    c.execute("ALTER TABLE terrains ADD COLUMN lat REAL")
+except sqlite3.OperationalError:
+    pass
+try:
+    c.execute("ALTER TABLE terrains ADD COLUMN lon REAL")
+except sqlite3.OperationalError:
+    pass
+c.execute("UPDATE terrains SET lat=5.22376, lon=-3.78729 WHERE ref='INZ-GBA-001'")
+c.execute("UPDATE terrains SET lat=5.43702, lon=-4.20128 WHERE ref LIKE 'INZ-ATT-%'")
+import shutil
+shutil.copy(os.path.join(BASE, "data", "INZ-GBA-001-contour.kml"),
+            os.path.join(UP, "INZ-GBA-001-contour.kml"))
+if not c.execute("SELECT 1 FROM documents WHERE file='/uploads/INZ-GBA-001-contour.kml'").fetchone():
+    c.execute(
+        "INSERT INTO documents(name,terrain,type,etat,file) VALUES(?,?,?,?,?)",
+        ("Contour parcelle d'origine (plan 2017)", "Grand-Bassam",
+         "Plan KML, 10 bornes", "Disponible", "/uploads/INZ-GBA-001-contour.kml"))
+    print("plan KML rattache")
 if not c.execute("SELECT 1 FROM photos WHERE file='/uploads/demo-gba-photo.png'").fetchone():
     c.execute(
         "INSERT INTO photos(terrain_ref,file,original,caption,size,created)"
