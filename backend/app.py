@@ -14,7 +14,7 @@ import uuid
 from datetime import datetime, timezone
 
 import jwt
-from fastapi import Depends, FastAPI, File, Form, Header, HTTPException, UploadFile
+from fastapi import Depends, FastAPI, File, Form, Header, HTTPException, Request, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
@@ -27,9 +27,10 @@ SECRET = os.environ.get("INZONE_SECRET", "dev-secret-a-changer-en-prod")
 TOKEN_DAYS = 7
 
 app = FastAPI(title="inZONE API", version="1.0.0")
+CORS_ORIGINS = [o.strip() for o in os.environ.get("INZONE_CORS", "*").split(",") if o.strip()]
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # V1 démo ; restreindre en prod
+    allow_origins=CORS_ORIGINS,  # prod : INZONE_CORS=https://votredomaine.ci
     allow_methods=["*"],
     allow_headers=["*"],
 )
@@ -88,6 +89,8 @@ def init_db():
           status TEXT DEFAULT 'Émise', created TEXT);
         CREATE TABLE IF NOT EXISTS zones_projets(
           id INTEGER PRIMARY KEY, name TEXT, surface TEXT, remarque TEXT);
+        CREATE TABLE IF NOT EXISTS rubriques(
+          id INTEGER PRIMARY KEY, titre TEXT, etat TEXT);
         """
     )
     for col in ("description TEXT", "acces TEXT", "sol TEXT", "riverains TEXT",
@@ -236,15 +239,33 @@ PROJETS_SEED = [
 ]
 
 
+RUBRIQUES_SEED = [
+    ("Lots attribués non mis en valeur", "En attente des données de la SOGEDI"),
+    ("Attributions et retraits de lots", "En attente des données de la SOGEDI"),
+    ("Nouveaux terrains privés en bordure des zones", "Ouverte"),
+    ("Prix constatés, zone par zone", "Ouverte"),
+    ("Avancement réel des routes et des réseaux", "Ouverte"),
+    ("Textes et décisions du Conseil des ministres", "Ouverte"),
+]
+
+
 def backfill_projets(con):
     if con.execute("SELECT COUNT(*) FROM zones_projets").fetchone()[0] == 0:
         con.executemany(
             "INSERT INTO zones_projets(name,surface,remarque) VALUES(?,?,?)",
             PROJETS_SEED)
         con.commit()
+    if con.execute("SELECT COUNT(*) FROM rubriques").fetchone()[0] == 0:
+        con.executemany(
+            "INSERT INTO rubriques(titre,etat) VALUES(?,?)",
+            RUBRIQUES_SEED)
+        con.commit()
 
 
 # ---------- auth ----------
+LOGIN_ATTEMPTS: dict = {}
+if SECRET == "dev-secret-a-changer-en-prod":
+    print("ATTENTION : INZONE_SECRET non défini, secret de développement utilisé.")
 class Login(BaseModel):
     email: str
     password: str
@@ -298,7 +319,15 @@ def health():
 
 
 @app.post("/api/login")
-def login(body: Login):
+def login(body: Login, request: Request):
+    ip = request.client.host if request.client else "?"
+    now = time.time()
+    hits = LOGIN_ATTEMPTS.get(ip, [])
+    hits = [t for t in hits if now - t < 60]
+    if len(hits) >= 12:
+        raise HTTPException(status_code=429, detail="Trop de tentatives, réessayez dans une minute")
+    hits.append(now)
+    LOGIN_ATTEMPTS[ip] = hits
     con = db()
     row = con.execute("SELECT * FROM users WHERE email=?",
                       (body.email.strip().lower(),)).fetchone()
@@ -366,6 +395,47 @@ def zones_projets():
     out = rows(con, "SELECT * FROM zones_projets ORDER BY id")
     con.close()
     return out
+
+
+@app.get("/api/rubriques")
+def list_rubriques(_: dict = Depends(admin_only)):
+    con = db()
+    out = rows(con, "SELECT * FROM rubriques ORDER BY id")
+    con.close()
+    return out
+
+
+class RubriqueIn(BaseModel):
+    etat: str
+
+
+@app.put("/api/rubriques/{rid}")
+def update_rubrique(rid: int, body: RubriqueIn, _: dict = Depends(admin_only)):
+    if len(body.etat.strip()) < 2:
+        raise HTTPException(status_code=422, detail="État requis")
+    con = db()
+    con.execute("UPDATE rubriques SET etat=? WHERE id=?", (body.etat.strip(), rid))
+    con.commit()
+    con.close()
+    return {"id": rid, "etat": body.etat.strip()}
+
+
+@app.delete("/api/documents/{did}")
+def delete_document(did: int, _: dict = Depends(admin_only)):
+    con = db()
+    row = con.execute("SELECT file FROM documents WHERE id=?", (did,)).fetchone()
+    if not row:
+        con.close()
+        raise HTTPException(status_code=404, detail="Document introuvable")
+    if row["file"]:
+        try:
+            os.remove(os.path.join(UPLOAD_DIR, os.path.basename(row["file"])))
+        except OSError:
+            pass
+    con.execute("DELETE FROM documents WHERE id=?", (did,))
+    con.commit()
+    con.close()
+    return {"id": did, "deleted": True}
 
 
 @app.get("/api/terrains")
