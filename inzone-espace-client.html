@@ -294,6 +294,18 @@ td strong,td .num{white-space:nowrap}
       <p class="note" id="s-msg" role="alert" hidden></p>
     </form>
     <p class="muted" id="show-login" style="font-size:.88rem" hidden>Déjà un compte ? <a href="#" id="show-login-a">Se connecter</a></p>
+    <p class="muted" style="font-size:.88rem"><a href="#" id="show-forgot-a">Mot de passe oublié ?</a></p>
+    <form id="ff" novalidate hidden>
+      <label>Adresse électronique<input id="f-mail" type="email" autocomplete="email"></label>
+      <button class="btn" type="submit"><span>Recevoir le lien</span></button>
+      <p class="note" id="f-msg" role="status" hidden></p>
+    </form>
+    <form id="rf" novalidate hidden>
+      <label>Code reçu<input id="f-tok" placeholder="Coller le code du lien"></label>
+      <label>Nouveau mot de passe (8 caractères minimum)<input id="f-pass" type="password" autocomplete="new-password"></label>
+      <button class="btn" type="submit"><span>Changer le mot de passe</span></button>
+      <p class="note" id="r-msg" role="status" hidden></p>
+    </form>
   </div>
   <figure class="lg-a">
     <img alt="" src="assets/satellite.jpg">
@@ -569,6 +581,10 @@ async function apiPut(p,body){let tok="";try{tok=localStorage.getItem("inz-token
 $("lf").addEventListener("submit",async e=>{e.preventDefault();const m=$("l-msg");m.hidden=true;try{const d=await apiPost("/api/login",{email:$("l-mail").value.trim(),password:$("l-pass").value});try{localStorage.setItem("inz-token",d.token);localStorage.setItem("inz-role",d.role)}catch(_){}$("who").textContent=d.name||"Mon compte";$("tagm").textContent=d.name||"Mon compte";enter("bord",false)}catch(err){if(/Identifiants/.test(err.message)){m.textContent=err.message+" — vérifiez l'email et le mot de passe.";m.hidden=false}else{enter("bord",false)}}});
 $("show-signup-a").addEventListener("click",e=>{e.preventDefault();$("lf").hidden=true;$("show-signup").hidden=true;$("sf").hidden=false;$("show-login").hidden=false;$("s-nom").focus()});
 $("show-login-a").addEventListener("click",e=>{e.preventDefault();$("sf").hidden=true;$("show-login").hidden=true;$("lf").hidden=false;$("show-signup").hidden=false});
+$("show-forgot-a").addEventListener("click",e=>{e.preventDefault();["lf","sf","show-signup","show-login"].forEach(id=>$(id).hidden=true);$("ff").hidden=false;$("rf").hidden=true;$("f-mail").focus()});
+$("ff").addEventListener("submit",async e=>{e.preventDefault();const m=$("f-msg");m.hidden=true;try{await apiPost("/api/forgot",{email:$("f-mail").value.trim()});m.textContent="Si ce compte existe, un lien vient d'être envoyé.";m.hidden=false;$("ff").hidden=true;$("rf").hidden=false;$("f-tok").focus()}catch(err){m.textContent="Envoi impossible : réessayez dans un moment.";m.hidden=false}});
+$("rf").addEventListener("submit",async e=>{e.preventDefault();const m=$("r-msg");m.hidden=true;try{await apiPost("/api/reset",{token:$("f-tok").value.trim(),password:$("f-pass").value});m.textContent="Mot de passe changé. Connectez-vous.";m.hidden=false;$("rf").hidden=true;$("lf").hidden=false;$("show-signup").hidden=false}catch(err){m.textContent=err.message;m.hidden=false}});
+if(location.hash.startsWith("#reset-")){$("lf").hidden=true;$("show-signup").hidden=true;$("ff").hidden=true;$("rf").hidden=false;$("f-tok").value=location.hash.slice(7)}
 $("sf").addEventListener("submit",async e=>{e.preventDefault();const m=$("s-msg");m.hidden=true;try{const d=await apiPost("/api/signup",{name:$("s-nom").value.trim(),company:$("s-soc").value.trim(),email:$("s-mail").value.trim(),password:$("s-pass").value});try{localStorage.setItem("inz-token",d.token);localStorage.setItem("inz-role",d.role)}catch(_){}$("who").textContent=d.name||"Mon compte";$("tagm").textContent=d.name||"Mon compte";enter("bord",false)}catch(err){const t=err.message;m.textContent=/injoignable/.test(t)?"Serveur injoignable : réessayez dans un moment.":t;m.hidden=false}});
 
 $("out").addEventListener("click",()=>{try{localStorage.removeItem("inz-token");localStorage.removeItem("inz-role")}catch(_){}$("app").hidden=true;$("login").hidden=false;try{history.replaceState(null,"","#")}catch(e){}});

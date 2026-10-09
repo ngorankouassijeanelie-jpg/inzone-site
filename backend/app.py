@@ -91,6 +91,8 @@ def init_db():
           id INTEGER PRIMARY KEY, name TEXT, surface TEXT, remarque TEXT);
         CREATE TABLE IF NOT EXISTS rubriques(
           id INTEGER PRIMARY KEY, titre TEXT, etat TEXT);
+        CREATE TABLE IF NOT EXISTS reset_tokens(
+          email TEXT PRIMARY KEY, token TEXT, exp INTEGER);
         """
     )
     for col in ("description TEXT", "acces TEXT", "sol TEXT", "riverains TEXT",
@@ -124,8 +126,7 @@ def make_user(con, email, pwd, role, name, company="", country=""):
     salt = secrets.token_hex(16)
     con.execute(
         "INSERT INTO users(email,pwd_hash,salt,role,name,company,country,created)"
-        " VALUES(?,?,?,?,?,?,?,?)",
-        (email, hash_pwd(pwd, salt), salt, role, name, company, country,
+        " VALUES(?,?,?,?,?,?,?,?)",        (email, hash_pwd(pwd, salt), salt, role, name, company, country,
          datetime.now(timezone.utc).isoformat()),
     )
 
@@ -137,7 +138,7 @@ def seed(con):
     make_user(con, "investisseur@exemple.ma", "demonstration", "client",
               "Investisseur exemple", "Société exemple", "Maroc")
     c.executemany(
-        "INSERT INTO terrains VALUES(?,?,?,?,?,?,?,?)",
+        "INSERT INTO terrains(ref,name,zone,surface_ha,price_m2,status,level,point_cle) VALUES(?,?,?,?,?,?,?,?)",
         [
             ("INZ-GBA-001", "Grand-Bassam", "Grand-Bassam", 6.0, 60000,
              "Analyse standard", "Fiche complète",
@@ -994,6 +995,76 @@ def signup(body: SignupIn, request: Request):
     SIGNUP_ATTEMPTS[ip] = hits
     user = dict(row)
     return {"token": make_token(user), "role": "client", "name": user["name"]}
+
+
+class ForgotIn(BaseModel):
+    email: str
+
+
+class ResetIn(BaseModel):
+    token: str
+    password: str
+
+
+def send_reset_link(email: str, token: str):
+    link = os.environ.get("INZONE_URL", "http://localhost:8001").rstrip("/")
+    body = (f"Réinitialisation de votre mot de passe inZONE.\n\n"
+            f"Lien valable 1 heure :\n{link}/inzone-espace-client.html#reset-{token}\n")
+    host = os.environ.get("SMTP_HOST", "")
+    if host:
+        import smtplib
+        from email.message import EmailMessage
+        msg = EmailMessage()
+        msg["From"] = os.environ.get("SMTP_FROM", "inzone@africand.com")
+        msg["To"] = email
+        msg["Subject"] = "inZONE — réinitialisation du mot de passe"
+        msg.set_content(body)
+        with smtplib.SMTP(host, int(os.environ.get("SMTP_PORT", "587"))) as s:
+            s.starttls()
+            if os.environ.get("SMTP_USER"):
+                s.login(os.environ["SMTP_USER"], os.environ.get("SMTP_PASS", ""))
+            s.send_message(msg)
+    else:
+        with open(os.path.join(BASE, "reset-links.log"), "a") as f:
+            f.write(f"{email} :: {body}\n")
+
+
+@app.post("/api/forgot")
+def forgot(body: ForgotIn):
+    email = body.email.strip().lower()
+    con = db()
+    exists = con.execute("SELECT 1 FROM users WHERE email=?", (email,)).fetchone()
+    if exists:
+        token = secrets.token_urlsafe(24)
+        con.execute("INSERT OR REPLACE INTO reset_tokens(email,token,exp) VALUES(?,?,?)",
+                    (email, token, int(time.time()) + 3600))
+        con.commit()
+        try:
+            send_reset_link(email, token)
+        except Exception:
+            pass
+    con.close()
+    return {"ok": True}  # même réponse si le compte n'existe pas
+
+
+@app.post("/api/reset")
+def reset(body: ResetIn):
+    if len(body.password) < 8:
+        raise HTTPException(status_code=422,
+                            detail="Mot de passe : 8 caractères minimum")
+    con = db()
+    row = con.execute("SELECT * FROM reset_tokens WHERE token=?",
+                      (body.token.strip(),)).fetchone()
+    if not row or row["exp"] < time.time():
+        con.close()
+        raise HTTPException(status_code=422, detail="Lien invalide ou expiré")
+    salt = secrets.token_hex(16)
+    con.execute("UPDATE users SET pwd_hash=?, salt=? WHERE email=?",
+                (hash_pwd(body.password, salt), salt, row["email"]))
+    con.execute("DELETE FROM reset_tokens WHERE email=?", (row["email"],))
+    con.commit()
+    con.close()
+    return {"ok": True}
 
 
 class UserIn(BaseModel):
