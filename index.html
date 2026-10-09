@@ -109,6 +109,23 @@ footer{padding:18px 0 26px}.foot{background:#000;color:#fff;border-radius:var(--
 .foot nav{display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:14px;font-weight:600}.foot a{text-decoration:none}.foot a:hover{text-decoration:underline}
 .rule{grid-column:1/-1;border-top:1px solid rgba(255,255,255,.2);padding-top:14px;font-size:12px;color:#d6d3d1}
 .reveal{opacity:0;transform:translateY(18px)}.reveal.in{opacity:1;transform:none;transition:opacity .5s ease,transform .5s ease}
+/* HERO néo-brutaliste */
+.nh{background:#f5f3ee;border:2px solid #0a0a0a;padding:clamp(20px,3.5vw,44px);position:relative;overflow:hidden}
+.nh-grid{display:grid;grid-template-columns:minmax(240px,330px) 1fr;gap:clamp(20px,4vw,56px);align-items:start}
+.nh-collage svg{display:block;width:100%;height:auto}
+.nh-kicker{display:inline-block;font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;border:2px solid #000;border-radius:999px;padding:7px 16px;background:#fff;margin-bottom:20px}
+.nh h1{font-size:clamp(2.6rem,6.4vw,5.2rem);font-weight:800;line-height:1.02;letter-spacing:-.03em;text-transform:none}
+.nh h1 .u{background:linear-gradient(transparent 62%,#0a0a0a 62%,#0a0a0a 92%,transparent 92%)}
+.nh h1 .dot-yl{color:#e8b90f}
+.nh-sub{display:flex;gap:26px;align-items:flex-start;margin-top:26px;flex-wrap:wrap}
+.btn-talk{display:inline-block;background:#000;color:#fff;font-weight:700;font-size:15px;padding:16px 30px;text-decoration:none;border:2px solid #000}
+.btn-talk:hover{background:#262626}
+.nh-desc{font-size:15px;max-width:44ch;color:#262626;border-left:2px solid #000;padding-left:22px}
+.nh-stats{display:flex;gap:26px;flex-wrap:wrap;margin-top:22px;font-size:13px;font-weight:700}
+.nh-stats span b{font-size:20px}
+.nh-foot{border-top:2px solid #000;margin-top:30px;padding-top:18px;display:flex;align-items:center;gap:18px;font-size:14px;font-weight:600}
+.nh-foot a{text-decoration:none}.nh-foot a:hover{text-decoration:underline;text-underline-offset:4px}
+@media(max-width:900px){.nh-grid{grid-template-columns:1fr}.nh-collage{max-height:230px;overflow:hidden}}
 @media(max-width:900px){.links,.cta-row{display:none}.burger{display:block}.hero-grid,.fiche,.demo,.grid4,.grid3,.steps{grid-template-columns:1fr}.kpis{grid-template-columns:1fr 1fr}.mock-body{grid-template-columns:1fr}.mock-side{flex-direction:row;overflow:auto}.foot{grid-template-columns:1fr}form{grid-template-columns:1fr}.nav.open .links{display:flex;flex-direction:column;background:#fff;border-bottom:1px solid var(--line);padding:12px 20px}.nav.open .cta-row{display:flex;padding:0 20px 14px}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.reveal{opacity:1;transform:none}}
 </style>
@@ -136,36 +153,31 @@ footer{padding:18px 0 26px}.foot{background:#000;color:#fff;border-radius:var(--
 <main id="top" class="wrap">
   <!-- HERO -->
   <header class="hero">
-    <div class="hero-grid">
-      <div class="hero-copy">
-        <span class="eyebrow">Intelligence foncière industrielle — Côte d'Ivoire</span>
-        <h1>Décidez où vous implanter sans vous déplacer.</h1>
-        <p class="sub">Cartographie des zones, fiches terrain en 24–48h et vérification sur site. Sources officielles et presse 2025–2026, recoupées cadastre + satellite.</p>
-        <div class="hero-cta">
-          <a class="btn btn-dark" href="#fiche">Voir une fiche exemple</a>
-          <a class="btn btn-light" href="#demo">Demander une démo</a>
+    <div class="nh">
+      <div class="nh-grid">
+        <div class="nh-collage" aria-hidden="true">
+          <svg viewBox="0 0 330 560" role="presentation">
+            <polygon points="60,0 330,55 255,365 15,325 0,120" fill="#7ba7c9"/>
+            <circle cx="115" cy="225" r="48" fill="#0a0a0a"/>
+            <rect x="20" y="272" width="220" height="6" fill="#0a0a0a"/>
+            <polygon points="70,40 115,40 305,265 275,290" fill="#0a0a0a"/>
+            <polygon points="88,0 128,0 118,345 96,345" fill="#ffffff"/>
+            <polygon points="0,420 255,375 295,560 0,560" fill="#0a0a0a"/>
+            <polygon points="0,470 215,445 225,460 0,488" fill="#ffffff"/>
+            <polygon points="235,432 252,428 246,452" fill="#ffffff"/>
+            <g stroke="#ffffff" stroke-width="3"><line x1="60" y1="505" x2="110" y2="490"/><line x1="90" y1="512" x2="140" y2="497"/><line x1="120" y1="519" x2="170" y2="504"/></g>
+          </svg>
         </div>
-        <div class="kpis">
-          <div><b>13</b><span>zones industrielles publiques recensées</span></div>
-          <div><b>3 283 ha</b><span>foncier industriel public, total officiel 2023</span></div>
-          <div><b>39 %</b><span>lots occupés au PK24 : 67 actifs sur 173 attributaires</span></div>
-        </div>
-      </div>
-      <div class="mock" aria-label="Aperçu de l'espace client inZONE">
-        <div class="mock-bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span>&nbsp; Espace client — INZ-GBA-001 · Grand-Bassam</div>
-        <div class="mock-body">
-          <div class="mock-side"><i class="on">Tableau de bord</i><i>Fiches</i><i>Veille</i><i>Documents</i></div>
-          <div class="mock-main">
-            <div class="row"><strong>Grand-Bassam · 6 ha</strong><span class="pill ok">Logistique</span></div>
-            <div class="map"><span>Contour satellite · 24,7 km aéroport</span></div>
-            <ul class="vig">
-              <li>Riverains au contact <em>Vigilance 1</em></li>
-              <li>Sol bas et sableux <em>Vigilance 2</em></li>
-              <li>Accès en terre <em>Vigilance 4</em></li>
-            </ul>
+        <div>
+          <span class="nh-kicker">Intelligence foncière · Côte d'Ivoire</span>
+          <h1>Tout le foncier<br><span class="u">industriel, vérifié</span><br>au même endroit<span class="dot-yl">.</span></h1>
+          <div class="nh-sub">
+            <a class="btn-talk" href="#demo">Parler à un expert</a>
+            <p class="nh-desc">Superficies, attributions, prix et textes de 13 zones industrielles. Fiches terrain en 24–48h, recoupées cadastre + satellite. <a href="#fiche">Voir une fiche exemple →</a></p>
           </div>
+          <div class="nh-stats"><span><b>13</b> zones recensées</span><span><b>3 283 ha</b> de foncier public</span><span><b>39 %</b> occupés au PK24</span></div>
+          <div class="nh-foot"><span>● ○ ◆</span><a href="#produit">Explorer ↓</a></div>
         </div>
-        <div class="mock-foot"><span>Fiche standard du 9 oct. 2026 · 35 min aéroport</span><a class="btn btn-white" style="padding:8px 16px" href="inzone-espace-client.html">Ouvrir le produit</a></div>
       </div>
     </div>
   </header>
