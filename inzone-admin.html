@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<style>body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>inZONE Administration</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap">
+<style>
+:root{--bg:#f5f5f5;--card:#fff;--soft:#f8f8f8;--text:#111111;--ink2:#434343;--muted:#626262;--line:#e6e6e6;--blue:#2b2b2b;--accent:#1a5fd0;--accent-soft:rgba(26,95,208,.14);--blue-dark:#1a1a1a;--blue-2:#9aa0a6;--blue-pale:#f2f2f2;--navy:#1f1f1f;--navy-2:#2e2e2e;--rest:#e4e4e4;--ok:#17713b;--ok-bg:#e6f4ea;--warn:#8a5400;--warn-bg:#fdf1dc;--idle:#595959;--idle-bg:#f1f1f1;--font:"Inter","Helvetica Neue",Helvetica,Arial,sans-serif;--ease:cubic-bezier(.16,1,.3,1);--side:264px;color-scheme:light}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased}
+h1,h2,h3,p,dl,dd{margin:0}
+h1{font-size:clamp(1.6rem,2.6vw,2.2rem);font-weight:600;letter-spacing:-.035em;line-height:1.12;text-wrap:balance}
+h2{font-size:1.08rem;font-weight:600;letter-spacing:-.02em}
+h3{font-size:.98rem;font-weight:600;letter-spacing:-.01em}
+button,input,select,textarea{font:inherit;color:inherit;border-radius:0}
+button{cursor:pointer}
+a{color:var(--blue)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.num{font-variant-numeric:tabular-nums}
+.muted{color:var(--muted)}
+.eyebrow{font-size:.72rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.mark svg{width:30px;height:auto;fill:currentColor;display:block}
+.brand{display:flex;align-items:center;gap:10px;font-weight:600;font-size:1.15rem;letter-spacing:-.03em}
+.brand b{font-weight:700}
+.btn{position:relative;display:inline-flex;align-items:center;gap:16px;min-height:48px;padding:10px 8px 10px 18px;border:0;background:var(--blue);color:#fff;font-weight:500;letter-spacing:-.015em;white-space:nowrap;overflow:hidden;text-decoration:none;align-self:flex-start}
+.btn{transition:filter .2s ease}
+.btn:hover{filter:brightness(.93)}
+.btn>*{position:relative}
+.btn i{width:32px;height:32px;display:grid;place-items:center;background:var(--blue-dark);transition:background .3s,color .3s}
+.btn:hover i{background:#fff;color:var(--blue)}
+.btn.light:hover i,.panel.blue .btn:hover i{background:var(--blue-dark);color:#fff}
+.btn svg{width:13px;height:13px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.btn.ghost{background:var(--soft);color:var(--text);box-shadow:none;padding:10px 18px}
+.btn.light{background:#fff;color:var(--blue)}.btn.light i{background:var(--blue);color:#fff}
+.btn.sm{min-height:40px;padding:6px 14px;font-size:.88rem}
+.btn.sm.ic{padding:6px 6px 6px 14px}.btn.sm i{width:28px;height:28px}
+/* connexion */
+#login{min-height:100%;display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);background:#ffffff}
+.lg-b{padding:clamp(24px,4vw,56px);display:flex;flex-direction:column;justify-content:center;gap:20px;max-width:560px;width:100%;margin-inline:auto}
+.lg-b .brand{margin-bottom:clamp(8px,4vh,40px)}
+.lg-b h2{font-size:clamp(1.7rem,2.6vw,2.2rem);letter-spacing:-.035em;line-height:1.1}
+.lg-a{position:relative;overflow:hidden;color:#fff;padding:clamp(24px,4vw,56px);display:flex;flex-direction:column;gap:24px;justify-content:space-between;min-height:320px;background:var(--navy)}
+.lg-a img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;max-width:none}
+.lg-a::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(20,20,20,.9) 0%,rgba(20,20,20,.35) 42%,rgba(20,20,20,.5) 62%,rgba(20,20,20,.94) 100%)}
+.lg-a::before{content:"";position:absolute;left:0;right:0;top:0;height:3px;z-index:2;background:linear-gradient(90deg,#2b2b2b,#9aa0a6 50%,#2b2b2b)}
+.lg-a>*:not(img){position:relative;z-index:1}
+.lg-a .eyebrow{color:#e4e4e4}
+.lg-a h1{font-size:clamp(1.8rem,3.2vw,2.8rem);margin-top:14px;max-width:14em}
+.lg-a h1 span{color:#cacaca}
+.lg-a ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px;max-width:46ch}
+.lg-a li{padding-left:24px;position:relative}
+.lg-a li::before{content:"";position:absolute;left:0;top:.45em;width:10px;height:10px;background:#9aa0a6}
+.lg-a figcaption{font-size:.75rem;color:rgba(255,255,255,.7);margin-top:14px}
+form{display:flex;flex-direction:column;gap:14px}
+label{display:flex;flex-direction:column;gap:6px;font-size:.85rem;font-weight:500}
+input,select,textarea{padding:12px;border:1px solid #c9c9c9;background:#fff;width:100%;min-height:46px;transition:border-color .2s ease,box-shadow .2s ease}
+input:hover,select:hover,textarea:hover{border-color:#8f8f8f}
+select{appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='none' stroke='%23525252' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 7.5 10 12.5 15 7.5'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;background-size:16px;padding-right:38px;cursor:pointer}
+input:focus,select:focus,textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft);outline:none}
+.note{font-size:.83rem;color:var(--muted);border-left:2px solid var(--blue);padding-left:12px}
+.or{display:flex;align-items:center;gap:14px;font-size:.78rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.or::before,.or::after{content:"";flex:1;height:1px;background:var(--line)}
+.try{display:flex;flex-direction:column;gap:12px;padding:18px;background:var(--soft);box-shadow:inset 3px 0 0 var(--blue)}
+.demo{font-size:.7rem;font-weight:600;letter-spacing:.07em;text-transform:uppercase;border:1px solid var(--line);padding:3px 8px;color:var(--muted);align-self:flex-start}
+.back{font-size:.88rem;font-weight:500;text-decoration:underline;text-underline-offset:3px}
+/* application */
+#app{min-height:100%}
+.shell{margin-left:var(--side);min-height:100vh;min-height:100dvh}
+html,body{overscroll-behavior:none}
+#app.min{--side:76px}
+aside{position:fixed;left:0;top:0;bottom:0;width:var(--side);overflow:hidden auto;display:flex;flex-direction:column;gap:22px;padding:20px 14px;background:linear-gradient(170deg,var(--navy-2) 0%,var(--navy) 55%,#141414 100%);color:#fff;z-index:20}
+aside .brand{color:#fff;text-decoration:none;padding:6px 10px;min-height:44px;white-space:nowrap;overflow:hidden}
+aside nav{display:flex;flex-direction:column;gap:2px}
+aside nav button{display:flex;align-items:center;gap:12px;text-align:left;border:0;background:none;padding:11px 12px;font-weight:500;color:rgba(255,255,255,.74);min-height:46px;position:relative;white-space:nowrap;transition:background .2s,color .2s}
+aside nav button:hover{color:#fff;background:rgba(255,255,255,.07)}
+aside nav button[aria-current="page"]{color:#fff;background:rgba(255,255,255,.12)}
+aside nav button[aria-current="page"]::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--blue-2)}
+.ni{width:20px;height:20px;flex:none;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linejoin:round;stroke-linecap:round}
+.lbl{flex:1;overflow:hidden;text-overflow:ellipsis}
+aside nav em{font-style:normal;font-size:.72rem;font-weight:600;background:var(--blue);color:#fff;padding:1px 7px}
+.acct{margin-top:auto;border-top:1px solid rgba(255,255,255,.14);padding:16px 8px 0;display:flex;align-items:center;gap:12px;font-size:.85rem;white-space:nowrap}
+.av{flex:none;width:36px;height:36px;display:grid;place-items:center;background:var(--blue);font-weight:600;font-size:.8rem;letter-spacing:.04em}
+.acct div{display:flex;flex-direction:column;min-width:0;line-height:1.35}
+.acct small{color:rgba(255,255,255,.66);font-size:.76rem}
+#out{display:flex;align-items:center;gap:12px;border:0;background:none;color:rgba(255,255,255,.74);padding:10px 12px;font-weight:500;min-height:44px;white-space:nowrap}
+#out:hover{color:#fff;background:rgba(255,255,255,.07)}
+aside :focus-visible{outline-color:#fff}
+#app.min .lbl,#app.min .brand>span:last-child,#app.min .acct div{display:none}
+#app.min aside nav button,#app.min #out{justify-content:center;padding-inline:0}
+#app.min aside nav em{position:absolute;top:6px;right:8px;padding:0 5px;font-size:.66rem}
+#app.min .acct{justify-content:center;padding-inline:0}
+#app.min aside .brand{justify-content:center;padding-inline:0}
+.shell{min-width:0;display:flex;flex-direction:column}
+.top{position:sticky;top:0;z-index:10;display:flex;align-items:center;gap:14px;padding:10px clamp(16px,2.6vw,36px);background:rgba(255,255,255,.86);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+button.brand{background:none;border:0;font:inherit;color:inherit;text-align:left;cursor:pointer;width:100%;border-radius:10px}
+.crumb{flex:1;min-width:0;display:flex;align-items:baseline;gap:8px;font-size:.9rem;color:var(--muted);white-space:nowrap;overflow:hidden}
+.crumb b{color:var(--text);font-weight:600;overflow:hidden;text-overflow:ellipsis}
+.tag{flex:none;font-size:.7rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;padding:5px 10px;background:var(--blue-pale);color:var(--blue-dark)}
+.top a{font-size:.88rem;font-weight:500;white-space:nowrap}
+main{padding:clamp(16px,2.4vw,32px) clamp(16px,2.6vw,36px) 40px;min-width:0}
+.view{max-width:1240px;margin-inline:auto;display:flex;flex-direction:column;gap:20px}
+.head{display:flex;flex-wrap:wrap;gap:12px 16px;justify-content:space-between;align-items:flex-start}
+.head>div{display:flex;flex-direction:column;gap:4px;min-width:0}
+.view>.head{align-items:flex-end;padding:6px 0 2px}
+.view>.head>div{gap:8px}
+.grid{display:grid;gap:20px}
+.g4{grid-template-columns:repeat(auto-fit,minmax(min(100%,200px),1fr))}
+.g2{grid-template-columns:repeat(auto-fit,minmax(min(100%,340px),1fr))}
+.g32{grid-template-columns:minmax(0,1.5fr) minmax(0,1fr)}
+.panel{position:relative;background:var(--card);padding:22px;display:flex;flex-direction:column;gap:14px;min-width:0;box-shadow:0 0 0 1px rgba(43,43,43,.08),0 24px 48px -34px rgba(40,40,40,.35)}
+.panel.blue{background:linear-gradient(160deg,var(--navy-2),var(--navy) 60%,#141414);color:#fff}
+.panel.blue .muted,.panel.blue .eyebrow{color:#e4e4e4}
+.panel.blue .btn{background:#fff;color:var(--blue)}.panel.blue .btn i{background:var(--blue);color:#fff}
+.panel.blue .rowl{border-color:rgba(255,255,255,.18)!important}
+.src{font-size:.78rem;color:var(--muted);margin-top:auto}
+/* hero */
+.trial{padding:12px 16px;background:#fff;box-shadow:inset 3px 0 0 var(--blue),0 0 0 1px rgba(43,43,43,.14);font-size:.9rem;color:var(--ink2)}
+.trial strong{color:var(--text)}
+.hero{position:relative;overflow:hidden;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:24px clamp(24px,4vw,64px);align-items:end;padding:clamp(22px,2.8vw,36px);color:#fff;background:linear-gradient(150deg,var(--navy-2) 0%,var(--navy) 55%,#141414 100%);box-shadow:0 36px 70px -40px rgba(20,20,20,.7)}
+.hero::before{content:"";position:absolute;left:0;right:0;top:0;height:3px;background:linear-gradient(90deg,#2b2b2b,#9aa0a6 50%,#2b2b2b)}
+.hero-mark{position:absolute;right:-3%;top:50%;height:220%;transform:translateY(-50%);pointer-events:none}
+.hero-t{position:relative;display:flex;flex-direction:column;gap:14px}
+.hero .eyebrow{color:#cacaca}
+.hero h1{max-width:16em}
+.hero-k{position:relative;display:grid;grid-template-columns:repeat(3,auto);gap:6px clamp(20px,3vw,44px)}
+.hero-k dt{font-size:.74rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:#cacaca;white-space:nowrap}
+.hero-k dd{margin-top:8px;font-size:clamp(1.9rem,3.2vw,2.9rem);font-weight:600;letter-spacing:-.045em;line-height:1;white-space:nowrap}
+.hero-k small{font-size:.36em;font-weight:500;letter-spacing:0;color:#cacaca;margin-left:8px}
+.hero-k p{grid-column:1/-1;font-size:.76rem;color:rgba(255,255,255,.66);margin-top:6px}
+/* kpi */
+.kpi{position:relative;text-align:left;border:0;background:var(--card);padding:18px 20px;display:flex;flex-direction:column;gap:6px;box-shadow:0 0 0 1px rgba(43,43,43,.1),0 24px 48px -34px rgba(40,40,40,.4);transition:box-shadow .2s ease}
+button.kpi:hover{box-shadow:0 0 0 1px rgba(26,95,208,.45),0 30px 54px -30px rgba(40,40,40,.5)}
+.kpi-l{font-size:.74rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.kpi b{font-size:2.6rem;font-weight:600;letter-spacing:-.045em;line-height:1;margin-top:6px}
+.kpi small,.kpi>span:not(.kpi-l):not(.kpi-v){font-size:.82rem;color:var(--muted)}
+.kpi-v{display:flex;gap:4px;align-items:center;height:12px;margin-top:4px}
+.sq{width:12px;height:12px;background:var(--blue)}.sq.b{background:var(--blue-2)}.sq.c{background:var(--rest)}
+.pg{display:block;flex:1;height:6px;background:var(--rest)}.pg i{display:block;height:100%;background:var(--blue)}
+/* charts */
+.tabs{display:flex;box-shadow:inset 0 0 0 1px var(--line);background:#fff}
+.tabs button{border:0;background:none;padding:8px 12px;min-height:40px;font-size:.82rem;font-weight:500;color:var(--muted)}
+.tabs button[aria-pressed="true"]{background:var(--navy);color:#fff}
+.hbars{display:flex;flex-direction:column;gap:16px;padding:4px 0}
+.hb{display:grid;grid-template-columns:120px minmax(0,1fr);gap:6px 14px;align-items:center}
+.hb-n{font-weight:500;font-size:.9rem}
+.hb-n small{display:block;color:var(--muted);font-size:.74rem;font-weight:400}
+.hb-t{position:relative;height:30px;display:flex;align-items:center;gap:10px;background:linear-gradient(90deg,var(--line) 1px,transparent 1px) 0 0/25% 100%}
+.hb-f{height:14px;background:linear-gradient(90deg,var(--blue-dark),var(--blue));min-width:2px}
+.hb-v{font-size:.86rem;font-weight:600;white-space:nowrap}
+.ringrow{display:flex;align-items:center;gap:22px;flex-wrap:wrap}
+.ring{width:132px;height:132px;flex:none}
+.rg{fill:none;stroke-width:9}
+.rg.d{stroke:var(--blue)}.rg.n{stroke:var(--blue-2)}.rg.u{stroke:var(--rest)}
+.ring-n{font-size:26px;font-weight:600;letter-spacing:-.04em;fill:var(--text)}
+.ring-l{font-size:9px;fill:var(--muted);font-weight:500}
+.lg{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px;font-size:.86rem;color:var(--ink2);flex:1;min-width:140px}
+.lg li{display:flex;align-items:center;gap:8px}
+.lg b{margin-left:auto;color:var(--text);font-weight:600}
+.lg.row{flex-direction:row;flex-wrap:wrap;gap:6px 22px}.lg.row b{margin-left:4px}
+.k{width:10px;height:10px;flex:none}
+.k.d,.k.s1,.s1{background:var(--blue)}.k.n,.k.s2,.s2{background:var(--blue-2)}.k.u,.k.s3,.s3{background:var(--rest)}
+.stk{display:flex;flex-direction:column;gap:10px}
+.stk-t{font-size:.8rem;font-weight:600;color:var(--ink2)}
+.stk-b{display:flex;gap:2px;height:22px}
+.stk-b i{display:block;min-width:3px;transition:filter .2s}
+.stk-b i:hover,.hb-f:hover{filter:brightness(1.15)}
+#tip{position:fixed;z-index:60;pointer-events:none;padding:7px 10px;background:var(--navy);color:#fff;font-size:.8rem;font-weight:500;white-space:nowrap;transform:translate(-50%,calc(-100% - 12px));box-shadow:0 10px 24px -10px rgba(20,20,20,.6)}
+.tw{overflow-x:auto}
+table{border-collapse:collapse;width:100%;min-width:520px;font-size:.9rem}
+th,td{text-align:left;padding:12px 14px 12px 0;border-bottom:1px solid var(--line);vertical-align:middle}
+th{font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:600;border-bottom:1px solid var(--text)}
+tbody tr{transition:background .2s}tbody tr:hover{background:var(--soft)}
+td.r,th.r{text-align:right}
+.st{display:inline-block;font-size:.72rem;font-weight:600;letter-spacing:.03em;padding:4px 9px;white-space:nowrap}
+.st.ok{background:var(--ok-bg);color:var(--ok)}.st.run{background:var(--warn-bg);color:var(--warn)}.st.idle{background:var(--idle-bg);color:var(--idle)}.st.blue{background:var(--blue-pale);color:var(--blue-dark)}
+.rows{display:flex;flex-direction:column}
+.rowl{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--line)}
+.rowl:last-child{border-bottom:0}
+.rowl>div{flex:1 1 220px;min-width:0;display:flex;flex-direction:column;gap:2px}
+.rowl small{color:var(--muted);font-size:.82rem}
+.lock{display:inline-flex;align-items:center;gap:8px;font-size:.78rem;font-weight:600;color:var(--idle)}
+.lock::before{content:"";width:11px;height:9px;background:var(--idle);box-shadow:0 -5px 0 -2px var(--card),0 -5px 0 0 var(--idle)}
+.steps{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
+.steps li{display:grid;grid-template-columns:22px minmax(0,1fr) auto;gap:4px 14px;padding:0 0 22px;position:relative;align-items:start}
+.steps li::before{content:"";width:14px;height:14px;margin-top:3px;border:2px solid #c4c4c4;background:var(--card);position:relative;z-index:1}
+.steps li::after{content:"";position:absolute;left:6px;top:17px;bottom:-3px;width:2px;background:var(--line)}
+.steps li:last-child::after{display:none}.steps li:last-child{padding-bottom:0}
+.steps li.done::before{background:var(--blue);border-color:var(--blue)}.steps li.done::after{background:var(--blue)}
+.steps li.now::before{border-color:var(--blue);box-shadow:0 0 0 4px var(--blue-pale)}
+.steps small{display:block;color:var(--muted);font-size:.83rem}
+.steps time{font-size:.8rem;color:var(--muted);white-space:nowrap}
+.sub{margin:10px 0 0;padding:0;list-style:none;border-top:1px solid var(--line)}
+.sub li{display:flex;flex-wrap:wrap;justify-content:space-between;gap:6px 12px;padding:9px 0;border-bottom:1px solid var(--line);font-size:.88rem}
+.sub li::before,.sub li::after{display:none}
+figure{margin:0;display:flex;flex-direction:column;gap:8px}
+figure img{width:100%;height:auto;display:block;box-shadow:0 0 0 1px rgba(43,43,43,.14),0 24px 48px -34px rgba(40,40,40,.5)}
+figcaption{font-size:.78rem;color:var(--muted)}
+.tog{display:flex;flex-direction:row;align-items:center;gap:12px;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--line);font-size:.9rem;font-weight:400}
+.tog input{width:20px;height:20px;min-height:0;accent-color:var(--accent);flex:none;padding:0}
+.news{display:flex;flex-direction:column}
+.news article{display:grid;grid-template-columns:110px minmax(0,1fr);gap:6px 18px;padding:14px 0;border-bottom:1px solid var(--line)}
+.news article:last-child{border-bottom:0}
+.news time{font-size:.75rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--blue-dark)}
+.head>.tabs{flex-direction:row;gap:0;flex:none}
+.panel>.hbars{flex:1;justify-content:center}
+.acct small{white-space:normal}
+#out{text-align:left}
+.side-h{display:flex;align-items:center;justify-content:space-between;gap:8px}
+#app.min .side-h{justify-content:center}
+table{border-collapse:separate;border-spacing:0 6px}
+th{padding:2px 14px;border-bottom:0}
+td{padding:12px 14px;background:var(--soft);border:0;border-top:1px solid transparent;border-bottom:1px solid transparent;transition:background-color .2s ease,border-color .2s ease}
+td:first-child{border-left:1px solid transparent;box-shadow:inset 3px 0 0 transparent}
+td:last-child{border-right:1px solid transparent}
+tbody tr:hover{background:transparent}
+tbody tr:hover td{background:#fff;border-color:rgba(26,95,208,.35)}
+tbody tr:hover td:first-child{box-shadow:inset 3px 0 0 var(--accent)}
+td .btn.ghost{background:#fff}
+.btn,input,select,textarea,.av,.tabs,#tip,aside nav button,#out,.sel{border-radius:10px}
+.btn i{border-radius:7px}
+.tabs{overflow:hidden}
+.panel,.kpi,figure img{border-radius:16px}
+.panel{overflow:hidden}
+.hero{border-radius:20px}
+.trial,.try{border-radius:12px}
+.st,.tag,.demo,aside nav em,.pg,.pg i{border-radius:999px}
+aside nav button[aria-current="page"]::before{top:10px;bottom:10px;left:0;border-radius:0 3px 3px 0}
+td:first-child{border-radius:10px 0 0 10px}td:last-child{border-radius:0 10px 10px 0}
+.hb-f{border-radius:0 5px 5px 0}
+.stk-b{border-radius:6px;overflow:hidden}
+.sq,.k,.steps li::before{border-radius:3px}
+.tog input{border-radius:4px}
+#scrim{display:none}
+@media (max-width:1100px){.g32{grid-template-columns:1fr}.hero{grid-template-columns:1fr;align-items:start}}
+@media (max-width:860px){
+ #login{grid-template-columns:1fr}
+ #app,#app.min{--side:264px}
+ .shell{margin-left:0}
+ aside{width:min(84vw,280px);transform:translateX(-102%);transition:transform .35s var(--ease);box-shadow:0 0 60px rgba(20,20,20,.5)}
+ #app.open aside{transform:none}
+ #app.min .lbl,#app.min .brand>span:last-child{display:revert}#app.min .acct div{display:flex}
+ #app.min aside nav button,#app.min #out,#app.min .acct,#app.min aside .brand{justify-content:flex-start;padding-inline:12px}
+ #app.min aside nav em{position:static}
+ #app.min aside,#app aside{width:min(84vw,280px);visibility:visible;transform:translateX(-102%);transition:transform .2s ease-out}
+ #app.open aside{transform:none}
+ .shell{transition:none}
+ #app.open #scrim{display:block;position:fixed;inset:0;z-index:15;background:rgba(20,20,20,.5);border:0}
+ .top a,.crumb span{display:none}
+ .news article{grid-template-columns:1fr}
+ .hero-k{grid-template-columns:1fr 1fr}
+ .hb{grid-template-columns:1fr}
+}
+@media (prefers-reduced-motion:no-preference){.view{animation:in .18s ease-out}@keyframes in{from{opacity:.6}}}
+html{scrollbar-gutter:stable}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+
+.sq.n{background:var(--navy)}.sq.w{background:#c98a1a}
+.sel{min-height:40px;padding:6px 10px;font-size:.88rem;min-width:170px}
+td input{min-height:40px;padding:6px 10px;font-size:.9rem;min-width:200px}
+.lg-a.adm::after{background:linear-gradient(160deg,rgba(46,46,46,.2),rgba(20,20,20,.2))}
+.lg-a.adm{background:linear-gradient(155deg,#373737 0%,#1f1f1f 50%,#141414 100%);justify-content:center}
+.lg-a.adm>*{max-width:520px}
+.adm-mark{position:absolute;right:-8%;top:50%;height:120%;transform:translateY(-50%)}
+.hb{grid-template-columns:150px minmax(0,1fr)}
+@media (max-width:860px){.hb{grid-template-columns:1fr}}
+.hb-f{background:linear-gradient(90deg,#174fae,#1a5fd0)}
+.s1,.k.s1,.k.d,.sq,.pg i{background:#1a5fd0}.rg.d{stroke:#1a5fd0}
+.s2,.k.s2,.k.n,.sq.b{background:#3a3f45}.rg.n{stroke:#3a3f45}
+.s3,.k.s3,.k.u,.sq.c,.pg{background:#dfe2e6}.rg.u{stroke:#dfe2e6}
+.sq.n{background:#111}.sq.w{background:#c98a1a}
+aside nav em,.av{background:#fff;color:#111}
+td strong,td .num{white-space:nowrap}
+</style>
+</head>
+<body>
+<section id="login">
+  <div class="lg-b">
+    <a class="brand" href="index.html" style="color:inherit;text-decoration:none"><span class="mark"><svg viewBox="0 0 42 34" aria-hidden="true"><polygon points="12,0 30,0 33.2,3.2 15.2,3.2"/><polygon points="14.6,5.6 32.6,5.6 35.8,8.8 17.8,8.8"/><polygon points="17.2,11.2 35.2,11.2 38.4,14.4 20.4,14.4"/><polygon points="3.2,16.8 21.2,16.8 24.4,20 6.4,20"/><polygon points="5.8,22.4 23.8,22.4 27,25.6 9,25.6"/><polygon points="8.4,28 26.4,28 29.6,31.2 11.6,31.2"/></svg></span><span>in<b>ZONE</b></span></a>
+    <span class="demo">Démonstration · Administration</span>
+    <div><h2>Connexion administrateur</h2><p class="muted" style="margin-top:8px">Accès réservé à l'équipe d'Africand Consulting.</p></div>
+    <form id="lf" novalidate>
+      <label>Adresse électronique<input id="l-mail" type="email" autocomplete="email" value="contact@africand.com"></label>
+      <label>Mot de passe<input id="l-pass" type="password" autocomplete="current-password" value="demonstration"></label>
+      <button class="btn" type="submit"><span>Se connecter</span><i><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 10h10.2M10.4 5.6 15.2 10l-4.8 4.4"/></svg></i></button>
+    </form>
+    <p class="note">Version de démonstration : aucune identification réelle n'est effectuée. Avant la mise en ligne, cette page devra être protégée par une vraie connexion.</p>
+    <a class="back" href="index.html">Retour au site</a>
+  </div>
+  <div class="lg-a adm">
+    <svg class="adm-mark" viewBox="0 0 42 34" aria-hidden="true"><g fill="#fff" fill-opacity=".06"><polygon points="12,0 30,0 33.2,3.2 15.2,3.2"/><polygon points="14.6,5.6 32.6,5.6 35.8,8.8 17.8,8.8"/><polygon points="17.2,11.2 35.2,11.2 38.4,14.4 20.4,14.4"/><polygon points="3.2,16.8 21.2,16.8 24.4,20 6.4,20"/><polygon points="5.8,22.4 23.8,22.4 27,25.6 9,25.6"/><polygon points="8.4,28 26.4,28 29.6,31.2 11.6,31.2"/></g></svg>
+    <div><span class="eyebrow">Administration</span><h1>Terrains, vérifications, <span>veille et comptes.</span></h1></div>
+    <ul><li>Gérez le catalogue des terrains et leur statut publié.</li><li>Suivez chaque vérification, point par point.</li><li>Tenez à jour la base des zones et le bulletin de veille.</li></ul>
+  </div>
+</section>
+
+<div id="app" hidden>
+  <aside id="side">
+    <div class="side-h"><button class="brand" id="brandtog" type="button" title="Ouvrir ou fermer le menu" aria-label="inZONE, ouvrir ou fermer le menu" aria-controls="side" aria-expanded="true"><span class="mark"><svg viewBox="0 0 42 34" aria-hidden="true"><polygon points="12,0 30,0 33.2,3.2 15.2,3.2"/><polygon points="14.6,5.6 32.6,5.6 35.8,8.8 17.8,8.8"/><polygon points="17.2,11.2 35.2,11.2 38.4,14.4 20.4,14.4"/><polygon points="3.2,16.8 21.2,16.8 24.4,20 6.4,20"/><polygon points="5.8,22.4 23.8,22.4 27,25.6 9,25.6"/><polygon points="8.4,28 26.4,28 29.6,31.2 11.6,31.2"/></svg></span><span>in<b>ZONE</b></span></button></div>
+    <nav aria-label="Administration"><button data-go="bord" title="Tableau de bord"><svg class="ni" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h7v7H4zM13 4h7v4h-7zM13 10h7v10h-7zM4 13h7v7H4z"/></svg><span class="lbl">Tableau de bord</span></button><button data-go="terrains" title="Terrains"><svg class="ni" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7l5-2 6 2 5-2v12l-5 2-6-2-5 2zM9 5v12M15 7v12"/></svg><span class="lbl">Terrains</span><em>3</em></button><button data-go="verifs" title="Vérifications"><svg class="ni" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l7 3v5c0 4.500-3 8-7 10-4-2-7-5.500-7-10V6zM9 12l2.200 2.200 4-4.400"/></svg><span class="lbl">Vérifications</span><em>1</em></button><button data-go="demandes" title="Demandes"><svg class="ni" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v11H9l-5 4zM8 9h8M8 12h5"/></svg><span class="lbl">Demandes</span><em id="nd">2</em></button><button data-go="clients" title="Comptes clients"><svg class="ni" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 11a3.500 3.500 0 1 0 0-7 3.500 3.500 0 0 0 0 7zM2.500 20c0-3.500 3-5.500 6.500-5.500s6.500 2 6.500 5.500M16 4.500a3.500 3.500 0 0 1 0 6.500M18 14.800c2 .700 3.500 2.400 3.500 5.200"/></svg><span class="lbl">Comptes clients</span></button><button data-go="zones" title="Zones industrielles"><svg class="ni" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 20V9l6 3V9l6 3V5h6v15zM7 16h2M12 16h2M17 16h2"/></svg><span class="lbl">Zones industrielles</span></button><button data-go="veille" title="Veille"><svg class="ni" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 16v-5a6 6 0 0 1 12 0v5l1.500 2h-15zM10 20h4"/></svg><span class="lbl">Veille</span></button><button data-go="tarifs" title="Offres et tarifs"><svg class="ni" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18v12H3zM3 10h18M7 15h4"/></svg><span class="lbl">Offres et tarifs</span></button></nav>
+    <div style="margin-top:auto;display:flex;flex-direction:column;gap:6px">
+      <div class="acct"><span class="av" aria-hidden="true">AC</span><div><span>Africand Consulting</span><small>Administrateur</small></div></div>
+      <button id="out" title="Se déconnecter"><svg class="ni" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 4h4v16h-4M10 8l-4 4 4 4M6 12h9"/></svg><span class="lbl">Se déconnecter</span></button>
+    </div>
+  </aside>
+  <button id="scrim" aria-label="Fermer le menu"></button>
+  <div class="shell">
+    <div class="top">
+      <div class="crumb"><span>Administration /</span><b id="where">Tableau de bord</b></div>
+      <span class="tag">Données d'exemple</span>
+      <a href="inzone-espace-client.html">Espace client</a>
+      <a href="index.html">Site</a>
+    </div>
+    <main>
+  <section class="view" id="v-bord">
+    <div class="hero">
+      <svg class="hero-mark" viewBox="0 0 42 34" aria-hidden="true"><g fill="#fff" fill-opacity=".05"><polygon points="12,0 30,0 33.2,3.2 15.2,3.2"/><polygon points="14.6,5.6 32.6,5.6 35.8,8.8 17.8,8.8"/><polygon points="17.2,11.2 35.2,11.2 38.4,14.4 20.4,14.4"/><polygon points="3.2,16.8 21.2,16.8 24.4,20 6.4,20"/><polygon points="5.8,22.4 23.8,22.4 27,25.6 9,25.6"/><polygon points="8.4,28 26.4,28 29.6,31.2 11.6,31.2"/></g></svg>
+      <div class="hero-t"><span class="eyebrow">Administration</span><h1>Pilotage de la plateforme inZONE.</h1><p>Vérifications, demandes, zones et veille : tout part d'ici.</p>
+        <button class="btn light" data-go="verifs"><span>Suivre les vérifications</span><i><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 10h10.2M10.4 5.6 15.2 10l-4.8 4.4"/></svg></i></button></div>
+      <dl class="hero-k">
+        <div><dt>Catalogue privé</dt><dd class="num">20,46<small>ha</small></dd></div>
+        <div><dt>Prix annoncés, total</dt><dd class="num">8,36<small>Mds FCFA</small></dd></div>
+        <div><dt>Foncier public recensé</dt><dd class="num">3 283<small>ha</small></dd></div>
+        <p>Catalogue : surfaces et prix selon les vendeurs. Foncier public : total officiel 2023.</p>
+      </dl>
+    </div>
+    <div class="grid g4">
+      <button class="kpi" data-go="terrains"><span class="kpi-l">Terrains au catalogue</span><b class="num">3</b><span class="kpi-v" id="k-ter"></span><small id="k-ter-t"></small></button>
+      <button class="kpi" data-go="verifs"><span class="kpi-l">Points de vérification</span><b class="num"><span id="k-pt">0</span>/4</b><span class="kpi-v"><i class="pg"><i id="k-pt-b" style="width:0"></i></i></span><small id="k-pt-t"></small></button>
+      <button class="kpi" data-go="demandes"><span class="kpi-l">Demandes ouvertes</span><b class="num" id="k-dem">2</b><span class="kpi-v" id="k-dem-v"></span><small>Demandes d'exemple</small></button>
+      <button class="kpi" data-go="zones"><span class="kpi-l">Zones à actualiser</span><b class="num">3</b><span class="kpi-v"><i class="sq w"></i><i class="sq w"></i><i class="sq w"></i></span><small>Yopougon, Koumassi, Vridi</small></button>
+    </div>
+    <div class="grid g32">
+      <div class="panel"><div class="head"><div><h2>À faire</h2><p class="muted">Déduit de l'état des dossiers</p></div><span class="st blue" id="todo-n"></span></div>
+        <div class="rows" id="todo"></div></div>
+      <div class="panel"><div class="head"><div><h2>Vérification premium</h2><p class="muted">Grand-Bassam, INZ-GBA-001 · Investisseur exemple</p></div><span class="st run">En cours</span></div>
+        <div class="ringrow"><svg class="ring" viewBox="0 0 128 128" role="img" aria-label="Étape 4 sur 6 : trois étapes terminées, une en cours, deux à venir"><circle class="rg d" r="52" cx="64" cy="64" pathLength="60" stroke-dasharray="8.6 51.4" transform="rotate(-85.8 64 64)"/><circle class="rg d" r="52" cx="64" cy="64" pathLength="60" stroke-dasharray="8.6 51.4" transform="rotate(-25.8 64 64)"/><circle class="rg d" r="52" cx="64" cy="64" pathLength="60" stroke-dasharray="8.6 51.4" transform="rotate(34.2 64 64)"/><circle class="rg n" r="52" cx="64" cy="64" pathLength="60" stroke-dasharray="8.6 51.4" transform="rotate(94.2 64 64)"/><circle class="rg u" r="52" cx="64" cy="64" pathLength="60" stroke-dasharray="8.6 51.4" transform="rotate(154.2 64 64)"/><circle class="rg u" r="52" cx="64" cy="64" pathLength="60" stroke-dasharray="8.6 51.4" transform="rotate(214.2 64 64)"/><text x="64" y="62" text-anchor="middle" class="ring-n">4/6</text><text x="64" y="80" text-anchor="middle" class="ring-l">étape en cours</text></svg><ul class="lg"><li><i class="k d"></i>Terminées<b class="num">3</b></li><li><i class="k n"></i>En cours<b class="num">1</b></li><li><i class="k u"></i>À venir<b class="num">2</b></li></ul></div>
+        <div class="rows" id="pts-ro"></div>
+        <button class="btn ghost sm" data-go="verifs">Mettre à jour les points</button></div>
+    </div>
+    <div class="grid g2">
+      <div class="panel"><div class="head"><div><h2>Zones existantes, par superficie</h2><p class="muted">En hectares</p></div><button class="btn ghost sm" data-go="zones">Gérer</button></div>
+        <div class="hbars" id="zs"></div><p class="src">Attinguié PK31 : superficie non publiée. Sources de 2025 et 2026, sauf Yopougon, Koumassi et Vridi.</p></div>
+      <div class="panel"><div class="head"><div><h2>Fraîcheur des données de zones</h2><p class="muted">8 zones existantes, par date de la donnée</p></div></div>
+        <div class="stk"><div class="stk-b"><i class="s1" style="flex:4" data-tip="2026 : 4 zones"></i><i class="s2" style="flex:1" data-tip="2025 : 1 zone"></i><i class="s3" style="flex:3" data-tip="Antérieure à 2025 : 3 zones"></i></div>
+          <ul class="lg row"><li><i class="k s1"></i>2026<b class="num">4</b></li><li><i class="k s2"></i>2025<b class="num">1</b></li><li><i class="k s3"></i>Antérieure à 2025<b class="num">3</b></li></ul></div>
+        <div class="head" style="margin-top:8px"><div><h2>Catalogue, comparé</h2><p class="muted" id="cmp-sub"></p></div>
+          <div class="tabs" role="group" aria-label="Mesure affichée"><button data-m="m2" aria-pressed="true">Prix au m²</button><button data-m="tot" aria-pressed="false">Prix total</button><button data-m="surf" aria-pressed="false">Surface</button></div></div>
+        <div class="hbars" id="cmp"></div>
+        <p class="src">Données des vendeurs, fiches du 9 octobre 2026.</p></div>
+    </div>
+  </section>
+
+  <section class="view" id="v-terrains" hidden>
+    <div class="head"><div><span class="eyebrow">Terrains</span><h1>Catalogue des terrains privés</h1><p class="muted">Le statut choisi ici est celui affiché aux clients.</p></div></div>
+    <div class="panel"><div class="tw"><table><thead><tr><th>Terrain</th><th class="r">Surface</th><th class="r">Prix au m²</th><th class="r">Prix total</th><th>Statut publié</th><th>Point clé</th></tr></thead><tbody id="t-rows"></tbody></table></div>
+      <p class="note" id="t-msg" role="status">Le statut choisi ici est celui affiché sur le site. Dans cette démonstration, il n'est pas enregistré.</p></div>
+    <div class="grid g2">
+      <div class="panel"><h2>Données confidentielles</h2><p class="muted">Jamais affichées en accès libre. Réservées à l'équipe et au niveau premium.</p>
+        <div class="rows"><div class="rowl"><div>Coordonnées GPS et bornes</div><span class="lock">Non affiché ici</span></div><div class="rowl"><div>Numéro du titre foncier</div><span class="lock">Non affiché ici</span></div><div class="rowl"><div>Nom du propriétaire et du mandataire</div><span class="lock">Non affiché ici</span></div><div class="rowl"><div>Nom des entreprises voisines et repères précis</div><span class="lock">Non affiché ici</span></div></div>
+        <p class="note">Cette démonstration ne contient aucune de ces données.</p></div>
+      <div class="panel"><h2>Règle de publication</h2><div class="rows"><div class="rowl"><div>Annoncé<small>Données du vendeur uniquement.</small></div><span class="st idle">Annoncé</span></div><div class="rowl"><div>Analyse en cours<small>Analyse à distance commencée.</small></div><span class="st run">Analyse en cours</span></div><div class="rowl"><div>Analyse standard<small>Fiche complète publiée.</small></div><span class="st ok">Analyse standard</span></div><div class="rowl"><div>Vérifié premium<small>CIE, SODECI, urbanisme et constat sur site terminés.</small></div><span class="st blue">Vérifié premium</span></div></div>
+        <p class="note">Ni pour ni contre le vendeur. Chaque affirmation est recoupée avec le plan cadastral, l'image satellite et des sources publiques.</p></div>
+    </div>
+  </section>
+
+  <section class="view" id="v-verifs" hidden>
+    <div class="head"><div><span class="eyebrow">Vérifications</span><h1>Suivi des vérifications premium</h1><p class="muted">Avancement point par point : CIE, SODECI, urbanisme, site.</p></div></div>
+    <div class="grid g32">
+      <div class="panel"><div class="head"><div><h2>Grand-Bassam, INZ-GBA-001</h2><span class="muted">Investisseur exemple · Vérification premium</span></div><span class="st run">Étape 4 sur 6</span></div>
+        <div class="tw"><table><thead><tr><th>Point à vérifier</th><th>Source</th><th>État</th></tr></thead><tbody id="pts"></tbody></table></div>
+        <p class="note" id="p-msg" role="status">Modifiez un état : le tableau de bord se met à jour. Rien n'est enregistré dans cette démonstration.</p></div>
+      <div class="panel"><h2>Étapes du dossier</h2><ol class="steps">
+        <li class="done"><div><strong>Demande reçue</strong><small>Terrain et niveau souhaité enregistrés.</small></div><time>Exemple</time></li>
+        <li class="done"><div><strong>Proposition envoyée</strong><small>Périmètre, délai et prix transmis.</small></div><time>Exemple</time></li>
+        <li class="done"><div><strong>Paiement reçu</strong><small>La vérification peut commencer.</small></div><time>Exemple</time></li>
+        <li class="now"><div><strong>Vérifications en cours</strong><small>Chaque point indique sa source une fois terminé.</small></div><time>En cours</time></li>
+        <li><div><strong>Rapport disponible</strong><small>Rapport complet, localisation exacte et plan.</small></div><time>À venir</time></li>
+        <li><div><strong>Entretien de restitution</strong><small>Un échange pour commenter les résultats.</small></div><time>À venir</time></li></ol></div>
+    </div>
+    <p class="note">Délai habituel d'une vérification premium : une à trois semaines. Elle ne porte pas sur la validité juridique du titre, qui relève du notaire de l'acquéreur.</p>
+  </section>
+
+  <section class="view" id="v-demandes" hidden>
+    <div class="head"><div><span class="eyebrow">Demandes</span><h1>Demandes reçues</h1><p class="muted">Demandes du site et des clients, à traiter dans l'ordre d'arrivée.</p></div></div>
+    <div class="panel"><div class="tw"><table><thead><tr><th>Demande</th><th>Terrain ou zone</th><th>Compte</th><th>État</th><th></th></tr></thead><tbody id="dem"></tbody></table></div>
+      <p class="note">Demandes d'exemple. Les formulaires du site et de l'espace client ne transmettent pas encore les demandes : elles arrivent pour l'instant à contact@africand.com.</p></div>
+  </section>
+
+  <section class="view" id="v-clients" hidden>
+    <div class="head"><div><span class="eyebrow">Comptes clients</span><h1>Comptes de la plateforme</h1><p class="muted">Comptes d'exemple et d'essai en attendant l'ouverture réelle.</p></div></div>
+    <div class="panel"><div class="tw"><table><thead><tr><th>Compte</th><th>Société</th><th>Pays</th><th>Formule</th><th>Terrains suivis</th><th>État</th></tr></thead><tbody><tr><td><strong>Investisseur exemple</strong><br><span class='muted'>investisseur@exemple.ma</span></td><td>Société exemple</td><td>Maroc</td><td>Formule investisseur</td><td>3</td><td><span class="st blue">Compte d'exemple</span></td></tr><tr><td><strong>Compte d'essai</strong><br><span class='muted'>Accès sans saisie</span></td><td>Non renseigné</td><td>Non renseigné</td><td>Formule investisseur</td><td>3</td><td><span class="st idle">Essai</span></td></tr></tbody></table></div>
+      <p class="note">La création de compte et le paiement ne sont pas encore actifs. Les demandes de compte démo arrivent à contact@africand.com.</p></div>
+    <div class="grid g2">
+      <div class="panel"><h2>Critères du compte d'exemple</h2><div class="rows"><div class="rowl"><div>Secteur d'activité</div><strong>Logistique et entreposage</strong></div><div class="rowl"><div>Surface recherchée</div><strong>2 à 10 ha</strong></div><div class="rowl"><div>Secteur géographique</div><strong>Grand Abidjan</strong></div></div></div>
+      <div class="panel"><h2>Zones suivies par ce compte</h2><div class="rows"><div class="rowl"><div>Akoupé-Zeudji PK24<small>1 000 ha, 284 ha attribués</small></div><span class="st blue">Suivie</span></div><div class="rowl"><div>Attinguié PK31<small>En développement</small></div><span class="st blue">Suivie</span></div></div></div>
+    </div>
+  </section>
+
+  <section class="view" id="v-zones" hidden>
+    <div class="head"><div><span class="eyebrow">Zones industrielles</span><h1>Base des zones publiques</h1><p class="muted">Superficies, écoulement et fraîcheur de chaque donnée.</p></div></div>
+    <div class="panel"><h2>Zones existantes</h2><div class="tw"><table><thead><tr><th>Zone</th><th>Superficie</th><th>Écoulement</th><th>Date de la donnée</th><th>Statut</th><th>Mise à jour</th></tr></thead><tbody><tr><td><strong>Akoupé-Zeudji PK24</strong></td><td>1 000 ha</td><td>284,1 ha attribués, 367 lots, 173 entreprises dont 67 en activité. 423 ha aménagés</td><td>Février 2026</td><td>En exploitation</td><td><span class="st ok">À jour</span></td></tr><tr><td><strong>Yamoussoukro</strong></td><td>750 ha</td><td>Première tranche de 250 ha occupée à 60 %. 15 entreprises en activité, 10 en construction</td><td>Décembre 2025</td><td>En extension</td><td><span class="st ok">À jour</span></td></tr><tr><td><strong>Yopougon</strong></td><td>469 ha</td><td>Non publié</td><td>Antérieure à 2025</td><td>Réhabilitée</td><td><span class="st run">À actualiser</span></td></tr><tr><td><strong>Plateforme PEIA, PK24</strong></td><td>431 ha</td><td>Capacité de 150 unités, premières entreprises attendues</td><td>Février 2026</td><td>En aménagement</td><td><span class="st ok">À jour</span></td></tr><tr><td><strong>Koumassi</strong></td><td>120 ha</td><td>Non publié</td><td>Antérieure à 2025</td><td>En réhabilitation</td><td><span class="st run">À actualiser</span></td></tr><tr><td><strong>Vridi</strong></td><td>120 ha</td><td>Non publié</td><td>Antérieure à 2025</td><td>En réhabilitation</td><td><span class="st run">À actualiser</span></td></tr><tr><td><strong>Korhogo (anacarde)</strong></td><td>28,7 ha</td><td>Opérateurs attendus</td><td>Février 2026</td><td>Inaugurée en 2023</td><td><span class="st ok">À jour</span></td></tr><tr><td><strong>Attinguié PK31</strong></td><td>Non publié</td><td>Au moins deux sites inaugurés en 2025 et 2026</td><td>Juin 2026</td><td>En développement</td><td><span class="st ok">À jour</span></td></tr></tbody></table></div></div>
+    <div class="panel"><h2>Zones en projet</h2><div class="tw"><table><thead><tr><th>Zone</th><th>Superficie</th><th>Remarque</th></tr></thead><tbody><tr><td><strong>Ville industrielle du PK50</strong></td><td>1 500 ha</td><td>Présentée comme le futur site phare, avec logements et services</td></tr><tr><td><strong>San Pedro</strong></td><td>540 ha</td><td>Parcelle déclarée d'utilité publique</td></tr><tr><td><strong>Yamoussoukro, programme complet</strong></td><td>500 ha</td><td></td></tr><tr><td><strong>Bonoua</strong></td><td>329 ha</td><td>Réserve déclarée d'utilité publique</td></tr><tr><td><strong>Adzopé</strong></td><td>300 ha</td><td>432 ha selon une autre source</td></tr><tr><td><strong>Bouaké</strong></td><td>150 ha</td><td>Parcelle réservée par décret</td></tr><tr><td><strong>Assouba</strong></td><td>23 ha</td><td></td></tr><tr><td><strong>Bondoukou et Séguéla (anacarde)</strong></td><td>15 ha chacune</td><td></td></tr><tr><td><strong>Ferkessédougou, Abengourou, Daloa, Mankono, M'Bengué</strong></td><td>Non publié</td><td>Annoncées à l'horizon 2030</td></tr></tbody></table></div>
+      <p class="note">Programme 2026-2030 : quatre programmes couvrant 1 450 ha pour 370 milliards FCFA, puis environ 400 milliards FCFA sur trois ans.</p></div>
+    <p class="note">Sources : Fraternité Matin (février 2026), Abidjan.net (décembre 2025), SOGEDI (août 2026), Bilan du gouvernement (novembre 2025), Afrik Soir (mars 2026), CCESP (avril 2023).</p>
+  </section>
+
+  <section class="view" id="v-veille" hidden>
+    <div class="head"><div><span class="eyebrow">Veille</span><h1>Bulletin mensuel</h1><p class="muted">Préparez le prochain numéro à partir des sources du mois.</p></div></div>
+    <div class="grid g32">
+      <div class="panel"><div class="head"><div><h2>Bulletin n° 0, octobre 2026</h2><p class="muted">Numéro de démonstration, en accès libre</p></div><span class="st ok">Publié</span></div>
+        <div class="tw"><table><thead><tr><th>Date</th><th>Titre</th><th>Source</th></tr></thead><tbody id="nw"><tr><td class='muted'>Juin 2026</td><td><strong>Attinguié : une usine de biochar inaugurée au PK31</strong></td><td>Afriveille</td></tr><tr><td class='muted'>Février 2026</td><td><strong>PK24 : 284 hectares attribués, 67 entreprises en activité</strong></td><td>Fraternité Matin</td></tr><tr><td class='muted'>Février 2026</td><td><strong>Y4 : la section Anyama-autoroute du Nord ouverte</strong></td><td>Connectionivoirienne</td></tr><tr><td class='muted'>Décembre 2025</td><td><strong>Yamoussoukro : 70 hectares en aménagement</strong></td><td>Abidjan.net</td></tr><tr><td class='muted'>Mars 2026</td><td><strong>Quatre nouveaux programmes : 1 450 hectares</strong></td><td>Afrik Soir</td></tr></tbody></table></div></div>
+      <form class="panel" id="nf" novalidate><h2>Ajouter une actualité</h2>
+        <label>Date<input id="n-d" placeholder="Mois et année"></label>
+        <label>Titre<input id="n-t"></label>
+        <label>Source<input id="n-s" placeholder="Organisme ou média"></label>
+        <button class="btn ghost sm" type="submit">Ajouter au bulletin</button><p class="note" id="n-msg" role="status" hidden></p></form>
+    </div>
+    <div class="panel"><h2>Rubriques premium</h2><div class="rows"><div class="rowl"><div>Lots attribués non mis en valeur</div><span class="st run">En attente des données de la SOGEDI</span></div><div class="rowl"><div>Attributions et retraits de lots</div><span class="st run">En attente des données de la SOGEDI</span></div><div class="rowl"><div>Nouveaux terrains privés en bordure des zones</div><span class="st ok">Ouverte</span></div><div class="rowl"><div>Prix constatés, zone par zone</div><span class="st ok">Ouverte</span></div><div class="rowl"><div>Avancement réel des routes et des réseaux</div><span class="st ok">Ouverte</span></div><div class="rowl"><div>Textes et décisions du Conseil des ministres</div><span class="st ok">Ouverte</span></div></div></div>
+  </section>
+
+  <section class="view" id="v-tarifs" hidden>
+    <div class="head"><div><span class="eyebrow">Offres et tarifs</span><h1>Niveaux et prix</h1><p class="muted">Ce que chaque niveau promet, son délai et son tarif.</p></div></div>
+    <form class="panel" id="pf" novalidate><div class="tw"><table><thead><tr><th>Niveau</th><th>Ce que le client obtient</th><th>Délai</th><th>Tarif</th></tr></thead><tbody><tr><td><strong>Consultation</strong></td><td>Carte des zones, hectares attribués, projets, catalogue des terrains</td><td>Immédiat</td><td>Libre</td></tr><tr><td><strong>Analyse standard</strong></td><td>Fiche complète d'un terrain : voisinage, accès, distances, relief, vigilance</td><td>24 à 48 h</td><td><input aria-label="Tarif de l'analyse standard" value="Sur mesure, à partir de 2 300 €"></td></tr><tr><td><strong>Vérification premium</strong></td><td>CIE, SODECI, plan d'urbanisme, constat sur site, localisation exacte</td><td>1 à 3 semaines</td><td><input aria-label="Tarif de la vérification premium" value="Sur mesure, à partir de 2 300 €"></td></tr><tr><td><strong>Veille premium</strong></td><td>Bulletin mensuel : lots, prix, travaux, textes</td><td>Mensuel</td><td><input aria-label="Tarif de la veille premium" value="Sur mesure, à partir de 2 300 €"></td></tr><tr><td><strong>Mission</strong></td><td>Recherche de site, étude d'implantation, risques de litige avec un notaire partenaire</td><td>Selon le projet</td><td>Sur devis</td></tr></tbody></table></div>
+      <button class="btn ghost sm" type="submit">Enregistrer les tarifs</button><p class="note" id="pf-msg" role="status" hidden></p></form>
+    <p class="note">inZONE est payé pour l'information, que la transaction se fasse ou non.</p>
+  </section>
+</main>
+  </div>
+</div>
+<div id="tip" role="tooltip" hidden></div>
+<script>
+const $=i=>document.getElementById(i);
+const T=[{n:"Grand-Bassam",ref:"INZ-GBA-001",s:"6 ha",p:"60 000",tt:"3,6 Mds FCFA",st:"Analyse standard",k:"Usage conseillé : logistique, industrie légère",m2:60000,tot:3.6,surf:6},
+{n:"Attinguié",ref:"INZ-ATT-001",s:"8,46 ha",p:"35 000",tt:"2,96 Mds FCFA",st:"Analyse en cours",k:"Tracé de la voie Y4 à confirmer",m2:35000,tot:2.96,surf:8.46},
+{n:"Anyama",ref:"INZ-ANY-001",s:"6 ha",p:"30 000",tt:"1,8 Md FCFA",st:"Annoncé",k:"Vocation industrielle à établir",m2:30000,tot:1.8,surf:6}];
+const SC={"Annoncé":"idle","Analyse en cours":"run","Analyse standard":"ok","Vérifié premium":"blue"};
+const P=[{n:"Électricité : distance au réseau, capacité, délai",s:"CIE",st:"Réponse attendue"},{n:"Eau : réseau au droit du terrain, débit",s:"SODECI",st:"À lancer"},{n:"Vocation industrielle au plan d'urbanisme",s:"Administration",st:"À lancer"},{n:"Constat sur site : accès, eau, occupation",s:"Visite sur place",st:"À lancer"}];
+const PC={"À lancer":"idle","Réponse attendue":"run","Terminé":"ok"};
+const D=[{t:"Vérification premium",z:"Grand-Bassam, INZ-GBA-001",c:"Investisseur exemple",st:"En cours"},{t:"Analyse standard",z:"Attinguié, INZ-ATT-001",c:"Investisseur exemple",st:"En préparation"}];
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const chip=(t,c)=>`<span class="st ${c}">${esc(t)}</span>`;
+const sel=(opts,v,attr)=>`<select class="sel" ${attr}>${opts.map(o=>`<option${o===v?" selected":""}>${o}</option>`).join("")}</select>`;
+const fr=(v,d)=>v.toLocaleString("fr-FR",{minimumFractionDigits:d,maximumFractionDigits:d});
+const M={m2:{sub:"Prix annoncé au m², en FCFA",f:v=>fr(v,0)+" FCFA/m²"},tot:{sub:"Prix total annoncé, en milliards de FCFA",f:v=>fr(v,v%1?2:1).replace(/,(\d)0$/,",$1")+(v<2?" Md FCFA":" Mds FCFA")},surf:{sub:"Surface annoncée, en hectares",f:v=>fr(v,v%1?2:0)+" ha"}};
+function bars(el,rows,f){const mx=Math.max(...rows.map(r=>r.v));el.innerHTML=rows.map(r=>`<div class="hb"><div class="hb-n">${r.n}${r.s?`<small>${r.s}</small>`:""}</div><div class="hb-t"><i class="hb-f" style="width:${r.v/mx*76}%" data-tip="${r.n} : ${f(r.v)}"></i><span class="hb-v num">${f(r.v)}</span></div></div>`).join("")}
+function cmp(m){bars($("cmp"),T.map(t=>({n:t.n,s:t.ref,v:t[m]})),M[m].f);$("cmp-sub").textContent=M[m].sub;document.querySelectorAll(".tabs button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.m===m))}
+document.querySelector(".tabs").addEventListener("click",e=>{const b=e.target.closest("button");if(b)cmp(b.dataset.m)});
+function render(){
+  /* terrains */
+  $("t-rows").innerHTML=T.map((t,i)=>`<tr><td><strong>${t.n}</strong><br><span class="muted num">${t.ref}</span></td><td class="r num">${t.s}</td><td class="r num">${t.p}</td><td class="r num">${t.tt}</td><td>${sel(Object.keys(SC),t.st,`data-t="${i}" aria-label="Statut de ${t.n}"`)}</td><td class="muted">${t.k}</td></tr>`).join("");
+  const order=["Vérifié premium","Analyse standard","Analyse en cours","Annoncé"],cl={"Vérifié premium":"n","Analyse standard":"a","Analyse en cours":"b","Annoncé":"c"};
+  $("k-ter").innerHTML=order.flatMap(o=>T.filter(t=>t.st===o).map(()=>`<i class="sq ${cl[o]}"></i>`)).join("");
+  $("k-ter-t").textContent=order.map(o=>[T.filter(t=>t.st===o).length,o.toLowerCase()]).filter(x=>x[0]).map(x=>x.join(" ")).join(", ");
+  /* points */
+  $("pts").innerHTML=P.map((p,i)=>`<tr><td><strong>${p.n}</strong></td><td class="muted">${p.s}</td><td>${sel(Object.keys(PC),p.st,`data-p="${i}" aria-label="État : ${p.n}"`)}</td></tr>`).join("");
+  $("pts-ro").innerHTML=P.map(p=>`<div class="rowl"><div>${p.n.split(" :")[0]} <small>${p.s}</small></div>${chip(p.st,PC[p.st])}</div>`).join("");
+  const done=P.filter(p=>p.st==="Terminé").length,run=P.filter(p=>p.st==="Réponse attendue").length,idle=P.filter(p=>p.st==="À lancer").length;
+  $("k-pt").textContent=done;$("k-pt-b").style.width=done/4*100+"%";$("k-pt-t").textContent=`${done} terminé${done>1?"s":""}, ${run} en attente, ${idle} à lancer`;
+  /* demandes */
+  $("dem").innerHTML=D.map((d,i)=>`<tr><td><strong>${d.t}</strong></td><td>${d.z}</td><td>${d.c}</td><td>${chip(d.st,d.st==="Traitée"?"ok":"run")}</td><td class="r">${d.st==="Traitée"?"":`<button class="btn ghost sm" data-d="${i}">Marquer traitée</button>`}</td></tr>`).join("");
+  const open=D.filter(d=>d.st!=="Traitée").length;$("k-dem").textContent=open;$("nd").textContent=open;$("nd").hidden=!open;$("k-dem-v").innerHTML=D.map(d=>`<i class="sq ${d.st==="Traitée"?"c":"a"}"></i>`).join("");
+  /* à faire */
+  const todo=[];
+  P.filter(p=>p.st==="Réponse attendue").forEach(p=>todo.push(["Relancer : "+p.s,"Grand-Bassam, "+p.n.split(" :")[0].toLowerCase()+". Réponse attendue.","verifs"]));
+  if(idle)todo.push([`Lancer ${idle} point${idle>1?"s":""} de vérification`,"Grand-Bassam : "+P.filter(p=>p.st==="À lancer").map(p=>p.n.split(" :")[0].toLowerCase()).join(", ")+".","verifs"]);
+  T.filter(t=>t.st==="Analyse en cours").forEach(t=>todo.push(["Terminer l'analyse : "+t.n,t.k+".","terrains"]));
+  T.filter(t=>t.st==="Annoncé").forEach(t=>todo.push(["Commencer l'analyse : "+t.n,"Données du vendeur uniquement. "+t.k+".","terrains"]));
+  todo.push(["Actualiser 3 zones","Yopougon, Koumassi, Vridi : superficie de source antérieure à 2025.","zones"]);
+  todo.push(["Valider les tarifs proposés","Options sur mesure, à partir de 2 300 €.","tarifs"]);
+  todo.push(["Ouvrir les rubriques attributions et retraits","Dès l'accès aux données de la SOGEDI.","veille"]);
+  $("todo").innerHTML=todo.map(t=>`<div class="rowl"><div><strong>${t[0]}</strong><small>${t[1]}</small></div><button class="btn ghost sm" data-go="${t[2]}">Ouvrir</button></div>`).join("");
+  $("todo-n").textContent=todo.length+" actions";
+}
+document.addEventListener("change",e=>{const s=e.target;if(s.dataset.t!==undefined){T[s.dataset.t].st=s.value;render();$("t-msg").textContent="Statut de "+T[s.dataset.t].n+" passé à « "+s.value+" » pour cette démonstration. Il n'est pas enregistré."}else if(s.dataset.p!==undefined){P[s.dataset.p].st=s.value;render();$("p-msg").textContent="Point mis à jour pour cette démonstration. Il n'est pas enregistré."}});
+/* infobulle */
+const tip=$("tip");
+document.addEventListener("pointermove",e=>{const m=e.target.closest&&e.target.closest("[data-tip]");if(!m){tip.hidden=true;return}tip.textContent=m.dataset.tip;tip.hidden=false;tip.style.left=Math.max(90,Math.min(innerWidth-90,e.clientX))+"px";tip.style.top=e.clientY+"px"});
+/* navigation */
+const V=["bord","terrains","verifs","demandes","clients","zones","veille","tarifs"];
+function go(v){if(!V.includes(v))v="bord";V.forEach(x=>$("v-"+x).hidden=x!==v);document.querySelectorAll("aside nav button").forEach(b=>{if(b.dataset.go===v){b.setAttribute("aria-current","page");$("where").textContent=b.querySelector(".lbl").textContent}else b.removeAttribute("aria-current")});$("app").classList.remove("open");try{history.replaceState(null,"","#"+v)}catch(e){}window.scrollTo(0,0)}
+function enter(v){$("login").hidden=true;$("app").hidden=false;go(v||"bord")}
+document.addEventListener("click",e=>{const d=e.target.closest("[data-d]");if(d){D[d.dataset.d].st="Traitée";render();return}const b=e.target.closest("[data-go]");if(b)go(b.dataset.go)});
+$("lf").addEventListener("submit",e=>{e.preventDefault();enter("bord")});
+$("out").addEventListener("click",()=>{$("app").hidden=true;$("login").hidden=false;try{history.replaceState(null,"","#")}catch(e){}});
+const mob=()=>matchMedia("(max-width:860px)").matches;
+try{if(localStorage.getItem("inz-menu")==="min")$("app").classList.add("min")}catch(e){}
+$("brandtog").addEventListener("click",()=>{const a=$("app");if(mob()){a.classList.toggle("open");$("brandtog").setAttribute("aria-expanded",String(a.classList.contains("open")))}else{a.classList.toggle("min");$("brandtog").setAttribute("aria-expanded",String(!a.classList.contains("min")));try{localStorage.setItem("inz-menu",a.classList.contains("min")?"min":"max")}catch(e){}}});
+$("scrim").addEventListener("click",()=>$("app").classList.remove("open"));
+document.addEventListener("keydown",e=>{if(e.key==="Escape")$("app").classList.remove("open")});
+$("nf").addEventListener("submit",e=>{e.preventDefault();const d=$("n-d").value.trim(),t=$("n-t").value.trim(),s=$("n-s").value.trim(),m=$("n-msg");m.hidden=false;if(!d||!t||!s){m.textContent="Indiquez la date, le titre et la source : chaque actualité publiée cite sa source.";return}$("nw").insertAdjacentHTML("afterbegin",`<tr><td class="muted">${esc(d)}</td><td><strong>${esc(t)}</strong></td><td>${esc(s)}</td></tr>`);e.target.reset();m.textContent="Actualité ajoutée pour cette démonstration. Elle n'est pas enregistrée ni publiée sur le site."});
+$("pf").addEventListener("submit",e=>{e.preventDefault();$("pf-msg").hidden=false;$("pf-msg").textContent="Tarifs mis à jour pour cette démonstration. Ils ne sont pas enregistrés ni publiés sur le site."});
+render();cmp("m2");
+bars($("zs"),[["Akoupé-Zeudji PK24",1000],["Yamoussoukro",750],["Yopougon",469],["Plateforme PEIA, PK24",431],["Koumassi",120],["Vridi",120],["Korhogo (anacarde)",28.7]].map(z=>({n:z[0],v:z[1]})),v=>fr(v,v%1?1:0)+" ha");
+const h=location.hash.slice(1);if(V.includes(h))enter(h);
+</script>
+</body>
+</html>
