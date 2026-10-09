@@ -953,6 +953,49 @@ def update_tarif(niveau: str, body: TarifIn, _: dict = Depends(admin_only)):
     return {"niveau": niveau, "tarif": body.tarif}
 
 
+class SignupIn(BaseModel):
+    name: str
+    email: str
+    password: str
+    company: str = ""
+    country: str = ""
+
+
+SIGNUP_ATTEMPTS: dict = {}
+
+
+@app.post("/api/signup", status_code=201)
+def signup(body: SignupIn, request: Request):
+    ip = request.client.host if request.client else "?"
+    now = time.time()
+    hits = [t for t in SIGNUP_ATTEMPTS.get(ip, []) if now - t < 3600]
+    if len(hits) >= 5:
+        raise HTTPException(status_code=429,
+                            detail="Trop d'inscriptions, réessayez dans une heure")
+    name, email, pwd = (body.name.strip(), body.email.strip().lower(),
+                        body.password)
+    if len(name) < 2:
+        raise HTTPException(status_code=422, detail="Nom requis")
+    if "@" not in email or "." not in email.split("@")[-1]:
+        raise HTTPException(status_code=422, detail="Email invalide")
+    if len(pwd) < 8:
+        raise HTTPException(status_code=422,
+                            detail="Mot de passe : 8 caractères minimum")
+    con = db()
+    if con.execute("SELECT 1 FROM users WHERE email=?", (email,)).fetchone():
+        con.close()
+        raise HTTPException(status_code=409, detail="Compte déjà existant, connectez-vous")
+    make_user(con, email, pwd, "client", name,
+              body.company.strip(), body.country.strip())
+    con.commit()
+    row = con.execute("SELECT * FROM users WHERE email=?", (email,)).fetchone()
+    con.close()
+    hits.append(now)
+    SIGNUP_ATTEMPTS[ip] = hits
+    user = dict(row)
+    return {"token": make_token(user), "role": "client", "name": user["name"]}
+
+
 class UserIn(BaseModel):
     email: str
     password: str
