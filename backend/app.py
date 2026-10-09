@@ -86,6 +86,8 @@ def init_db():
           id INTEGER PRIMARY KEY, demande_id INTEGER, client_email TEXT,
           objet TEXT, niveau TEXT, montant TEXT,
           status TEXT DEFAULT 'Émise', created TEXT);
+        CREATE TABLE IF NOT EXISTS zones_projets(
+          id INTEGER PRIMARY KEY, name TEXT, surface TEXT, remarque TEXT);
         """
     )
     for col in ("description TEXT", "acces TEXT", "sol TEXT", "riverains TEXT",
@@ -106,6 +108,7 @@ def init_db():
     con.commit()
     if c.execute("SELECT COUNT(*) FROM users").fetchone()[0] == 0:
         seed(con)
+    backfill_projets(con)
     con.close()
 
 
@@ -217,6 +220,27 @@ def seed(con):
         ],
     )
     con.commit()
+
+
+PROJETS_SEED = [
+    ("Ville industrielle du PK50", "1 500 ha", "Futur site phare, logements et services"),
+    ("San Pedro", "540 ha", "Parcelle déclarée d'utilité publique"),
+    ("Yamoussoukro, programme complet", "500 ha", ""),
+    ("Bonoua", "329 ha", "Réserve déclarée d'utilité publique"),
+    ("Adzopé", "300 ha", "432 ha selon une autre source"),
+    ("Bouaké", "150 ha", "Parcelle réservée par décret"),
+    ("Assouba", "23 ha", ""),
+    ("Bondoukou et Séguéla (anacarde)", "15 ha chacune", ""),
+    ("Ferkessédougou, Abengourou, Daloa, Mankono, M'Bengué", "Non publié", "Annoncées à l'horizon 2030"),
+]
+
+
+def backfill_projets(con):
+    if con.execute("SELECT COUNT(*) FROM zones_projets").fetchone()[0] == 0:
+        con.executemany(
+            "INSERT INTO zones_projets(name,surface,remarque) VALUES(?,?,?)",
+            PROJETS_SEED)
+        con.commit()
 
 
 # ---------- auth ----------
@@ -335,6 +359,14 @@ def zones():
     return out
 
 
+@app.get("/api/zones-projets")
+def zones_projets():
+    con = db()
+    out = rows(con, "SELECT * FROM zones_projets ORDER BY id")
+    con.close()
+    return out
+
+
 @app.get("/api/terrains")
 def terrains():
     con = db()
@@ -355,6 +387,7 @@ def terrain(ref: str):
 
 @app.get("/api/bulletins")
 def bulletins():
+
     con = db()
     out = rows(con, "SELECT * FROM bulletins ORDER BY id")
     con.close()
@@ -545,6 +578,31 @@ def update_terrain(ref: str, body: TerrainPatch, _: dict = Depends(admin_only)):
     return {"ref": ref, "updated": sets}
 
 
+@app.delete("/api/terrains/{ref}")
+def delete_terrain(ref: str, _: dict = Depends(admin_only)):
+    con = db()
+    t = con.execute("SELECT name FROM terrains WHERE ref=?", (ref,)).fetchone()
+    if not t:
+        con.close()
+        raise HTTPException(status_code=404, detail="Terrain introuvable")
+    for (f,) in con.execute("SELECT file FROM photos WHERE terrain_ref=?", (ref,)).fetchall():
+        try:
+            os.remove(os.path.join(UPLOAD_DIR, os.path.basename(f)))
+        except OSError:
+            pass
+    vids = [r[0] for r in con.execute(
+        "SELECT id FROM verifications WHERE terrain_ref=?", (ref,)).fetchall()]
+    for vid in vids:
+        con.execute("DELETE FROM steps WHERE verif_id=?", (vid,))
+    con.execute("DELETE FROM verifications WHERE terrain_ref=?", (ref,))
+    con.execute("DELETE FROM photos WHERE terrain_ref=?", (ref,))
+    con.execute("DELETE FROM documents WHERE terrain=?", (t["name"],))
+    con.execute("DELETE FROM terrains WHERE ref=?", (ref,))
+    con.commit()
+    con.close()
+    return {"ref": ref, "deleted": True}
+
+
 MAX_FILE = 8 * 1024 * 1024
 
 
@@ -591,6 +649,33 @@ def list_photos(ref: str):
     out = rows(con, "SELECT * FROM photos WHERE terrain_ref=? ORDER BY id", (ref,))
     con.close()
     return out
+
+
+@app.get("/api/photos")
+def all_photos(_: dict = Depends(admin_only)):
+    con = db()
+    out = rows(con, "SELECT photos.*, terrains.name AS terrain_name FROM photos"
+                    " LEFT JOIN terrains ON terrains.ref=photos.terrain_ref"
+                    " ORDER BY photos.id DESC")
+    con.close()
+    return out
+
+
+@app.delete("/api/photos/{pid}")
+def delete_photo(pid: int, _: dict = Depends(admin_only)):
+    con = db()
+    row = con.execute("SELECT file FROM photos WHERE id=?", (pid,)).fetchone()
+    if not row:
+        con.close()
+        raise HTTPException(status_code=404, detail="Photo introuvable")
+    try:
+        os.remove(os.path.join(UPLOAD_DIR, os.path.basename(row["file"])))
+    except OSError:
+        pass
+    con.execute("DELETE FROM photos WHERE id=?", (pid,))
+    con.commit()
+    con.close()
+    return {"id": pid, "deleted": True}
 
 
 @app.post("/api/terrains/{ref}/documents", status_code=201)
