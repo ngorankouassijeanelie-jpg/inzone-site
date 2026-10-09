@@ -85,6 +85,8 @@ c.execute("UPDATE terrains SET lat=5.43702, lon=-4.20128 WHERE ref LIKE 'INZ-ATT
 import shutil
 shutil.copy(os.path.join(BASE, "data", "INZ-GBA-001-contour.kml"),
             os.path.join(UP, "INZ-GBA-001-contour.kml"))
+shutil.copy(os.path.join(BASE, "data", "INZ-GBA-001-analyse-standard.pdf"),
+            os.path.join(UP, "INZ-GBA-001-analyse-standard.pdf"))
 if not c.execute("SELECT 1 FROM documents WHERE file='/uploads/INZ-GBA-001-contour.kml'").fetchone():
     c.execute(
         "INSERT INTO documents(name,terrain,type,etat,file) VALUES(?,?,?,?,?)",
@@ -99,8 +101,9 @@ if not c.execute("SELECT 1 FROM photos WHERE file='/uploads/demo-gba-photo.png'"
          "grand-bassam-vue.png", "Vue du terrain, Grand-Bassam",
          os.path.getsize(os.path.join(UP, "demo-gba-photo.png"))))
     print("photo demo ajoutee")
-c.execute("UPDATE documents SET file='/uploads/demo-fiche-gba.pdf'"
-          " WHERE name='Analyse standard' AND terrain='Grand-Bassam' AND file IS NULL")
+c.execute("UPDATE documents SET name='Analyse standard INZ-GBA-001', type='Fiche, 3 pages',"
+          " etat='Disponible', file='/uploads/INZ-GBA-001-analyse-standard.pdf'"
+          " WHERE name='Analyse standard' AND terrain='Grand-Bassam'")
 c.execute("UPDATE documents SET file='/uploads/demo-bulletin-0.pdf'"
           " WHERE name LIKE 'Bulletin%' AND file IS NULL")
 con.commit()
