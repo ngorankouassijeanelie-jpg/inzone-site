@@ -678,6 +678,42 @@ def delete_photo(pid: int, _: dict = Depends(admin_only)):
     return {"id": pid, "deleted": True}
 
 
+@app.get("/api/terrains/{ref}/contour")
+def terrain_contour(ref: str):
+    """Contour de la parcelle issu du dernier KML joint, en [[lat,lon]]."""
+    import xml.etree.ElementTree as ET
+    con = db()
+    row = con.execute(
+        "SELECT file FROM documents WHERE (terrain=(SELECT name FROM terrains WHERE ref=?)"
+        " OR terrain=?) AND (file LIKE '%.kml') ORDER BY id DESC LIMIT 1",
+        (ref, ref)).fetchone()
+    con.close()
+    if not row:
+        raise HTTPException(status_code=404, detail="Aucun contour KML")
+    path = os.path.join(UPLOAD_DIR, os.path.basename(row["file"]))
+    try:
+        root = ET.parse(path).getroot()
+        ns = {"k": "http://www.opengis.net/kml/2.2"}
+        coords = None
+        for tag in (".//k:Polygon//k:coordinates", ".//coordinates"):
+            el = root.find(tag, ns) if "k:" in tag else root.find(tag)
+            if el is not None and el.text and el.text.strip():
+                coords = el.text.strip()
+                break
+        if not coords:
+            raise ValueError("pas de coordonnées")
+        pts = []
+        for pair in coords.replace("\n", " ").split():
+            parts = pair.split(",")
+            lon, lat = float(parts[0]), float(parts[1])
+            pts.append([lat, lon])
+        if len(pts) < 3:
+            raise ValueError("contour trop court")
+    except Exception:
+        raise HTTPException(status_code=422, detail="KML illisible")
+    return {"polygon": pts}
+
+
 @app.post("/api/terrains/{ref}/documents", status_code=201)
 def upload_document(ref: str, file: UploadFile = File(...),
                     type: str = Form("Pièce"), _: dict = Depends(admin_only)):
@@ -687,10 +723,12 @@ def upload_document(ref: str, file: UploadFile = File(...),
         con.close()
         raise HTTPException(status_code=404, detail="Terrain introuvable")
     ctype = (file.content_type or "").lower()
-    if not (ctype.startswith("image/") or ctype == "application/pdf"):
+    name_low = (file.filename or "").lower()
+    is_kml = name_low.endswith(".kml") or ctype == "application/vnd.google-earth.kml+xml"
+    if not (ctype.startswith("image/") or ctype == "application/pdf" or is_kml):
         con.close()
-        raise HTTPException(status_code=422, detail="PDF ou image uniquement")
-    saved = save_upload(ref, file, ("image/", "application/"))
+        raise HTTPException(status_code=422, detail="PDF, image ou KML uniquement")
+    saved = save_upload(ref, file, ("",) if is_kml else ("image/", "application/"))
     cur = con.execute(
         "INSERT INTO documents(name,terrain,type,etat,file) VALUES(?,?,?,?,?)",
         (file.filename, t["name"], type.strip() or "Pièce", "Disponible", saved["file"]))
