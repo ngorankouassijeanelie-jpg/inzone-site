@@ -485,13 +485,19 @@ td strong,td .num{white-space:nowrap}
 </div>
 <div id="tip" role="tooltip" hidden></div>
 <script>
-const T=[{id:"gba",n:"Grand-Bassam",ref:"INZ-GBA-001",s:"6 ha",p:"60 000",lvl:"Analyse standard",c:"ok",d:"Logistique et industrie légère. Vérification premium en cours.",go:"fiche",b:"Ouvrir la fiche",m2:60000,tot:3.6,surf:6},
+let T=[{id:"gba",n:"Grand-Bassam",ref:"INZ-GBA-001",s:"6 ha",p:"60 000",lvl:"Analyse standard",c:"ok",d:"Logistique et industrie légère. Vérification premium en cours.",go:"fiche",b:"Ouvrir la fiche",m2:60000,tot:3.6,surf:6},
 {id:"att",n:"Attinguié",ref:"INZ-ATT-001",s:"8,46 ha",p:"35 000",lvl:"Analyse en cours",c:"run",d:"Terrain vallonné, à environ 2,7 km de l'autoroute du Nord. Tracé de la voie Y4 à confirmer.",go:"demande",b:"Demander une vérification",m2:35000,tot:2.96,surf:8.46},
 {id:"any",n:"Anyama",ref:"INZ-ANY-001",s:"6 ha",p:"30 000",lvl:"Annoncé",c:"idle",d:"Voisin d'une cimenterie. Données du vendeur uniquement, analyse non commencée.",go:"demande",b:"Demander une analyse",m2:30000,tot:1.8,surf:6}];
 const $=i=>document.getElementById(i);
 const AR='<i><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 10h10.2M10.4 5.6 15.2 10l-4.8 4.4"/></svg></i>';
+function renderTerrains(){
 $("tb1").innerHTML=T.map(t=>`<tr><td><strong>${t.n}</strong><br><span class="muted num">${t.ref}</span></td><td class="r num">${t.s}</td><td class="r num">${t.p}</td><td><span class="st ${t.c}">${t.lvl}</span></td><td class="r"><button class="btn ghost sm" data-go="${t.go==="fiche"?"fiche":"terrains"}" aria-label="Voir ${t.n}">Voir</button></td></tr>`).join("");
 $("cards").innerHTML=T.map(t=>`<div class="panel"><div class="head"><div><span class="eyebrow">${t.ref}</span><h2>${t.n}</h2></div><span class="st ${t.c}">${t.lvl}</span></div><p class="muted">${t.d}</p><div class="rows"><div class="rowl"><div>Surface</div><strong class="num">${t.s}</strong></div><div class="rowl"><div>Prix annoncé</div><strong class="num">${t.p} FCFA/m²</strong></div></div><button class="btn ${t.go==="fiche"?"sm ic":"ghost sm"}" data-go="${t.go}" data-site="${t.n}"><span>${t.b}</span>${t.go==="fiche"?AR:""}</button></div>`).join("");
+}
+renderTerrains();
+const STC={"Analyse standard":"ok","Analyse en cours":"run","Annoncé":"idle","Vérifié premium":"blue"};
+function mapT(t){const s=t.surface_ha||0,m=t.price_m2||0;return{id:t.ref,n:t.name,ref:t.ref,s:s?s.toLocaleString("fr-FR")+" ha":"—",p:m?m.toLocaleString("fr-FR"):"—",lvl:t.status,c:STC[t.status]||"idle",d:t.point_cle||"",go:t.ref==="INZ-GBA-001"?"fiche":"demande",b:t.ref==="INZ-GBA-001"?"Ouvrir la fiche":"Demander une vérification",m2:m,tot:s*m/1e5,surf:s}}
+async function syncTerrains(){try{const r=await fetch(API()+"/api/terrains");if(!r.ok)return;const j=await r.json();if(!j.length)return;T=j.map(mapT);renderTerrains();charts()}catch(e){}}
 /* graphiques */
 const fr=(v,d)=>v.toLocaleString("fr-FR",{minimumFractionDigits:d,maximumFractionDigits:d});
 const M={m2:{sub:"Prix annoncé au m², en FCFA",f:v=>fr(v,0)+" FCFA/m²"},tot:{sub:"Prix total annoncé, en milliards de FCFA",f:v=>fr(v,v%1?2:1).replace(/,(\d)0$/,",$1")+(v<2?" Md FCFA":" Mds FCFA")},surf:{sub:"Surface annoncée, en hectares",f:v=>fr(v,v%1?2:0)+" ha"}};
@@ -508,7 +514,7 @@ const V=["bord","terrains","fiche","verifs","docs","veille","abo","compte","dema
 const N={fiche:"Mes terrains",demande:"Nouvelle demande"};
 function go(v){if(!V.includes(v))v="bord";V.forEach(x=>$("v-"+x).hidden=x!==v);const cur=v==="fiche"?"terrains":v;let name=N[v]||"";document.querySelectorAll("aside nav button").forEach(b=>{if(b.dataset.go===cur){b.setAttribute("aria-current","page");name=name||b.querySelector(".lbl").textContent}else b.removeAttribute("aria-current")});$("where").textContent=name;$("app").classList.remove("open");$("brandtog").setAttribute("aria-expanded",String(!$("app").classList.contains("min")));try{history.replaceState(null,"","#"+v)}catch(e){}window.scrollTo(0,0)}
 let trial=false;
-function enter(v,t){trial=!!t;$("trial").hidden=!trial;$("who").textContent=trial?"Compte d'essai":"Compte d'exemple";$("tagm").textContent=trial?"Compte d'essai":"Compte d'exemple";$("login").hidden=true;$("app").hidden=false;go(v||"bord")}
+function enter(v,t){trial=!!t;$("trial").hidden=!trial;$("who").textContent=trial?"Compte d'essai":"Compte d'exemple";$("tagm").textContent=trial?"Compte d'essai":"Compte d'exemple";$("login").hidden=true;$("app").hidden=false;go(v||"bord");syncTerrains()}
 document.addEventListener("click",e=>{const b=e.target.closest("[data-go]");if(!b)return;if(b.dataset.site){[...$("d-site").options].forEach(o=>{if(o.text.startsWith(b.dataset.site))$("d-site").value=o.value})}go(b.dataset.go)});
 const API=()=>{try{return localStorage.getItem("inz-api")||"http://localhost:8001"}catch(_){return"http://localhost:8001"}};
 async function apiPost(p,body,tok){const r=await fetch(API()+p,{method:"POST",headers:Object.assign({"Content-Type":"application/json"},tok?{Authorization:"Bearer "+tok}:{}),body:JSON.stringify(body)});if(!r.ok){let m="";try{m=(await r.json()).detail||""}catch(e){}throw new Error(r.status===401?(m||"Identifiants incorrects"):"Serveur injoignable ("+r.status+")")}return r.json()}

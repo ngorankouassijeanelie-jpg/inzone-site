@@ -435,13 +435,13 @@ td strong,td .num{white-space:nowrap}
 <div id="tip" role="tooltip" hidden></div>
 <script>
 const $=i=>document.getElementById(i);
-const T=[{n:"Grand-Bassam",ref:"INZ-GBA-001",s:"6 ha",p:"60 000",tt:"3,6 Mds FCFA",st:"Analyse standard",k:"Usage conseillé : logistique, industrie légère",m2:60000,tot:3.6,surf:6},
+let T=[{n:"Grand-Bassam",ref:"INZ-GBA-001",s:"6 ha",p:"60 000",tt:"3,6 Mds FCFA",st:"Analyse standard",k:"Usage conseillé : logistique, industrie légère",m2:60000,tot:3.6,surf:6},
 {n:"Attinguié",ref:"INZ-ATT-001",s:"8,46 ha",p:"35 000",tt:"2,96 Mds FCFA",st:"Analyse en cours",k:"Tracé de la voie Y4 à confirmer",m2:35000,tot:2.96,surf:8.46},
 {n:"Anyama",ref:"INZ-ANY-001",s:"6 ha",p:"30 000",tt:"1,8 Md FCFA",st:"Annoncé",k:"Vocation industrielle à établir",m2:30000,tot:1.8,surf:6}];
 const SC={"Annoncé":"idle","Analyse en cours":"run","Analyse standard":"ok","Vérifié premium":"blue"};
-const P=[{n:"Électricité : distance au réseau, capacité, délai",s:"CIE",st:"Réponse attendue"},{n:"Eau : réseau au droit du terrain, débit",s:"SODECI",st:"À lancer"},{n:"Vocation industrielle au plan d'urbanisme",s:"Administration",st:"À lancer"},{n:"Constat sur site : accès, eau, occupation",s:"Visite sur place",st:"À lancer"}];
+let P=[{n:"Électricité : distance au réseau, capacité, délai",s:"CIE",st:"Réponse attendue"},{n:"Eau : réseau au droit du terrain, débit",s:"SODECI",st:"À lancer"},{n:"Vocation industrielle au plan d'urbanisme",s:"Administration",st:"À lancer"},{n:"Constat sur site : accès, eau, occupation",s:"Visite sur place",st:"À lancer"}];
 const PC={"À lancer":"idle","Réponse attendue":"run","Terminé":"ok"};
-const D=[{t:"Vérification premium",z:"Grand-Bassam, INZ-GBA-001",c:"Investisseur exemple",st:"En cours"},{t:"Analyse standard",z:"Attinguié, INZ-ATT-001",c:"Investisseur exemple",st:"En préparation"}];
+let D=[{t:"Vérification premium",z:"Grand-Bassam, INZ-GBA-001",c:"Investisseur exemple",st:"En cours"},{t:"Analyse standard",z:"Attinguié, INZ-ATT-001",c:"Investisseur exemple",st:"En préparation"}];
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const chip=(t,c)=>`<span class="st ${c}">${esc(t)}</span>`;
 const sel=(opts,v,attr)=>`<select class="sel" ${attr}>${opts.map(o=>`<option${o===v?" selected":""}>${o}</option>`).join("")}</select>`;
@@ -476,15 +476,15 @@ function render(){
   $("todo").innerHTML=todo.map(t=>`<div class="rowl"><div><strong>${t[0]}</strong><small>${t[1]}</small></div><button class="btn ghost sm" data-go="${t[2]}">Ouvrir</button></div>`).join("");
   $("todo-n").textContent=todo.length+" actions";
 }
-document.addEventListener("change",e=>{const s=e.target;if(s.dataset.t!==undefined){T[s.dataset.t].st=s.value;render();$("t-msg").textContent="Statut de "+T[s.dataset.t].n+" passé à « "+s.value+" » pour cette démonstration. Il n'est pas enregistré."}else if(s.dataset.p!==undefined){P[s.dataset.p].st=s.value;render();$("p-msg").textContent="Point mis à jour pour cette démonstration. Il n'est pas enregistré."}});
+document.addEventListener("change",e=>{const s=e.target;if(s.dataset.t!==undefined){const t=T[+s.dataset.t];t.st=s.value;if(t.ref&&tok()){fetch(API()+"/api/terrains/"+encodeURIComponent(t.ref),{method:"PUT",headers:{"Content-Type":"application/json",Authorization:"Bearer "+tok()},body:JSON.stringify({status:s.value})}).catch(()=>{})}render();$("t-msg").textContent="Statut de "+t.n+" passé à « "+s.value+" »."}else if(s.dataset.p!==undefined){const p=P[+s.dataset.p];p.st=s.value;if(p.id&&tok()){fetch(API()+"/api/steps/"+p.id,{method:"PUT",headers:{"Content-Type":"application/json",Authorization:"Bearer "+tok()},body:JSON.stringify({status:s.value})}).catch(()=>{})}render();$("p-msg").textContent="Point mis à jour."}});
 /* infobulle */
 const tip=$("tip");
 document.addEventListener("pointermove",e=>{const m=e.target.closest&&e.target.closest("[data-tip]");if(!m){tip.hidden=true;return}tip.textContent=m.dataset.tip;tip.hidden=false;tip.style.left=Math.max(90,Math.min(innerWidth-90,e.clientX))+"px";tip.style.top=e.clientY+"px"});
 /* navigation */
 const V=["bord","terrains","verifs","demandes","clients","zones","veille","tarifs"];
 function go(v){if(!V.includes(v))v="bord";V.forEach(x=>$("v-"+x).hidden=x!==v);document.querySelectorAll("aside nav button").forEach(b=>{if(b.dataset.go===v){b.setAttribute("aria-current","page");$("where").textContent=b.querySelector(".lbl").textContent}else b.removeAttribute("aria-current")});$("app").classList.remove("open");try{history.replaceState(null,"","#"+v)}catch(e){}window.scrollTo(0,0)}
-function enter(v){$("login").hidden=true;$("app").hidden=false;go(v||"bord")}
-document.addEventListener("click",e=>{const d=e.target.closest("[data-d]");if(d){D[d.dataset.d].st="Traitée";render();return}const b=e.target.closest("[data-go]");if(b)go(b.dataset.go)});
+function enter(v){$("login").hidden=true;$("app").hidden=false;go(v||"bord");syncFromAPI()}
+document.addEventListener("click",async e=>{const d=e.target.closest("[data-d]");if(d){const it=D[+d.dataset.d];if(it.id&&tok()){try{await fetch(API()+"/api/demandes/"+it.id+"/traiter",{method:"POST",headers:{Authorization:"Bearer "+tok()}})}catch(_){}}it.st="Traitée";render();return}const b=e.target.closest("[data-go]");if(b)go(b.dataset.go)});
 const API=()=>{try{return localStorage.getItem("inz-api")||"http://localhost:8001"}catch(_){return"http://localhost:8001"}};
 async function apiPost(p,body,tok){const r=await fetch(API()+p,{method:"POST",headers:Object.assign({"Content-Type":"application/json"},tok?{Authorization:"Bearer "+tok}:{}),body:JSON.stringify(body)});if(!r.ok){let m="";try{m=(await r.json()).detail||""}catch(e){}throw new Error(r.status===401?(m||"Identifiants incorrects"):"Serveur injoignable ("+r.status+")")}return r.json()}
 $("lf").addEventListener("submit",async e=>{e.preventDefault();const m=$("l-msg");m.hidden=true;try{const d=await apiPost("/api/login",{email:$("l-mail").value.trim(),password:$("l-pass").value});if(d.role!=="admin")throw new Error("Identifiants incorrects");try{localStorage.setItem("inz-token",d.token);localStorage.setItem("inz-role",d.role)}catch(_){}enter("bord")}catch(err){if(/Identifiants/.test(err.message)){m.textContent=err.message+" — accès réservé à l'équipe.";m.hidden=false}else{enter("bord")}}});
@@ -494,8 +494,13 @@ try{if(localStorage.getItem("inz-menu")==="min")$("app").classList.add("min")}ca
 $("brandtog").addEventListener("click",()=>{const a=$("app");if(mob()){a.classList.toggle("open");$("brandtog").setAttribute("aria-expanded",String(a.classList.contains("open")))}else{a.classList.toggle("min");$("brandtog").setAttribute("aria-expanded",String(!a.classList.contains("min")));try{localStorage.setItem("inz-menu",a.classList.contains("min")?"min":"max")}catch(e){}}});
 $("scrim").addEventListener("click",()=>$("app").classList.remove("open"));
 document.addEventListener("keydown",e=>{if(e.key==="Escape")$("app").classList.remove("open")});
-$("nf").addEventListener("submit",e=>{e.preventDefault();const d=$("n-d").value.trim(),t=$("n-t").value.trim(),s=$("n-s").value.trim(),m=$("n-msg");m.hidden=false;if(!d||!t||!s){m.textContent="Indiquez la date, le titre et la source : chaque actualité publiée cite sa source.";return}$("nw").insertAdjacentHTML("afterbegin",`<tr><td class="muted">${esc(d)}</td><td><strong>${esc(t)}</strong></td><td>${esc(s)}</td></tr>`);e.target.reset();m.textContent="Actualité ajoutée pour cette démonstration. Elle n'est pas enregistrée ni publiée sur le site."});
+$("nf").addEventListener("submit",async e=>{e.preventDefault();const d=$("n-d").value.trim(),t=$("n-t").value.trim(),s=$("n-s").value.trim(),m=$("n-msg");m.hidden=false;if(!d||!t||!s){m.textContent="Indiquez la date, le titre et la source : chaque actualité publiée cite sa source.";return}let saved=false;if(tok()){try{await apiPost("/api/bulletins",{num:"",date:d,title:t,source:s},tok());saved=true}catch(_){}}$("nw").insertAdjacentHTML("afterbegin",`<tr><td class="muted">${esc(d)}</td><td><strong>${esc(t)}</strong></td><td>${esc(s)}</td></tr>`);e.target.reset();m.textContent=saved?"Actualité publiée dans le bulletin.":"Actualité ajoutée pour cette démonstration. Elle n'est pas enregistrée."});
 $("pf").addEventListener("submit",e=>{e.preventDefault();$("pf-msg").hidden=false;$("pf-msg").textContent="Tarifs mis à jour pour cette démonstration. Ils ne sont pas enregistrés ni publiés sur le site."});
+function tok(){try{return localStorage.getItem("inz-token")||""}catch(_){return""}}
+async function apiGet(p){const r=await fetch(API()+p,{headers:tok()?{Authorization:"Bearer "+tok()}:{}});if(!r.ok)throw new Error(p);return r.json()}
+const STC={"Analyse standard":"ok","Analyse en cours":"run","Annoncé":"idle","Vérifié premium":"blue"};
+function mapT(t){const s=t.surface_ha||0,m=t.price_m2||0;return{n:t.name,ref:t.ref,s:s?s.toLocaleString("fr-FR")+" ha":"—",p:m?m.toLocaleString("fr-FR"):"—",tt:(s&&m)?M.tot.f(s*m/1e5):"—",st:t.status,k:t.point_cle||"",m2:m,tot:s*m/1e5,surf:s}}
+async function syncFromAPI(){try{const ts=await apiGet("/api/terrains");if(ts.length)T=ts.map(mapT)}catch(e){}try{const vs=await apiGet("/api/verifications");if(vs.length&&vs[0].steps)P=vs[0].steps.map(s=>({n:s.label,s:s.source,st:s.status,id:s.id}))}catch(e){}try{const ds=await apiGet("/api/demandes");D=ds.map(d=>({t:d.niveau||"Demande",z:d.objet||"—",c:d.name||"—",st:d.status||"Nouvelle",id:d.id}))}catch(e){}render();cmp("m2")}
 render();cmp("m2");
 bars($("zs"),[["Akoupé-Zeudji PK24",1000],["Yamoussoukro",750],["Yopougon",469],["Plateforme PEIA, PK24",431],["Koumassi",120],["Vridi",120],["Korhogo (anacarde)",28.7]].map(z=>({n:z[0],v:z[1]})),v=>fr(v,v%1?1:0)+" ha");
 const h=location.hash.slice(1);if(V.includes(h))enter(h);
