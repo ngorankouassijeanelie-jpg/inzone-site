@@ -380,6 +380,43 @@ class StatutIn(BaseModel):
     status: str
 
 
+class TerrainIn(BaseModel):
+    name: str
+    zone: str = ""
+    surface_ha: float = 0
+    price_m2: int = 0
+    status: str = "Annoncé"
+    point_cle: str = ""
+
+
+STATUTS = ("Annoncé", "Analyse en cours", "Analyse standard", "Vérifié premium")
+
+
+@app.post("/api/terrains", status_code=201)
+def create_terrain(body: TerrainIn, _: dict = Depends(admin_only)):
+    name = body.name.strip()
+    if len(name) < 2:
+        raise HTTPException(status_code=422, detail="Nom du terrain requis")
+    if body.status not in STATUTS:
+        raise HTTPException(status_code=422, detail="Statut invalide")
+    base = "".join(ch for ch in (body.zone or name) if ch.isalnum())[:3].upper() or "GEN"
+    con = db()
+    n = con.execute("SELECT COUNT(*) FROM terrains").fetchone()[0] + 1
+    ref = f"INZ-{base}-{n:03d}"
+    while con.execute("SELECT 1 FROM terrains WHERE ref=?", (ref,)).fetchone():
+        n += 1
+        ref = f"INZ-{base}-{n:03d}"
+    con.execute(
+        "INSERT INTO terrains(ref,name,zone,surface_ha,price_m2,status,level,point_cle)"
+        " VALUES(?,?,?,?,?,?,?,?)",
+        (ref, name, body.zone.strip(), body.surface_ha or None,
+         body.price_m2 or None, body.status, "", body.point_cle.strip()),
+    )
+    con.commit()
+    con.close()
+    return {"ref": ref, "status": body.status}
+
+
 @app.put("/api/terrains/{ref}")
 def update_terrain(ref: str, body: StatutIn, _: dict = Depends(admin_only)):
     con = db()
