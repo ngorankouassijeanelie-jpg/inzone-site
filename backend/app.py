@@ -82,6 +82,10 @@ def init_db():
         CREATE TABLE IF NOT EXISTS photos(
           id INTEGER PRIMARY KEY, terrain_ref TEXT, file TEXT,
           original TEXT, caption TEXT, size INTEGER, created TEXT);
+        CREATE TABLE IF NOT EXISTS factures(
+          id INTEGER PRIMARY KEY, demande_id INTEGER, client_email TEXT,
+          objet TEXT, niveau TEXT, montant TEXT,
+          status TEXT DEFAULT 'Émise', created TEXT);
         """
     )
     for col in ("description TEXT", "acces TEXT", "sol TEXT", "riverains TEXT",
@@ -608,6 +612,109 @@ def upload_document(ref: str, file: UploadFile = File(...),
     did = cur.lastrowid
     con.close()
     return {"id": did, "url": saved["file"]}
+
+
+class FactureIn(BaseModel):
+    demande_id: int
+    montant: str
+
+
+@app.post("/api/factures", status_code=201)
+def create_facture(body: FactureIn, _: dict = Depends(admin_only)):
+    if len(body.montant.strip()) < 2:
+        raise HTTPException(status_code=422, detail="Montant requis")
+    con = db()
+    d = con.execute("SELECT * FROM demandes WHERE id=?", (body.demande_id,)).fetchone()
+    if not d:
+        con.close()
+        raise HTTPException(status_code=404, detail="Demande introuvable")
+    cur = con.execute(
+        "INSERT INTO factures(demande_id,client_email,objet,niveau,montant,status,created)"
+        " VALUES(?,?,?,?,?,?,?)",
+        (d["id"], d["email"], d["objet"], d["niveau"], body.montant.strip(),
+         "Émise", datetime.now(timezone.utc).isoformat()),
+    )
+    con.commit()
+    fid = cur.lastrowid
+    con.close()
+    return {"id": fid, "status": "Émise"}
+
+
+@app.get("/api/mes-factures")
+def mes_factures(user: dict = Depends(current_user)):
+    con = db()
+    out = rows(con, "SELECT * FROM factures WHERE client_email=? ORDER BY id DESC",
+               (user["email"],))
+    con.close()
+    return out
+
+
+@app.get("/api/factures")
+def list_factures(_: dict = Depends(admin_only)):
+    con = db()
+    out = rows(con, "SELECT * FROM factures ORDER BY id DESC")
+    con.close()
+    return out
+
+
+@app.put("/api/factures/{fid}")
+def update_facture(fid: int, body: StatutIn, _: dict = Depends(admin_only)):
+    if body.status not in ("Émise", "Payée", "Annulée"):
+        raise HTTPException(status_code=422, detail="Statut invalide")
+    con = db()
+    con.execute("UPDATE factures SET status=? WHERE id=?", (body.status, fid))
+    con.commit()
+    con.close()
+    return {"id": fid, "status": body.status}
+
+
+def facture_pdf_bytes(f: dict) -> bytes:
+    lines = ["inZONE - Facture proforma no %d" % f["id"],
+             "Africand Consulting, Abidjan",
+             "Client : %s" % f["client_email"],
+             "Objet : %s - %s" % (f["niveau"] or "Prestation", f["objet"] or ""),
+             "Montant : %s" % f["montant"],
+             "Statut : %s" % f["status"],
+             "Reglement par virement. Merci."]
+    content = b""
+    for i, ln in enumerate(lines):
+        y = 780 - i * 28
+        ln = ln.encode("latin-1", "replace").replace(b"(", b"[").replace(b")", b"]")
+        content += f"BT /F1 13 Tf 72 {y} Td (".encode() + ln + b") Tj ET\n"
+    objs = [b"<</Type/Catalog/Pages 2 0 R>>",
+            b"<</Type/Pages/Kids[3 0 R]/Count 1>>",
+            b"<</Type/Page/Parent 2 0 R/MediaBox[0 0 595 842]/Contents 4 0 R"
+            b"/Resources<</Font<</F1 5 0 R>>>>>>",
+            b"<</Length %d>>stream\n" % len(content) + content + b"endstream",
+            b"<</Type/Font/Subtype/Type1/BaseFont/Helvetica>>"]
+    out = b"%PDF-1.4\n"
+    offs = []
+    for i, o in enumerate(objs, 1):
+        offs.append(len(out))
+        out += f"{i} 0 obj".encode() + o + b"endobj\n"
+    xref = len(out)
+    out += f"xref\n0 {len(objs)+1}\n0000000000 65535 f \n".encode()
+    for o in offs:
+        out += f"{o:010d} 00000 n \n".encode()
+    out += (f"trailer\n<</Size {len(objs)+1}/Root 1 0 R>>\n"
+            f"startxref\n{xref}\n%%EOF").encode()
+    return out
+
+
+@app.get("/api/factures/{fid}/pdf")
+def facture_pdf(fid: int, user: dict = Depends(current_user)):
+    con = db()
+    f = con.execute("SELECT * FROM factures WHERE id=?", (fid,)).fetchone()
+    con.close()
+    if not f:
+        raise HTTPException(status_code=404, detail="Facture introuvable")
+    f = dict(f)
+    if user["role"] != "admin" and f["client_email"] != user["email"]:
+        raise HTTPException(status_code=403, detail="Accès refusé")
+    from fastapi.responses import Response
+    return Response(content=facture_pdf_bytes(f), media_type="application/pdf",
+                    headers={"Content-Disposition":
+                             f"attachment; filename=facture-{fid}.pdf"})
 
 
 @app.put("/api/steps/{sid}")
