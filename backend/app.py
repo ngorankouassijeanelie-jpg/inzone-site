@@ -98,7 +98,7 @@ def init_db():
         c.execute("ALTER TABLE documents ADD COLUMN file TEXT")
     except sqlite3.OperationalError:
         pass
-    for col in ("criteria TEXT",):
+    for col in ("criteria TEXT", "alerts TEXT"):
         try:
             c.execute(f"ALTER TABLE users ADD COLUMN {col}")
         except sqlite3.OperationalError:
@@ -289,7 +289,7 @@ def login(body: Login):
 def me(user: dict = Depends(current_user)):
     return {"email": user["email"], "role": user["role"], "name": user["name"],
             "company": user["company"], "country": user.get("country", ""),
-            "criteria": user.get("criteria", "")}
+            "criteria": user.get("criteria", ""), "alerts": user.get("alerts", "")}
 
 
 class MeIn(BaseModel):
@@ -297,12 +297,13 @@ class MeIn(BaseModel):
     company: str = ""
     country: str = ""
     criteria: str = ""
+    alerts: str = ""
 
 
 @app.put("/api/me")
 def update_me(body: MeIn, user: dict = Depends(current_user)):
     sets, vals = [], []
-    for f in ("name", "company", "country", "criteria"):
+    for f in ("name", "company", "country", "criteria", "alerts"):
         v = getattr(body, f)
         if v:
             sets.append(f"{f}=?")
