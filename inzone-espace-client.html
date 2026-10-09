@@ -286,6 +286,8 @@ td:first-child{border-radius:10px 0 0 10px}td:last-child{border-radius:0 10px 10
 @media (prefers-reduced-motion:no-preference){.view{animation:in .18s ease-out}@keyframes in{from{opacity:.6}}}
 html{scrollbar-gutter:stable}
 .vid16{width:100%;aspect-ratio:16/9;border-radius:12px;background:#111}
+.vidmax{position:fixed;inset:clamp(12px,4vw,48px);z-index:80;overflow:auto}
+.vidmax .vid16{max-height:68vh;aspect-ratio:auto;height:68vh}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 .hb-f{background:linear-gradient(90deg,#174fae,#1a5fd0)}
 .s1,.k.s1,.k.d,.sq,.pg i{background:#1a5fd0}.rg.d{stroke:#1a5fd0}
@@ -372,7 +374,7 @@ td strong,td .num{white-space:nowrap}
         <p>Surfaces et prix selon les vendeurs.</p>
       </dl>
     </div>
-    <div class="panel"><div class="head"><div><h2>Regarder une démo</h2><span class="muted">2 minutes : utiliser la plateforme pas à pas</span></div><span class="st run">Bientôt en vidéo</span></div><video class="vid16" controls preload="none" poster="assets/satellite.jpg"><source src="assets/demo-client.mp4" type="video/mp4"><p class="muted">Vidéo en préparation. En attendant, suivez les étapes ci-dessous ou <a href="index.html#demo">demandez une visite guidée</a>.</p></video><div class="rows"><div class="rowl"><div>1 · Suivez un terrain<small>Mes terrains : l'essentiel avant de vous déplacer.</small></div></div><div class="rowl"><div>2 · Lisez la fiche<small>Distances, vigilances, lecture inZONE.</small></div></div><div class="rowl"><div>3 · Demandez une vérification<small>Suivie ici, point par point.</small></div></div></div></div>
+    <div class="panel" id="vid-panel"><div class="head"><div><h2>Regarder une démo</h2><span class="muted">2 minutes : utiliser la plateforme pas à pas</span></div><div style="display:flex;gap:8px;align-items:center"><span class="st run">Bientôt en vidéo</span><button class="btn ghost sm" id="vid-toggle" type="button">Agrandir</button></div></div><video class="vid16" controls preload="none" poster="assets/satellite.jpg"><source src="assets/demo-client.mp4" type="video/mp4"><p class="muted">Vidéo en préparation. En attendant, suivez les étapes ci-dessous ou <a href="index.html#demo">demandez une visite guidée</a>.</p></video><div class="rows"><div class="rowl"><div>1 · Suivez un terrain<small>Mes terrains : l'essentiel avant de vous déplacer.</small></div></div><div class="rowl"><div>2 · Lisez la fiche<small>Distances, vigilances, lecture inZONE.</small></div></div><div class="rowl"><div>3 · Demandez une vérification<small>Suivie ici, point par point.</small></div></div></div></div>
     <div class="grid g4">
       <button class="kpi" data-go="terrains"><span class="kpi-l">Terrains suivis</span><b class="num">3</b><span class="kpi-v"><i class="sq a"></i><i class="sq b"></i><i class="sq c"></i></span><small>1 analysé, 1 en cours, 1 annoncé</small></button>
       <button class="kpi" data-go="veille"><span class="kpi-l">Zones publiques suivies</span><b class="num">2</b><span class="kpi-v"><i class="sq a"></i><i class="sq a"></i></span><small>Akoupé-Zeudji PK24, Attinguié PK31</small></button>
@@ -632,6 +634,8 @@ try{if(localStorage.getItem("inz-menu")==="min")$("app").classList.add("min")}ca
 $("brandtog").addEventListener("click",()=>{const a=$("app");if(mob()){a.classList.toggle("open");$("brandtog").setAttribute("aria-expanded",String(a.classList.contains("open")))}else{a.classList.toggle("min");$("brandtog").setAttribute("aria-expanded",String(!a.classList.contains("min")));try{localStorage.setItem("inz-menu",a.classList.contains("min")?"min":"max")}catch(e){}}});
 $("scrim").addEventListener("click",()=>$("app").classList.remove("open"));
 document.querySelector("aside .acct").addEventListener("click",()=>go("compte"));
+$("vid-toggle").addEventListener("click",()=>{const p=$("vid-panel");p.classList.toggle("vidmax");$("vid-toggle").textContent=p.classList.contains("vidmax")?"Réduire":"Agrandir"});
+document.addEventListener("keydown",e=>{if(e.key==="Escape"&&$("vid-panel").classList.contains("vidmax")){$("vid-panel").classList.remove("vidmax");$("vid-toggle").textContent="Agrandir"}});
 document.addEventListener("keydown",e=>{if(e.key==="Escape")$("app").classList.remove("open")});
 $("read").addEventListener("click",()=>{$("nb").hidden=true;$("kal").textContent="0";$("amsg").textContent="Toutes les alertes sont marquées comme lues."});
 $("cf").addEventListener("submit",async e=>{e.preventDefault();const m=$("cmsg");m.hidden=false;const body={name:$("c-nom").value.trim(),company:$("c-soc").value.trim(),country:getPays()};let tok="";try{tok=localStorage.getItem("inz-token")||""}catch(_){}if(!tok){m.textContent="Coordonnées notées pour cette démonstration. Reconnectez-vous au serveur pour les enregistrer.";return}try{await apiPut("/api/me",body);$("who").textContent=body.name||"Mon compte";$("tagm").textContent=body.name||"Mon compte";m.textContent="Coordonnées enregistrées."}catch(err){m.textContent="Enregistrement impossible : "+err.message}});
