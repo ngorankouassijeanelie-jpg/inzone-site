@@ -311,9 +311,9 @@ td strong,td .num{white-space:nowrap}
       <div class="hero-t"><span class="eyebrow">Tableau de bord</span><h1>Bonjour. Voici où en sont vos dossiers.</h1><p>Vos terrains suivis, votre vérification en cours et vos alertes, en un coup d'œil.</p>
         <button class="btn light" data-go="demande"><span>Nouvelle vérification</span><i><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 10h10.2M10.4 5.6 15.2 10l-4.8 4.4"/></svg></i></button></div>
       <dl class="hero-k">
-        <div><dt>Surface suivie</dt><dd class="num">20,46<small>ha</small></dd></div>
-        <div><dt>Prix annoncés, total</dt><dd class="num">8,36<small>Mds FCFA</small></dd></div>
-        <div><dt>Terrains suivis</dt><dd class="num">3</dd></div>
+        <div><dt>Surface suivie</dt><dd class="num" id="k-surf">20,46<small>ha</small></dd></div>
+        <div><dt>Prix annoncés, total</dt><dd class="num" id="k-prix">8,36<small>Mds FCFA</small></dd></div>
+        <div><dt>Terrains suivis</dt><dd class="num" id="k-nb">3</dd></div>
         <p>Surfaces et prix selon les vendeurs.</p>
       </dl>
     </div>
@@ -373,7 +373,7 @@ td strong,td .num{white-space:nowrap}
           <div class="rowl"><div>Zonage<small>Terrain privé hors zone aménagée. Mention « zone industrielle » non établie.</small></div></div>
           <div class="rowl"><div>Notre lecture<small>Adapté à la logistique et à l'industrie légère, peu à l'industrie lourde.</small></div></div>
         </div></div>
-      <div class="panel"><h2>Vérification premium</h2><span class="st run">En cours sur ce terrain</span>
+      <div class="panel" id="fiche-prem"><h2>Vérification premium</h2><span class="st run">En cours sur ce terrain</span>
         <div class="rows">
           <div class="rowl"><div>Électricité : distance au réseau, capacité, délai</div><span class="st run">Réponse attendue</span></div>
           <div class="rowl"><div>Eau : réseau au droit du terrain, débit</div><span class="st idle">À lancer</span></div>
@@ -418,7 +418,7 @@ td strong,td .num{white-space:nowrap}
   <section class="view" id="v-veille" hidden>
     <div class="head"><div><span class="eyebrow">Veille et alertes</span><h1>Ce qui bouge sur ce que vous suivez</h1><p class="muted">Lots, prix, travaux et textes : l'essentiel du mois, sourcé.</p></div><button class="btn ghost" id="read">Tout marquer comme lu</button></div>
     <div class="grid g2">
-      <div class="panel"><h2>Bulletin n° 0, octobre 2026</h2><div class="news">
+      <div class="panel"><h2>Bulletin n° 0, octobre 2026</h2><div class="news" id="news-list">
         <article><time>Juin 2026</time><div><h3>Attinguié : une usine de biochar inaugurée au PK31</h3><p class="muted">20 000 tonnes de coques de cajou par an. La zone se confirme comme pôle industriel.</p></div></article>
         <article><time>Février 2026</time><div><h3>PK24 : 284 hectares attribués, 67 entreprises en activité</h3><p class="muted">367 lots distribués à 173 entreprises, dont 106 n'ont pas démarré.</p></div></article>
         <article><time>Février 2026</time><div><h3>Y4 : la section Anyama-autoroute du Nord ouverte</h3><p class="muted">13 km en service. La section vers Songon était annoncée à plus de 90 % fin 2025.</p></div></article>
@@ -431,7 +431,7 @@ td strong,td .num{white-space:nowrap}
         <label class="tog" for="a4"><span>Parution du bulletin mensuel</span><input id="a4" type="checkbox" checked></label>
         <label class="tog" for="a5"><span>Lots attribués non mis en valeur dans mes zones</span><input id="a5" type="checkbox"></label></div>
         <h3 style="margin-top:8px">Zones suivies</h3><div class="rows"><div class="rowl"><div>Akoupé-Zeudji PK24<small>1 000 ha, 284 ha attribués</small></div><span class="st blue">Suivie</span></div><div class="rowl"><div>Attinguié PK31<small>En développement</small></div><span class="st blue">Suivie</span></div></div>
-        <p class="note" id="amsg" role="status">Vos préférences sont conservées le temps de cette démonstration.</p></div>
+        <p class="note" id="amsg" role="status">Vos préférences sont conservées dans ce navigateur.</p></div>
     </div>
   </section>
 
@@ -447,7 +447,7 @@ td strong,td .num{white-space:nowrap}
         <div class="rowl"><div>Mission sur mesure<small>Recherche de site, risques de litige</small></div><span class="st idle">Sur devis</span></div>
       </div></div>
     </div>
-    <div class="panel"><h2>Mes commandes</h2><div class="tw"><table><thead><tr><th>Commande</th><th>Terrain</th><th>Montant</th><th>État</th></tr></thead><tbody><tr><td><strong>Vérification premium</strong></td><td>Grand-Bassam</td><td>À partir de 2 300 €</td><td><span class="st run">En cours</span></td></tr><tr><td><strong>Formule investisseur</strong></td><td>Tous terrains suivis</td><td>À définir</td><td><span class="st ok">Active</span></td></tr></tbody></table></div><p class="note">Le paiement en ligne et les factures ne sont pas encore actifs. Le tarif de la formule investisseur reste à définir.</p></div>
+    <div class="panel"><h2>Mes commandes</h2><div class="tw"><table><thead><tr><th>Commande</th><th>Terrain</th><th>Montant</th><th>État</th></tr></thead><tbody id="orders-rows"><tr><td><strong>Vérification premium</strong></td><td>Grand-Bassam</td><td>À partir de 2 300 €</td><td><span class="st run">En cours</span></td></tr><tr><td><strong>Formule investisseur</strong></td><td>Tous terrains suivis</td><td>À définir</td><td><span class="st ok">Active</span></td></tr></tbody></table></div><p class="note">Le paiement en ligne et les factures ne sont pas encore actifs. Le tarif de la formule investisseur reste à définir.</p></div>
   </section>
 
   <section class="view" id="v-compte" hidden>
@@ -510,7 +510,8 @@ function bars(el,rows,f){const mx=Math.max(...rows.map(r=>r.v));el.innerHTML=row
 function cmp(m){bars($("cmp"),T.map(t=>({n:t.n,s:t.ref,v:t[m]})),M[m].f);$("cmp-sub").textContent=M[m].sub;document.querySelectorAll(".tabs button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.m===m))}
 document.querySelector(".tabs").addEventListener("click",e=>{const b=e.target.closest("button");if(b)cmp(b.dataset.m)});
 const hm=v=>v<60?v+" min":Math.floor(v/60)+" h "+String(v%60).padStart(2,"0");
-function charts(){cmp(document.querySelector('.tabs [aria-pressed="true"]').dataset.m);bars($("acc"),[{n:"Aéroport",s:"24,7 km",v:35},{n:"Port d'Abidjan",s:"39,1 km",v:71},{n:"Abidjan Plateau",s:"38 km",v:75}],hm)}
+function updateKpis(){const s=T.reduce((a,t)=>a+(t.surf||0),0),m=T.reduce((a,t)=>a+(t.surf||0)*(t.m2||0)/1e9,0);$("k-surf").innerHTML=fr(s,s%1?2:0)+"<small>ha</small>";$("k-prix").innerHTML=fr(m,m%1?2:1).replace(/,(\d)0$/,"$1")+"<small>"+(m<2?"Md":"Mds")+" FCFA</small>";$("k-nb").textContent=T.length}
+function charts(){cmp(document.querySelector('.tabs [aria-pressed="true"]').dataset.m);bars($("acc"),[{n:"Aéroport",s:"24,7 km",v:35},{n:"Port d'Abidjan",s:"39,1 km",v:71},{n:"Abidjan Plateau",s:"38 km",v:75}],hm);updateKpis()}
 /* infobulle */
 const tip=$("tip");
 document.addEventListener("pointermove",e=>{const m=e.target.closest&&e.target.closest("[data-tip]");if(!m){tip.hidden=true;return}tip.textContent=m.dataset.tip;tip.hidden=false;tip.style.left=Math.max(90,Math.min(innerWidth-90,e.clientX))+"px";tip.style.top=e.clientY+"px"});
@@ -522,8 +523,12 @@ let trial=false;
 function enter(v,t){trial=!!t;$("trial").hidden=!trial;$("who").textContent=trial?"Compte d'essai":"Compte d'exemple";$("tagm").textContent=trial?"Compte d'essai":"Compte d'exemple";function setSel(id,txt){const s=$(id);if(!s||!txt)return;[...s.options].forEach(o=>{if(o.text===txt)s.value=o.text})}
 async function syncProfile(){try{let tok="";try{tok=localStorage.getItem("inz-token")||""}catch(_){}if(!tok)return;const r=await fetch(API()+"/api/me",{headers:{Authorization:"Bearer "+tok}});if(!r.ok)return;const u=await r.json();if(u.name){$("c-nom").value=u.name}$("c-soc").value=u.company||"";$("c-pays").value=u.country||"";if(u.criteria){const p=u.criteria.split(" · ");setSel("k-sect",p[0]);setSel("k-surf",p[1]);setSel("k-geo",p[2])}}catch(e){}}
 const PSTC={"À lancer":"idle","Réponse attendue":"run","Terminé":"ok"};
-async function syncVerifs(){try{let tok="";try{tok=localStorage.getItem("inz-token")||""}catch(_){}if(!tok)return;const r=await fetch(API()+"/api/verifications",{headers:{Authorization:"Bearer "+tok}});if(!r.ok)return;const vs=await r.json();if(!vs.length||!vs[0].steps)return;const v=vs[0];$("vstage").textContent="Étape "+v.current_step+" sur "+v.total_steps;[...$("vsub").children].forEach((li,i)=>{const s=v.steps[i];if(!s)return;const chip=li.children[1];chip.className="st "+(PSTC[s.status]||"idle");chip.textContent=s.status})}catch(e){}}
-$("login").hidden=true;$("app").hidden=false;go(v||"bord");syncTerrains();syncDocs();syncFichePhotos();syncProfile();syncVerifs()}
+async function syncVerifs(){try{let tok="";try{tok=localStorage.getItem("inz-token")||""}catch(_){}if(!tok)return;const r=await fetch(API()+"/api/verifications",{headers:{Authorization:"Bearer "+tok}});if(!r.ok)return;const vs=await r.json();if(!vs.length||!vs[0].steps)return;const v=vs[0];$("vstage").textContent="Étape "+v.current_step+" sur "+v.total_steps;[...$("vsub").children].forEach((li,i)=>{const s=v.steps[i];if(!s)return;const chip=li.children[1];chip.className="st "+(PSTC[s.status]||"idle");chip.textContent=s.status});const fp=$("fiche-prem");if(fp){const rows=fp.querySelectorAll(".rowl");v.steps.forEach((s,i)=>{const r=rows[i];if(!r||!r.children[1])return;const c2=r.children[1];c2.className="st "+(PSTC[s.status]||"idle");c2.textContent=s.status})}catch(e){}}
+async function syncVeille(){try{const r=await fetch(API()+"/api/bulletins");if(!r.ok)return;const bs=await r.json();if(!bs.length)return;$("news-list").innerHTML=bs.map(b=>`<article><time>${esc(b.date)}</time><div><h3>${esc(b.title)}</h3><p class="muted">Source : ${esc(b.source)}</p></div></article>`).join("")}catch(e){}}
+try{const al=JSON.parse(localStorage.getItem("inz-alerts")||"{}");["a1","a2","a3"].forEach(id=>{if(typeof al[id]==="boolean")$(id).checked=al[id]})}catch(_){}
+document.querySelectorAll(".tog input").forEach(i=>i.addEventListener("change",()=>{try{const al={};["a1","a2","a3"].forEach(id=>{al[id]=$(id).checked});localStorage.setItem("inz-alerts",JSON.stringify(al))}catch(_){}}));
+async function syncOrders(){try{let tok="";try{tok=localStorage.getItem("inz-token")||""}catch(_){}if(!tok)return;const r=await fetch(API()+"/api/mes-demandes",{headers:{Authorization:"Bearer "+tok}});if(!r.ok)return;const ds=await r.json();if(!ds.length)return;$("orders-rows").innerHTML=ds.map(d=>`<tr><td><strong>${esc(d.niveau||"Demande")}</strong></td><td>${esc(d.objet||"—")}</td><td>Sur proposition</td><td>${d.status==="Traitée"?'<span class="st ok">Traitée</span>':'<span class="st run">'+esc(d.status||"Nouvelle")+"</span>"}</td></tr>`).join("")+`<tr><td><strong>Formule investisseur</strong></td><td>Tous terrains suivis</td><td>À définir</td><td><span class="st ok">Active</span></td></tr>`}catch(e){}}
+$("login").hidden=true;$("app").hidden=false;go(v||"bord");syncTerrains();syncDocs();syncFichePhotos();syncProfile();syncVerifs();syncVeille();syncOrders()}
 document.addEventListener("click",e=>{const b=e.target.closest("[data-go]");if(!b)return;if(b.dataset.site){[...$("d-site").options].forEach(o=>{if(o.text.startsWith(b.dataset.site))$("d-site").value=o.value})}go(b.dataset.go)});
 const API=()=>{try{return localStorage.getItem("inz-api")||"http://localhost:8001"}catch(_){return"http://localhost:8001"}};
 async function apiPost(p,body,tok){const r=await fetch(API()+p,{method:"POST",headers:Object.assign({"Content-Type":"application/json"},tok?{Authorization:"Bearer "+tok}:{}),body:JSON.stringify(body)});if(!r.ok){let m="";try{m=(await r.json()).detail||""}catch(e){}throw new Error(r.status===401?(m||"Identifiants incorrects"):"Serveur injoignable ("+r.status+")")}return r.json()}

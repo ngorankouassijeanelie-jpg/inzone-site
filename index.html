@@ -286,8 +286,8 @@ footer{padding:18px 0 26px}.foot{background:#000;color:#fff;border-radius:var(--
   f.addEventListener('submit',function(e){e.preventDefault();
     var okN=f.nom.value.trim().length>1,okM=/^[^@ ]+@[^@ ]+\.[^@ ]+$/.test(f.email.value.trim());
     document.getElementById('f-err').hidden=okN&&okM;
-    document.getElementById('f-ok').hidden=!(okN&&okM);
-    if(!okN)f.nom.focus();else if(!okM)f.email.focus();});
+    if(!(okN&&okM)){document.getElementById('f-ok').hidden=true;if(!okN)f.nom.focus();else f.email.focus();return;}
+    fetch('http://localhost:8001/api/demandes',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:f.nom.value.trim(),email:f.email.value.trim(),objet:(f.societe.value.trim()+' '+f.pays.value.trim()).trim(),niveau:f.niveau.value,message:f.projet.value.trim()})}).then(function(r){if(!r.ok)throw 0;return r.json()}).then(function(d){var ok=document.getElementById('f-ok');ok.hidden=false;ok.textContent='Demande n° '+d.id+' bien reçue. Nous revenons vers vous avec un périmètre et un délai.';f.reset()}).catch(function(){document.getElementById('f-ok').hidden=false;});});
   var io=new IntersectionObserver(function(es){es.forEach(function(x){if(x.isIntersecting){x.target.classList.add('in');io.unobserve(x.target);}});},{threshold:.12});
   document.querySelectorAll('.reveal').forEach(function(el){io.observe(el);});
 })();

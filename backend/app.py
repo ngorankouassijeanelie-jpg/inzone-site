@@ -393,8 +393,18 @@ def create_demande(body: DemandeIn):
 
 @app.get("/api/demandes")
 def list_demandes(_: dict = Depends(admin_only)):
+
     con = db()
     out = rows(con, "SELECT * FROM demandes ORDER BY id DESC")
+    con.close()
+    return out
+
+
+@app.get("/api/mes-demandes")
+def mes_demandes(user: dict = Depends(current_user)):
+    con = db()
+    out = rows(con, "SELECT * FROM demandes WHERE email=? ORDER BY id DESC",
+               (user["email"],))
     con.close()
     return out
 
