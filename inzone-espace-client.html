@@ -90,6 +90,8 @@ span.av{flex:none!important;width:40px!important;height:40px!important;min-width
 span.av img{width:100%!important;height:100%!important;object-fit:cover;display:block}
 span.av,span.av img{border-radius:50%!important}
 #av-big{width:120px!important;height:120px!important;min-width:120px;min-height:120px}
+span.av:has(img){background:none}
+aside .acct{cursor:pointer}
 .acct div{display:flex;flex-direction:column;min-width:0;line-height:1.35}
 .acct small{color:rgba(255,255,255,.66);font-size:.76rem}
 #out{display:flex;align-items:center;gap:12px;border:0;background:none;color:rgba(255,255,255,.74);padding:10px 12px;font-weight:500;min-height:44px;white-space:nowrap}
@@ -615,6 +617,7 @@ const mob=()=>matchMedia("(max-width:860px)").matches;
 try{if(localStorage.getItem("inz-menu")==="min")$("app").classList.add("min")}catch(e){}
 $("brandtog").addEventListener("click",()=>{const a=$("app");if(mob()){a.classList.toggle("open");$("brandtog").setAttribute("aria-expanded",String(a.classList.contains("open")))}else{a.classList.toggle("min");$("brandtog").setAttribute("aria-expanded",String(!a.classList.contains("min")));try{localStorage.setItem("inz-menu",a.classList.contains("min")?"min":"max")}catch(e){}}});
 $("scrim").addEventListener("click",()=>$("app").classList.remove("open"));
+document.querySelector("aside .acct").addEventListener("click",()=>go("compte"));
 document.addEventListener("keydown",e=>{if(e.key==="Escape")$("app").classList.remove("open")});
 $("read").addEventListener("click",()=>{$("nb").hidden=true;$("kal").textContent="0";$("amsg").textContent="Toutes les alertes sont marquées comme lues."});
 $("cf").addEventListener("submit",async e=>{e.preventDefault();const m=$("cmsg");m.hidden=false;const body={name:$("c-nom").value.trim(),company:$("c-soc").value.trim(),country:$("c-pays").value.trim()};let tok="";try{tok=localStorage.getItem("inz-token")||""}catch(_){}if(!tok){m.textContent="Coordonnées notées pour cette démonstration. Reconnectez-vous au serveur pour les enregistrer.";return}try{await apiPut("/api/me",body);$("who").textContent=body.name||"Mon compte";$("tagm").textContent=body.name||"Mon compte";m.textContent="Coordonnées enregistrées."}catch(err){m.textContent="Enregistrement impossible : "+err.message}});
