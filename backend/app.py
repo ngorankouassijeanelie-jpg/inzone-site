@@ -10,15 +10,19 @@ import os
 import secrets
 import sqlite3
 import time
+import uuid
 from datetime import datetime, timezone
 
 import jwt
-from fastapi import Depends, FastAPI, Header, HTTPException
+from fastapi import Depends, FastAPI, File, Form, Header, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
 BASE = os.path.dirname(os.path.abspath(__file__))
 DB = os.path.join(BASE, "inzone.db")
+UPLOAD_DIR = os.path.join(BASE, "uploads")
+os.makedirs(UPLOAD_DIR, exist_ok=True)
 SECRET = os.environ.get("INZONE_SECRET", "dev-secret-a-changer-en-prod")
 TOKEN_DAYS = 7
 
@@ -29,6 +33,7 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+app.mount("/uploads", StaticFiles(directory=UPLOAD_DIR), name="uploads")
 
 
 # ---------- base SQLite ----------
@@ -74,8 +79,21 @@ def init_db():
         CREATE TABLE IF NOT EXISTS documents(
           id INTEGER PRIMARY KEY, name TEXT, terrain TEXT,
           type TEXT, etat TEXT);
+        CREATE TABLE IF NOT EXISTS photos(
+          id INTEGER PRIMARY KEY, terrain_ref TEXT, file TEXT,
+          original TEXT, caption TEXT, size INTEGER, created TEXT);
         """
     )
+    for col in ("description TEXT", "acces TEXT", "sol TEXT", "riverains TEXT",
+                "reseaux TEXT", "source_prix TEXT", "gps TEXT"):
+        try:
+            c.execute(f"ALTER TABLE terrains ADD COLUMN {col}")
+        except sqlite3.OperationalError:
+            pass
+    try:
+        c.execute("ALTER TABLE documents ADD COLUMN file TEXT")
+    except sqlite3.OperationalError:
+        pass
     con.commit()
     if c.execute("SELECT COUNT(*) FROM users").fetchone()[0] == 0:
         seed(con)
@@ -387,6 +405,13 @@ class TerrainIn(BaseModel):
     price_m2: int = 0
     status: str = "Annoncé"
     point_cle: str = ""
+    description: str = ""
+    acces: str = ""
+    sol: str = ""
+    riverains: str = ""
+    reseaux: str = ""
+    source_prix: str = ""
+    gps: str = ""
 
 
 STATUTS = ("Annoncé", "Analyse en cours", "Analyse standard", "Vérifié premium")
@@ -407,23 +432,133 @@ def create_terrain(body: TerrainIn, _: dict = Depends(admin_only)):
         n += 1
         ref = f"INZ-{base}-{n:03d}"
     con.execute(
-        "INSERT INTO terrains(ref,name,zone,surface_ha,price_m2,status,level,point_cle)"
-        " VALUES(?,?,?,?,?,?,?,?)",
+        "INSERT INTO terrains(ref,name,zone,surface_ha,price_m2,status,level,point_cle,"
+        "description,acces,sol,riverains,reseaux,source_prix,gps)"
+        " VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
         (ref, name, body.zone.strip(), body.surface_ha or None,
-         body.price_m2 or None, body.status, "", body.point_cle.strip()),
+         body.price_m2 or None, body.status, "", body.point_cle.strip(),
+         body.description.strip(), body.acces.strip(), body.sol.strip(),
+         body.riverains.strip(), body.reseaux.strip(),
+         body.source_prix.strip(), body.gps.strip()),
     )
     con.commit()
     con.close()
     return {"ref": ref, "status": body.status}
 
 
+class TerrainPatch(BaseModel):
+    status: str = ""
+    name: str = ""
+    zone: str = ""
+    surface_ha: float = -1
+    price_m2: int = -1
+    point_cle: str = ""
+    description: str = ""
+    acces: str = ""
+    sol: str = ""
+    riverains: str = ""
+    reseaux: str = ""
+    source_prix: str = ""
+    gps: str = ""
+
+
 @app.put("/api/terrains/{ref}")
-def update_terrain(ref: str, body: StatutIn, _: dict = Depends(admin_only)):
+def update_terrain(ref: str, body: TerrainPatch, _: dict = Depends(admin_only)):
+    sets, vals = [], []
+    if body.status:
+        if body.status not in STATUTS:
+            raise HTTPException(status_code=422, detail="Statut invalide")
+        sets.append("status=?")
+        vals.append(body.status)
+    for f in ("name", "zone", "point_cle", "description", "acces", "sol",
+              "riverains", "reseaux", "source_prix", "gps"):
+        v = getattr(body, f)
+        if v:
+            sets.append(f"{f}=?")
+            vals.append(v.strip())
+    if body.surface_ha >= 0:
+        sets.append("surface_ha=?")
+        vals.append(body.surface_ha or None)
+    if body.price_m2 >= 0:
+        sets.append("price_m2=?")
+        vals.append(body.price_m2 or None)
+    if not sets:
+        raise HTTPException(status_code=422, detail="Rien à mettre à jour")
     con = db()
-    con.execute("UPDATE terrains SET status=? WHERE ref=?", (body.status, ref))
+    con.execute(f"UPDATE terrains SET {', '.join(sets)} WHERE ref=?", (*vals, ref))
     con.commit()
     con.close()
-    return {"ref": ref, "status": body.status}
+    return {"ref": ref, "updated": sets}
+
+
+MAX_FILE = 8 * 1024 * 1024
+
+
+def save_upload(ref: str, up: UploadFile, allowed: tuple) -> dict:
+    ctype = (up.content_type or "").lower()
+    if not ctype.startswith(allowed):
+        raise HTTPException(status_code=422, detail=f"Fichier refusé : {up.filename}")
+    data = up.file.read(MAX_FILE + 1)
+    if len(data) > MAX_FILE:
+        raise HTTPException(status_code=413, detail="Fichier trop lourd (max 8 Mo)")
+    if not data:
+        raise HTTPException(status_code=422, detail="Fichier vide")
+    ext = os.path.splitext(up.filename or "")[1].lower()[:5] or ".bin"
+    fname = f"{ref}-{uuid.uuid4().hex[:8]}{ext}"
+    with open(os.path.join(UPLOAD_DIR, fname), "wb") as f:
+        f.write(data)
+    return {"file": f"/uploads/{fname}", "size": len(data)}
+
+
+@app.post("/api/terrains/{ref}/photos", status_code=201)
+def upload_photo(ref: str, file: UploadFile = File(...),
+                 caption: str = Form(""), _: dict = Depends(admin_only)):
+    con = db()
+    row = con.execute("SELECT ref FROM terrains WHERE ref=?", (ref,)).fetchone()
+    if not row:
+        con.close()
+        raise HTTPException(status_code=404, detail="Terrain introuvable")
+    saved = save_upload(ref, file, ("image/",))
+    cur = con.execute(
+        "INSERT INTO photos(terrain_ref,file,original,caption,size,created)"
+        " VALUES(?,?,?,?,?,?)",
+        (ref, saved["file"], file.filename, caption.strip(), saved["size"],
+         datetime.now(timezone.utc).isoformat()),
+    )
+    con.commit()
+    pid = cur.lastrowid
+    con.close()
+    return {"id": pid, "url": saved["file"]}
+
+
+@app.get("/api/terrains/{ref}/photos")
+def list_photos(ref: str):
+    con = db()
+    out = rows(con, "SELECT * FROM photos WHERE terrain_ref=? ORDER BY id", (ref,))
+    con.close()
+    return out
+
+
+@app.post("/api/terrains/{ref}/documents", status_code=201)
+def upload_document(ref: str, file: UploadFile = File(...),
+                    type: str = Form("Pièce"), _: dict = Depends(admin_only)):
+    con = db()
+    t = con.execute("SELECT name FROM terrains WHERE ref=?", (ref,)).fetchone()
+    if not t:
+        con.close()
+        raise HTTPException(status_code=404, detail="Terrain introuvable")
+    ctype = (file.content_type or "").lower()
+    if not (ctype.startswith("image/") or ctype == "application/pdf"):
+        con.close()
+        raise HTTPException(status_code=422, detail="PDF ou image uniquement")
+    saved = save_upload(ref, file, ("image/", "application/"))
+    cur = con.execute(
+        "INSERT INTO documents(name,terrain,type,etat,file) VALUES(?,?,?,?,?)",
+        (file.filename, t["name"], type.strip() or "Pièce", "Disponible", saved["file"]))
+    con.commit()
+    did = cur.lastrowid
+    con.close()
+    return {"id": did, "url": saved["file"]}
 
 
 @app.put("/api/steps/{sid}")
