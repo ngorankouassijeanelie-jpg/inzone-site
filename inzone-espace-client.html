@@ -275,6 +275,7 @@ td strong,td .num{white-space:nowrap}
       <label>Adresse électronique<input id="l-mail" type="email" autocomplete="email" value="investisseur@exemple.ma"></label>
       <label>Mot de passe<input id="l-pass" type="password" autocomplete="current-password" value="demonstration"></label>
       <button class="btn" type="submit"><span>Se connecter</span><i><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 10h10.2M10.4 5.6 15.2 10l-4.8 4.4"/></svg></i></button>
+      <p class="note" id="l-msg" role="alert" hidden></p>
     </form>
   </div>
   <figure class="lg-a">
@@ -509,7 +510,9 @@ function go(v){if(!V.includes(v))v="bord";V.forEach(x=>$("v-"+x).hidden=x!==v);c
 let trial=false;
 function enter(v,t){trial=!!t;$("trial").hidden=!trial;$("who").textContent=trial?"Compte d'essai":"Compte d'exemple";$("tagm").textContent=trial?"Compte d'essai":"Compte d'exemple";$("login").hidden=true;$("app").hidden=false;go(v||"bord")}
 document.addEventListener("click",e=>{const b=e.target.closest("[data-go]");if(!b)return;if(b.dataset.site){[...$("d-site").options].forEach(o=>{if(o.text.startsWith(b.dataset.site))$("d-site").value=o.value})}go(b.dataset.go)});
-$("lf").addEventListener("submit",e=>{e.preventDefault();enter("bord",false)});
+const API=()=>{try{return localStorage.getItem("inz-api")||"http://localhost:8001"}catch(_){return"http://localhost:8001"}};
+async function apiPost(p,body,tok){const r=await fetch(API()+p,{method:"POST",headers:Object.assign({"Content-Type":"application/json"},tok?{Authorization:"Bearer "+tok}:{}),body:JSON.stringify(body)});if(!r.ok){let m="";try{m=(await r.json()).detail||""}catch(e){}throw new Error(r.status===401?(m||"Identifiants incorrects"):"Serveur injoignable ("+r.status+")")}return r.json()}
+$("lf").addEventListener("submit",async e=>{e.preventDefault();const m=$("l-msg");m.hidden=true;try{const d=await apiPost("/api/login",{email:$("l-mail").value.trim(),password:$("l-pass").value});try{localStorage.setItem("inz-token",d.token);localStorage.setItem("inz-role",d.role)}catch(_){}$("who").textContent=d.name||"Mon compte";$("tagm").textContent=d.name||"Mon compte";enter("bord",false)}catch(err){if(/Identifiants/.test(err.message)){m.textContent=err.message+" — vérifiez l'email et le mot de passe.";m.hidden=false}else{enter("bord",false)}}});
 
 $("out").addEventListener("click",()=>{$("app").hidden=true;$("login").hidden=false;try{history.replaceState(null,"","#")}catch(e){}});
 /* menu latéral repliable */
@@ -520,7 +523,7 @@ $("scrim").addEventListener("click",()=>$("app").classList.remove("open"));
 document.addEventListener("keydown",e=>{if(e.key==="Escape")$("app").classList.remove("open")});
 $("read").addEventListener("click",()=>{$("nb").hidden=true;$("kal").textContent="0";$("amsg").textContent="Toutes les alertes sont marquées comme lues."});
 [["cf","cmsg","Coordonnées mises à jour pour cette démonstration. Elles ne sont pas enregistrées."],["kf","kmsg","Critères mis à jour pour cette démonstration. Ils ne sont pas enregistrés."]].forEach(([f,m,t])=>$(f).addEventListener("submit",e=>{e.preventDefault();$(m).hidden=false;$(m).textContent=t}));
-$("df").addEventListener("submit",e=>{e.preventDefault();$("dmsg").hidden=false;$("dmsg").textContent="Demande préparée pour « "+$("d-site").value+" », niveau « "+$("d-niv").value+" ». Cette démonstration ne transmet pas encore les demandes : écrivez à contact@africand.com pour la confirmer."});
+$("df").addEventListener("submit",async e=>{e.preventDefault();const m=$("dmsg");m.hidden=false;let tok="";try{tok=localStorage.getItem("inz-token")||""}catch(_){}try{const d=await apiPost("/api/demandes",{name:$("who").textContent||"Compte d'exemple",email:$("l-mail").value||"investisseur@exemple.ma",objet:$("d-site").value,niveau:$("d-niv").value,message:$("d-msg").value},tok);m.textContent="Demande n° "+d.id+" bien reçue. Vous recevez une proposition avec le périmètre, le délai et le prix avant tout engagement."}catch(err){m.textContent="Demande préparée pour « "+$("d-site").value+" », niveau « "+$("d-niv").value+" ». Le serveur ne répond pas : écrivez à contact@africand.com pour la confirmer."}});
 charts();
 const h=location.hash.slice(1);if(h==="essai")enter("bord",true);else if(V.includes(h))enter(h,false);
 </script>

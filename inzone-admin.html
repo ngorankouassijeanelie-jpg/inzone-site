@@ -286,6 +286,7 @@ td strong,td .num{white-space:nowrap}
       <label>Adresse électronique<input id="l-mail" type="email" autocomplete="email" value="contact@africand.com"></label>
       <label>Mot de passe<input id="l-pass" type="password" autocomplete="current-password" value="demonstration"></label>
       <button class="btn" type="submit"><span>Se connecter</span><i><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 10h10.2M10.4 5.6 15.2 10l-4.8 4.4"/></svg></i></button>
+      <p class="note" id="l-msg" role="alert" hidden></p>
     </form>
     <p class="note">Version de démonstration : aucune identification réelle n'est effectuée. Avant la mise en ligne, cette page devra être protégée par une vraie connexion.</p>
     <a class="back" href="index.html">Retour au site</a>
@@ -484,7 +485,9 @@ const V=["bord","terrains","verifs","demandes","clients","zones","veille","tarif
 function go(v){if(!V.includes(v))v="bord";V.forEach(x=>$("v-"+x).hidden=x!==v);document.querySelectorAll("aside nav button").forEach(b=>{if(b.dataset.go===v){b.setAttribute("aria-current","page");$("where").textContent=b.querySelector(".lbl").textContent}else b.removeAttribute("aria-current")});$("app").classList.remove("open");try{history.replaceState(null,"","#"+v)}catch(e){}window.scrollTo(0,0)}
 function enter(v){$("login").hidden=true;$("app").hidden=false;go(v||"bord")}
 document.addEventListener("click",e=>{const d=e.target.closest("[data-d]");if(d){D[d.dataset.d].st="Traitée";render();return}const b=e.target.closest("[data-go]");if(b)go(b.dataset.go)});
-$("lf").addEventListener("submit",e=>{e.preventDefault();enter("bord")});
+const API=()=>{try{return localStorage.getItem("inz-api")||"http://localhost:8001"}catch(_){return"http://localhost:8001"}};
+async function apiPost(p,body,tok){const r=await fetch(API()+p,{method:"POST",headers:Object.assign({"Content-Type":"application/json"},tok?{Authorization:"Bearer "+tok}:{}),body:JSON.stringify(body)});if(!r.ok){let m="";try{m=(await r.json()).detail||""}catch(e){}throw new Error(r.status===401?(m||"Identifiants incorrects"):"Serveur injoignable ("+r.status+")")}return r.json()}
+$("lf").addEventListener("submit",async e=>{e.preventDefault();const m=$("l-msg");m.hidden=true;try{const d=await apiPost("/api/login",{email:$("l-mail").value.trim(),password:$("l-pass").value});if(d.role!=="admin")throw new Error("Identifiants incorrects");try{localStorage.setItem("inz-token",d.token);localStorage.setItem("inz-role",d.role)}catch(_){}enter("bord")}catch(err){if(/Identifiants/.test(err.message)){m.textContent=err.message+" — accès réservé à l'équipe.";m.hidden=false}else{enter("bord")}}});
 $("out").addEventListener("click",()=>{$("app").hidden=true;$("login").hidden=false;try{history.replaceState(null,"","#")}catch(e){}});
 const mob=()=>matchMedia("(max-width:860px)").matches;
 try{if(localStorage.getItem("inz-menu")==="min")$("app").classList.add("min")}catch(e){}
