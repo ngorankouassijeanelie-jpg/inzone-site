@@ -86,10 +86,10 @@ aside nav em{font-style:normal;font-size:.72rem;font-weight:600;background:var(-
 .acct{margin-top:auto;border-top:1px solid rgba(255,255,255,.14);padding:16px 8px 0;display:flex;align-items:center;gap:12px;font-size:.85rem;white-space:nowrap}
 .av{flex:none;width:36px;height:36px;display:grid;place-items:center;background:var(--blue);font-weight:600;font-size:.8rem;letter-spacing:.04em;overflow:hidden}
 .av img{width:100%;height:100%;object-fit:cover;display:block}
-span.av{flex:none!important;width:36px!important;height:36px!important;min-width:36px;min-height:36px;aspect-ratio:1/1;overflow:hidden}
+span.av{flex:none!important;width:40px!important;height:40px!important;min-width:40px;min-height:40px;aspect-ratio:1/1;overflow:hidden}
 span.av img{width:100%!important;height:100%!important;object-fit:cover;display:block}
 span.av,span.av img{border-radius:50%!important}
-#av-big{width:72px!important;height:72px!important;min-width:72px;min-height:72px}
+#av-big{width:120px!important;height:120px!important;min-width:120px;min-height:120px}
 .acct div{display:flex;flex-direction:column;min-width:0;line-height:1.35}
 .acct small{color:rgba(255,255,255,.66);font-size:.76rem}
 #out{display:flex;align-items:center;gap:12px;border:0;background:none;color:rgba(255,255,255,.74);padding:10px 12px;font-weight:500;min-height:44px;white-space:nowrap}
@@ -230,7 +230,6 @@ td .btn.ghost{background:#fff}
 .btn i{border-radius:7px}
 .tabs{overflow:hidden}
 .panel,.kpi,figure img{border-radius:16px}
-.panel{overflow:hidden}
 .hero{border-radius:20px}
 .trial,.try{border-radius:12px}
 .st,.tag,.demo,aside nav em,.pg,.pg i{border-radius:999px}
@@ -284,7 +283,7 @@ html{scrollbar-gutter:stable}
 .sq.n{background:#111}.sq.w{background:#9aa0a6}
 aside nav em,.av{background:#fff;color:#111}
 td strong,td .num{white-space:nowrap}
-#fmap{height:320px;border-radius:12px;position:relative;z-index:0;background:var(--soft)}
+#fmap{height:320px;border-radius:12px;position:relative;z-index:0;background:var(--soft);overflow:hidden}
 </style>
 </head>
 <body>
@@ -508,7 +507,7 @@ td strong,td .num{white-space:nowrap}
         <label>Adresse électronique<input id="c-mail" type="email" value="investisseur@exemple.ma" autocomplete="email"></label>
         <label>Pays<input id="c-pays" value="Maroc" autocomplete="country-name"></label>
         <button class="btn ghost sm" type="submit">Enregistrer</button><p class="note" id="cmsg" role="status" hidden></p></form>
-      <form class="panel" id="af" novalidate><h2>Photo de profil</h2><div class="acct" style="border:0;padding:0"><div id="av-big" style="flex:none;width:72px;height:72px;min-width:72px;border-radius:50%;overflow:hidden;background:#2b2b2b;color:#fff;display:grid;place-items:center;font-weight:700;font-size:1.2rem">?</div><div><span id="av-name">Votre photo</span><small>JPG ou PNG, 8 Mo maximum.</small></div></div><label>Choisir une photo<input id="a-file" type="file" accept="image/*"></label><button class="btn ghost sm" type="submit">Envoyer la photo</button><p class="note" id="avmsg" role="status" hidden></p></form>
+      <form class="panel" id="af" novalidate><h2>Photo de profil</h2><div class="acct" style="border:0;padding:0"><div id="av-big" style="flex:none;width:120px;height:120px;min-width:120px;border-radius:50%;overflow:hidden;background:#2b2b2b;color:#fff;display:grid;place-items:center;font-weight:700;font-size:1.6rem">?</div><div><span id="av-name">Votre photo</span><small>JPG ou PNG, 8 Mo maximum.</small></div></div><label>Choisir une photo<input id="a-file" type="file" accept="image/*"></label><button class="btn ghost sm" type="submit">Envoyer la photo</button><p class="note" id="avmsg" role="status" hidden></p></form>
       <form class="panel" id="kf" novalidate><h2>Mes critères de recherche</h2><p class="muted">Ils servent à vous signaler les nouveaux terrains.</p>
         <label>Secteur d'activité<select id="k-sect" class="fancy"><option>Logistique et entreposage</option><option>Agro-industrie</option><option>Industrie légère</option><option>Matériaux de construction</option></select></label>
         <label>Surface recherchée<select id="k-surf" class="fancy"><option>Moins de 2 ha</option><option selected>2 à 10 ha</option><option>Plus de 10 ha</option></select></label>
