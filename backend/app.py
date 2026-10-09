@@ -352,12 +352,12 @@ def me(user: dict = Depends(current_user)):
 @app.post("/api/me/avatar")
 def upload_avatar(file: UploadFile = File(...), user: dict = Depends(current_user)):
     saved = save_upload("av-" + user["email"].replace("@", "-at-"), file, ("image/",))
-    if saved["size"] > 2 * 1024 * 1024:
+    if saved["size"] > 8 * 1024 * 1024:
         try:
             os.remove(os.path.join(UPLOAD_DIR, os.path.basename(saved["file"])))
         except OSError:
             pass
-        raise HTTPException(status_code=413, detail="Photo trop lourde (max 2 Mo)")
+        raise HTTPException(status_code=413, detail="Photo trop lourde (max 8 Mo)")
     old = user.get("avatar", "")
     con = db()
     con.execute("UPDATE users SET avatar=? WHERE email=?", (saved["file"], user["email"]))
