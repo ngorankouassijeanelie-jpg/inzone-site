@@ -98,6 +98,14 @@ a{color:inherit}::selection{background:#000;color:#fff}:focus-visible{outline:2p
 .faq details{background:var(--soft);border-radius:14px;padding:16px 18px;margin-bottom:10px}
 .faq summary{font-weight:700;cursor:pointer;font-size:16px}
 .faq p{margin-top:8px;font-size:14.5px;color:#404040}
+.vidwrap{background:#000;border-radius:var(--r);padding:clamp(20px,3vw,32px);color:#fff;display:grid;grid-template-columns:1fr 1fr;gap:22px;align-items:center}
+.vidwrap h2{font-size:clamp(1.8rem,3.4vw,2.6rem);margin:12px 0}
+.vidwrap p{font-size:15px;color:#d6d3d1;max-width:46ch}
+.vidframe{position:relative;border-radius:12px;overflow:hidden;background:#1c1917;aspect-ratio:16/9}
+.vidframe iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+.vidsteps{list-style:none;margin:16px 0 0;padding:0;display:flex;flex-direction:column;gap:8px;font-size:14px;font-weight:600}
+.vidsteps li::before{content:"▸ ";color:#fff}
+@media(max-width:900px){.vidwrap{grid-template-columns:1fr}}
 .demo{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .demo-left{background:var(--soft);border-radius:var(--r);padding:clamp(20px,3vw,32px)}
 .demo-left h2{font-size:clamp(2rem,4vw,3rem);margin:12px 0}
