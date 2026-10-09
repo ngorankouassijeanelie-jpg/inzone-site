@@ -106,7 +106,7 @@ def init_db():
         c.execute("ALTER TABLE documents ADD COLUMN file TEXT")
     except sqlite3.OperationalError:
         pass
-    for col in ("criteria TEXT", "alerts TEXT"):
+    for col in ("criteria TEXT", "alerts TEXT", "avatar TEXT"):
         try:
             c.execute(f"ALTER TABLE users ADD COLUMN {col}")
         except sqlite3.OperationalError:
@@ -337,14 +337,38 @@ def login(body: Login, request: Request):
             hash_pwd(body.password, row["salt"]), row["pwd_hash"]):
         raise HTTPException(status_code=401, detail="Identifiants incorrects")
     user = dict(row)
-    return {"token": make_token(user), "role": user["role"], "name": user["name"]}
+    return {"token": make_token(user), "role": user["role"], "name": user["name"],
+            "avatar": user.get("avatar", "")}
 
 
 @app.get("/api/me")
 def me(user: dict = Depends(current_user)):
     return {"email": user["email"], "role": user["role"], "name": user["name"],
             "company": user["company"], "country": user.get("country", ""),
-            "criteria": user.get("criteria", ""), "alerts": user.get("alerts", "")}
+            "criteria": user.get("criteria", ""), "alerts": user.get("alerts", ""),
+            "avatar": user.get("avatar", "")}
+
+
+@app.post("/api/me/avatar")
+def upload_avatar(file: UploadFile = File(...), user: dict = Depends(current_user)):
+    saved = save_upload("av-" + user["email"].replace("@", "-at-"), file, ("image/",))
+    if saved["size"] > 2 * 1024 * 1024:
+        try:
+            os.remove(os.path.join(UPLOAD_DIR, os.path.basename(saved["file"])))
+        except OSError:
+            pass
+        raise HTTPException(status_code=413, detail="Photo trop lourde (max 2 Mo)")
+    old = user.get("avatar", "")
+    con = db()
+    con.execute("UPDATE users SET avatar=? WHERE email=?", (saved["file"], user["email"]))
+    con.commit()
+    con.close()
+    if old and old.startswith("/uploads/av-"):
+        try:
+            os.remove(os.path.join(UPLOAD_DIR, os.path.basename(old)))
+        except OSError:
+            pass
+    return {"avatar": saved["file"]}
 
 
 class MeIn(BaseModel):
@@ -376,7 +400,7 @@ def update_me(body: MeIn, user: dict = Depends(current_user)):
 @app.get("/api/users")
 def list_users(_: dict = Depends(admin_only)):
     con = db()
-    out = rows(con, "SELECT email,name,company,country,role,created FROM users ORDER BY id")
+    out = rows(con, "SELECT email,name,company,country,role,created,avatar FROM users ORDER BY id")
     con.close()
     return out
 
@@ -994,7 +1018,8 @@ def signup(body: SignupIn, request: Request):
     hits.append(now)
     SIGNUP_ATTEMPTS[ip] = hits
     user = dict(row)
-    return {"token": make_token(user), "role": "client", "name": user["name"]}
+    return {"token": make_token(user), "role": "client", "name": user["name"],
+            "avatar": user.get("avatar", "")}
 
 
 class ForgotIn(BaseModel):
