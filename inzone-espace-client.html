@@ -234,6 +234,10 @@ td:first-child{border-radius:10px 0 0 10px}td:last-child{border-radius:0 10px 10
 .sq,.k,.steps li::before{border-radius:3px}
 .tog input{border-radius:4px}
 #scrim{display:none}
+#boot{position:fixed;inset:0;z-index:60;display:grid;place-items:center;background:rgba(255,255,255,.72);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+.spin{width:46px;height:46px;border-radius:50%;border:4px solid var(--line);border-top-color:var(--accent);animation:rot .8s linear infinite}
+@keyframes rot{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){.spin{animation:none}}
 @media (max-width:1100px){.g32{grid-template-columns:1fr}.hero{grid-template-columns:1fr;align-items:start}}
 @media (max-width:860px){
  #login{grid-template-columns:1fr}
@@ -297,6 +301,7 @@ td strong,td .num{white-space:nowrap}
   </figure>
 </section>
 
+<div id="boot" hidden><div style="display:flex;flex-direction:column;align-items:center;gap:14px"><span class="spin" role="status" aria-label="Chargement"></span><span class="muted">Chargement de votre espace…</span></div></div>
 <div id="app" hidden>
   <aside id="side">
     <div class="side-h"><button class="brand" id="brandtog" type="button" title="Ouvrir ou fermer le menu" aria-label="inZONE, ouvrir ou fermer le menu" aria-controls="side" aria-expanded="true"><span class="mark"><svg viewBox="0 0 42 34" aria-hidden="true"><polygon points="12,0 30,0 33.2,3.2 15.2,3.2"/><polygon points="14.6,5.6 32.6,5.6 35.8,8.8 17.8,8.8"/><polygon points="17.2,11.2 35.2,11.2 38.4,14.4 20.4,14.4"/><polygon points="3.2,16.8 21.2,16.8 24.4,20 6.4,20"/><polygon points="5.8,22.4 23.8,22.4 27,25.6 9,25.6"/><polygon points="8.4,28 26.4,28 29.6,31.2 11.6,31.2"/></svg></span><span>in<b>ZONE</b></span></button></div>
@@ -552,7 +557,7 @@ async function saveAlerts(){let al={};["a1","a2","a3"].forEach(id=>{al[id]=$(id)
 document.querySelectorAll(".tog input").forEach(i=>i.addEventListener("change",saveAlerts));
 async function syncOrders(){try{let tok="";try{tok=localStorage.getItem("inz-token")||""}catch(_){}if(!tok)return;const r=await fetch(API()+"/api/mes-demandes",{headers:{Authorization:"Bearer "+tok}});if(!r.ok)return;const ds=await r.json();if(!ds.length)return;$("orders-rows").innerHTML=ds.map(d=>`<tr><td><strong>${esc(d.niveau||"Demande")}</strong></td><td>${esc(d.objet||"—")}</td><td>Sur proposition</td><td>${d.status==="Traitée"?'<span class="st ok">Traitée</span>':'<span class="st run">'+esc(d.status||"Nouvelle")+"</span>"}</td></tr>`).join("")+`<tr><td><strong>Formule investisseur</strong></td><td>Tous terrains suivis</td><td>À définir</td><td><span class="st ok">Active</span></td></tr>`}catch(e){}}
 async function syncFac(){try{let tok="";try{tok=localStorage.getItem("inz-token")||""}catch(_){}if(!tok)return;const r=await fetch(API()+"/api/mes-factures",{headers:{Authorization:"Bearer "+tok}});if(!r.ok)return;const fs=await r.json();if(!fs.length)return;$("fac-rows").innerHTML=fs.map(x=>`<tr><td><strong>Facture n° ${x.id}</strong><br><span class="muted">${esc(x.niveau||"")}</span></td><td>${esc(x.objet||"—")}</td><td class="r num">${esc(x.montant)}</td><td>${x.status==="Payée"?'<span class="st ok">Payée</span>':'<span class="st run">'+esc(x.status)+"</span>"}</td><td class="r"><a class="btn ghost sm" href="${API()+"/api/factures/"+x.id+"/pdf"}" download>PDF</a></td></tr>`).join("");$("fac-note").textContent="Règlement par virement. Téléchargez le PDF proforma."}catch(e){}}
-$("login").hidden=true;$("app").hidden=false;go(v||"bord");syncTerrains();syncDocs();syncFichePhotos();syncProfile();syncVerifs();syncVeille();syncOrders();syncFac()}
+$("login").hidden=true;$("boot").hidden=false;$("app").hidden=false;go(v||"bord");Promise.allSettled([syncTerrains(),syncDocs(),syncFichePhotos(),syncProfile(),syncVerifs(),syncVeille(),syncOrders(),syncFac()]).then(()=>{$("boot").hidden=true});setTimeout(()=>{$("boot").hidden=true},6000)}
 document.addEventListener("click",e=>{const b=e.target.closest("[data-go]");if(!b)return;if(b.dataset.site){[...$("d-site").options].forEach(o=>{if(o.text.startsWith(b.dataset.site))$("d-site").value=o.value})}go(b.dataset.go)});
 const API=()=>{try{return localStorage.getItem("inz-api")||"http://localhost:8001"}catch(_){return"http://localhost:8001"}};
 async function apiPost(p,body,tok){const r=await fetch(API()+p,{method:"POST",headers:Object.assign({"Content-Type":"application/json"},tok?{Authorization:"Bearer "+tok}:{}),body:JSON.stringify(body)});if(!r.ok){let m="";try{m=(await r.json()).detail||""}catch(e){}throw new Error(r.status===401?(m||"Identifiants incorrects"):"Serveur injoignable ("+r.status+")")}return r.json()}
