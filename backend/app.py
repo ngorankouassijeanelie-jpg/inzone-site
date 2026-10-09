@@ -94,6 +94,11 @@ def init_db():
         c.execute("ALTER TABLE documents ADD COLUMN file TEXT")
     except sqlite3.OperationalError:
         pass
+    for col in ("criteria TEXT",):
+        try:
+            c.execute(f"ALTER TABLE users ADD COLUMN {col}")
+        except sqlite3.OperationalError:
+            pass
     con.commit()
     if c.execute("SELECT COUNT(*) FROM users").fetchone()[0] == 0:
         seed(con)
@@ -279,7 +284,41 @@ def login(body: Login):
 @app.get("/api/me")
 def me(user: dict = Depends(current_user)):
     return {"email": user["email"], "role": user["role"], "name": user["name"],
-            "company": user["company"]}
+            "company": user["company"], "country": user.get("country", ""),
+            "criteria": user.get("criteria", "")}
+
+
+class MeIn(BaseModel):
+    name: str = ""
+    company: str = ""
+    country: str = ""
+    criteria: str = ""
+
+
+@app.put("/api/me")
+def update_me(body: MeIn, user: dict = Depends(current_user)):
+    sets, vals = [], []
+    for f in ("name", "company", "country", "criteria"):
+        v = getattr(body, f)
+        if v:
+            sets.append(f"{f}=?")
+            vals.append(v.strip())
+    if not sets:
+        raise HTTPException(status_code=422, detail="Rien à mettre à jour")
+    con = db()
+    con.execute(f"UPDATE users SET {', '.join(sets)} WHERE email=?",
+                (*vals, user["email"]))
+    con.commit()
+    con.close()
+    return {"email": user["email"], "updated": sets}
+
+
+@app.get("/api/users")
+def list_users(_: dict = Depends(admin_only)):
+    con = db()
+    out = rows(con, "SELECT email,name,company,country,role,created FROM users ORDER BY id")
+    con.close()
+    return out
 
 
 # --- catalogue public ---
