@@ -1,316 +1,538 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>inZONE — Intelligence foncière industrielle, Côte d'Ivoire</title>
 <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
-<meta name="description" content="inZONE, plateforme d'intelligence foncière industrielle pour la Côte d'Ivoire. Cartographie des zones, fiches terrain en 24-48h, vérification premium, veille mensuelle. Un service d'Africand Consulting." />
+<meta name="description" content="inZONE, plateforme d'intelligence foncière industrielle pour la Côte d'Ivoire : terrains suivis, vérification premium, veille mensuelle des zones industrielles, paiement en ligne.">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
 <style>
-:root{--bg:#fff;--ink:#0a0a0a;--mut:#525252;--line:#e7e5e4;--soft:#f5f4f3;--soft2:#e9e7e5;--dark:#0a0a0a;--r:18px;--max:1140px}
-*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;font-size:16px;line-height:1.5;-webkit-font-smoothing:antialiased}
-h1,h2,h3,p{margin:0}h1,h2,h3{text-wrap:balance;letter-spacing:-.03em;line-height:1}
-a{color:inherit}::selection{background:#000;color:#fff}:focus-visible{outline:2px solid #000;outline-offset:3px}
-.wrap{max-width:var(--max);margin:0 auto;padding:0 20px}
-.eyebrow{display:inline-block;font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--mut);border:1px solid var(--line);border-radius:999px;padding:7px 14px;background:#fff}
-/* NAV */
-.nav{position:sticky;top:0;z-index:50;background:rgba(255,255,255,.88);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
-.nav-in{max-width:var(--max);margin:0 auto;padding:12px 20px;display:flex;align-items:center;gap:20px}
-.brand{text-decoration:none;line-height:.9}.brand b{display:block;font-size:22px;font-weight:800;letter-spacing:-.04em}.brand small{display:block;font-size:10px;font-weight:500;color:var(--mut);margin-top:4px}
-.links{margin-left:auto;display:flex;gap:22px;font-size:14px;font-weight:600}
-.links a{text-decoration:none;color:#262626}.links a:hover{text-decoration:underline;text-underline-offset:4px}
-.cta-row{display:flex;gap:10px;margin-left:8px}
-.btn{display:inline-flex;align-items:center;gap:10px;border-radius:999px;padding:12px 22px;font-size:14px;font-weight:700;text-decoration:none;border:1px solid #000;transition:transform .2s ease,background .2s}
-.btn-dark{background:#000;color:#fff}.btn-dark:hover{background:#262626}
-.btn-light{background:#fff;color:#000}.btn-light:hover{background:#f5f5f5}
-.btn-white{background:#fff;color:#000;border-color:#fff}
-.btn:hover{transform:translateY(-1px)}
-.burger{display:none;margin-left:auto;background:#fff;border:1px solid #000;border-radius:999px;width:44px;height:44px;font-size:20px;line-height:1}
-/* HERO */
-.hero{padding:56px 0 20px}
-.hero-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:16px;align-items:stretch}
-.hero-copy{background:var(--soft);border-radius:var(--r);padding:clamp(24px,4vw,48px);display:flex;flex-direction:column;gap:18px;justify-content:center}
-.hero-copy h1{font-size:clamp(2.6rem,5.2vw,4.4rem);font-weight:800}
-.hero-copy .sub{font-size:17px;color:#262626;max-width:46ch}
-.hero-cta{display:flex;flex-wrap:wrap;gap:10px;margin-top:4px}
-.kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:8px}
-.kpis div{border-left:2px solid #000;padding-left:12px}
-.kpis b{display:block;font-size:clamp(1.3rem,2.2vw,1.9rem);font-variant-numeric:tabular-nums}
-.kpis span{font-size:12.5px;font-weight:600;color:var(--mut);line-height:1.35;display:block;margin-top:4px}
-/* product mock - pure CSS, 0 image */
-.mock{background:var(--dark);color:#fff;border-radius:var(--r);padding:14px;display:flex;flex-direction:column;gap:12px;min-height:420px}
-.mock-bar{display:flex;align-items:center;gap:8px;font-size:12px;font-weight:600;color:#d6d3d1}
-.dot{width:10px;height:10px;border-radius:50%;background:#444}.dot:first-child{background:#fff}
-.mock-body{display:grid;grid-template-columns:150px 1fr;gap:12px;flex:1}
-.mock-side{background:rgba(255,255,255,.08);border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:8px;font-size:12px;font-weight:600}
-.mock-side i{display:block;font-style:normal;background:rgba(255,255,255,.12);border-radius:8px;padding:8px 10px;color:#fff}
-.mock-side i.on{background:#fff;color:#000}
-.mock-main{background:#fff;color:#000;border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:12px}
-.mock-main .row{display:flex;justify-content:space-between;align-items:center;gap:10px}
-.pill{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;border:1px solid #000;border-radius:999px;padding:4px 10px}
-.pill.ok{background:#000;color:#fff;border-color:#000}
-.map{border:1px solid var(--line);border-radius:12px;background:linear-gradient(180deg,#f5f4f3,#e9e7e5);min-height:150px;display:grid;place-items:center;position:relative;overflow:hidden}
-.map::before{content:"";position:absolute;inset:12px;border:2px dashed #000;border-radius:10px;transform:rotate(-2deg)}
-.map span{position:relative;background:#000;color:#fff;font-size:12px;font-weight:700;border-radius:999px;padding:6px 12px}
-.vig{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px;font-size:13px;font-weight:600}
-.vig li{display:flex;justify-content:space-between;gap:10px;border:1px solid var(--line);border-radius:10px;padding:8px 12px}
-.vig em{font-style:normal;font-size:11px;color:var(--mut)}
-.mock-foot{display:flex;justify-content:space-between;align-items:center;gap:10px;font-size:13px;font-weight:600;color:#e7e5e4}
-/* strips */
-.strip{padding:14px 0}
-.strip-in{background:#000;color:#fff;border-radius:var(--r);padding:16px 22px;display:flex;flex-wrap:wrap;gap:8px 26px;align-items:center;font-size:13px;font-weight:600}
-.strip-in b{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:#a8a29e}
-/* sections */
-.sec{padding:34px 0}
-.sec-head{max-width:720px;margin-bottom:18px}
-.sec-head h2{font-size:clamp(2rem,4.4vw,3.2rem);font-weight:800;margin:12px 0 8px}
-.sec-head p{color:#262626;font-size:16px;max-width:60ch}
-.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
-.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
-.card{background:var(--soft);border-radius:var(--r);padding:22px;display:flex;flex-direction:column;gap:10px;min-height:210px}
-.card.dark{background:#000;color:#fff}
-.card h3{font-size:20px}
-.card p{font-size:14px;color:inherit;opacity:.85}
-.card .n{margin-top:auto;font-size:12px;font-weight:700;color:var(--mut)}
-.card.dark .n{color:#a8a29e}
-.steps{counter-reset:st;display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
-.step{background:#fff;border:1px solid var(--line);border-radius:var(--r);padding:22px;counter-increment:st}
-.step::before{content:"0" counter(st);display:block;font-size:12px;font-weight:700;letter-spacing:.14em;color:var(--mut);margin-bottom:12px}
-.step h3{font-size:19px;margin-bottom:8px}.step p{font-size:14px;color:#404040}
-/* fiche */
-.fiche{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.fiche-left{background:var(--soft);border-radius:var(--r);padding:clamp(20px,3vw,32px);display:flex;flex-direction:column;gap:14px}
-.fiche-left h3{font-size:clamp(1.6rem,3vw,2.4rem)}
-.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;background:var(--soft2);border-radius:12px;padding:16px}
-.stats b{font-size:18px;display:block}.stats span{font-size:12px;font-weight:600;color:#404040}
-.alert{background:#fff;border:1px solid var(--line);border-left:3px solid #000;border-radius:12px;padding:14px;font-size:13.5px;color:#404040}
-.fiche-right{background:#000;color:#fff;border-radius:var(--r);padding:12px;display:flex;flex-direction:column;gap:8px}
-.frow{background:rgba(255,255,255,.1);border-radius:12px;padding:14px 16px;display:grid;gap:4px}
-.frow:first-child{background:#fff;color:#000}
-.frow h4{margin:0;font-size:16px}.frow p{margin:0;font-size:13.5px;opacity:.85}.frow span{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;opacity:.8}
-/* pricing */
-.price{border:1px solid var(--line);border-radius:var(--r);padding:24px;display:flex;flex-direction:column;gap:12px;background:#fff}
-.price.hl{background:#000;color:#fff;border-color:#000}
-.price h3{font-size:22px}.price .p{font-size:34px;font-weight:800}.price .p small{font-size:14px;font-weight:600;opacity:.7}
-.price ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px;font-size:14px}
-.price li::before{content:"✓ ";font-weight:800}
-/* faq + demo */
-.faq details{background:var(--soft);border-radius:14px;padding:16px 18px;margin-bottom:10px}
-.faq summary{font-weight:700;cursor:pointer;font-size:16px}
-.faq p{margin-top:8px;font-size:14.5px;color:#404040}
-.vidwrap{background:#000;border-radius:var(--r);padding:clamp(20px,3vw,32px);color:#fff;display:grid;grid-template-columns:1fr 1fr;gap:22px;align-items:center}
-.vidwrap h2{font-size:clamp(1.8rem,3.4vw,2.6rem);margin:12px 0}
-.vidwrap p{font-size:15px;color:#d6d3d1;max-width:46ch}
-.vidframe{position:relative;border-radius:12px;overflow:hidden;background:#1c1917;aspect-ratio:16/9}
-.vidframe iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
-.vidsteps{list-style:none;margin:16px 0 0;padding:0;display:flex;flex-direction:column;gap:8px;font-size:14px;font-weight:600}
-.vidsteps li::before{content:"▸ ";color:#fff}
-@media(max-width:900px){.vidwrap{grid-template-columns:1fr}}
-.demo{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.demo-left{background:var(--soft);border-radius:var(--r);padding:clamp(20px,3vw,32px)}
-.demo-left h2{font-size:clamp(2rem,4vw,3rem);margin:12px 0}
-form{background:#fff;border:1px solid var(--line);border-radius:var(--r);padding:22px;display:grid;grid-template-columns:1fr 1fr;gap:14px}
-label{display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:600}
-input,select,textarea{border:1px solid #a8a29e;border-radius:12px;padding:12px 14px;font-size:16px;width:100%;background:#fff;color:#000}
-.full{grid-column:1/-1}.hint{font-size:12px;color:var(--mut)}.err{background:#fde7ea;color:#8a0019;border-radius:12px;padding:12px 14px;font-size:14px;font-weight:600}.ok{background:#e6f4ea;color:#14532d;border-radius:12px;padding:12px 14px;font-size:14px;font-weight:600}
-footer{padding:18px 0 26px}.foot{background:#000;color:#fff;border-radius:var(--r);padding:26px;display:grid;grid-template-columns:1.2fr 1fr;gap:20px}
-.foot nav{display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:14px;font-weight:600}.foot a{text-decoration:none}.foot a:hover{text-decoration:underline}
-.rule{grid-column:1/-1;border-top:1px solid rgba(255,255,255,.2);padding-top:14px;font-size:12px;color:#d6d3d1}
-.reveal{opacity:0;transform:translateY(18px)}.reveal.in{opacity:1;transform:none;transition:opacity .5s ease,transform .5s ease}
-/* HERO néo-brutaliste */
-.nh{background:#f5f3ee;border:2px solid #0a0a0a;padding:clamp(20px,3.5vw,44px);position:relative;overflow:hidden}
-.nh-grid{display:grid;grid-template-columns:minmax(240px,330px) 1fr;gap:clamp(20px,4vw,56px);align-items:start}
-.nh-collage svg{display:block;width:100%;height:auto}
-.nh-kicker{display:inline-block;font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;border:2px solid #000;border-radius:999px;padding:7px 16px;background:#fff;margin-bottom:20px}
-.nh h1{font-size:clamp(2.6rem,6.4vw,5.2rem);font-weight:800;line-height:1.02;letter-spacing:-.03em;text-transform:none}
-.nh h1 .u{background:linear-gradient(transparent 62%,#0a0a0a 62%,#0a0a0a 92%,transparent 92%)}
-.nh h1 .dot-yl{color:#e8b90f}
-.nh-sub{display:flex;gap:26px;align-items:flex-start;margin-top:26px;flex-wrap:wrap}
-.btn-talk{display:inline-block;background:#000;color:#fff;font-weight:700;font-size:15px;padding:16px 30px;text-decoration:none;border:2px solid #000}
-.btn-talk:hover{background:#262626}
-.nh-desc{font-size:15px;max-width:44ch;color:#262626;border-left:2px solid #000;padding-left:22px}
-.nh-stats{display:flex;gap:26px;flex-wrap:wrap;margin-top:22px;font-size:13px;font-weight:700}
-.nh-stats span b{font-size:20px}
-.nh-foot{border-top:2px solid #000;margin-top:30px;padding-top:18px;display:flex;align-items:center;gap:18px;font-size:14px;font-weight:600}
-.nh-foot a{text-decoration:none}.nh-foot a:hover{text-decoration:underline;text-underline-offset:4px}
-@media(max-width:900px){.nh-grid{grid-template-columns:1fr}.nh-collage{max-height:230px;overflow:hidden}}
-@media(max-width:900px){.links,.cta-row{display:none}.burger{display:block}.hero-grid,.fiche,.demo,.grid4,.grid3,.steps{grid-template-columns:1fr}.kpis{grid-template-columns:1fr 1fr}.mock-body{grid-template-columns:1fr}.mock-side{flex-direction:row;overflow:auto}.foot{grid-template-columns:1fr}form{grid-template-columns:1fr}.nav.open .links{display:flex;flex-direction:column;background:#fff;border-bottom:1px solid var(--line);padding:12px 20px}.nav.open .cta-row{display:flex;padding:0 20px 14px}}
-@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.reveal{opacity:1;transform:none}}
+/* Structure : barre globale sombre, trois grands héros empilés (noir, gris clair, noir), grille de tuiles 2 colonnes,
+   carrousel pleine largeur, notes et pied de page en colonnes. Un seul aspect, clair, assumé. */
+:root{--black:#000000;--ink:#1d1d1f;--fog:#f5f5f7;--white:#ffffff;--mute:#6e6e73;--mute-d:#a1a1a6;--line:#d2d2d7;--blue:#0071e3;--blue-l:#2997ff;--nav:#161617;
+  --font:"Inter","Helvetica Neue",Helvetica,Arial,sans-serif;color-scheme:light}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:var(--white);color:var(--ink);font-family:var(--font);font-size:17px;line-height:1.47;letter-spacing:-.01em;-webkit-font-smoothing:antialiased}
+h1,h2,h3,p,ul,ol{margin:0;padding:0}ul,ol{list-style:none}
+a{color:var(--blue);text-decoration:none}a:hover{text-decoration:underline}
+:focus-visible{outline:3px solid var(--blue-l);outline-offset:2px}
+.num{font-variant-numeric:tabular-nums}
+/* barre globale */
+.gn{position:sticky;top:env(safe-area-inset-top,0px);z-index:30;background:rgba(22,22,23,.9);backdrop-filter:saturate(180%) blur(20px);-webkit-backdrop-filter:saturate(180%) blur(20px)}
+.gn div{max-width:1024px;margin-inline:auto;padding-inline:16px;min-height:44px;display:flex;align-items:center;justify-content:space-between;gap:8px 20px;flex-wrap:wrap}
+.gn a{color:#d6d6d8;font-size:12px;min-height:44px;display:flex;align-items:center}
+.gn a:hover{color:var(--white);text-decoration:none}
+.gn svg{width:20px;fill:currentColor}
+/* héros */
+.hero{text-align:center;padding:52px 16px 0;overflow:hidden;margin-bottom:12px;display:flex;flex-direction:column;align-items:center}
+.hero.k{background:var(--black);color:var(--fog)}
+.hero.g{background:var(--fog);color:var(--ink)}
+.hero h1,.hero h2{font-size:clamp(34px,5vw,56px);font-weight:600;letter-spacing:-.03em;line-height:1.07;text-wrap:balance}
+.hero .sub{font-size:clamp(20px,2.4vw,28px);line-height:1.15;margin-top:6px;letter-spacing:-.015em}
+.hero .fine{font-size:17px;color:var(--mute);margin-top:10px}
+.hero.k .fine{color:var(--mute-d)}
+.btns{display:flex;flex-wrap:wrap;justify-content:center;gap:14px;margin-top:18px}
+.pill{display:inline-flex;align-items:center;min-height:44px;padding:0 22px;border-radius:980px;font-size:17px;background:var(--blue);color:var(--white);border:1px solid var(--blue)}
+.pill:hover{text-decoration:none;background:#0077ed}
+.pill.o{background:transparent;color:var(--blue)}
+.pill.o:hover{background:var(--blue);color:var(--white)}
+.k .pill.o{color:var(--blue-l);border-color:var(--blue-l)}
+.sm .pill{min-height:36px;padding:0 16px;font-size:14px}
+.stage{width:100%;max-width:980px;margin-top:38px;min-height:330px;position:relative;display:flex;justify-content:center;align-items:flex-end}
+/* héros 1 : mot géant + carte */
+.word{font-size:clamp(96px,25vw,330px);font-weight:700;letter-spacing:-.06em;line-height:.8;white-space:nowrap;background:linear-gradient(100deg,#3a3a3c 0%,#f5f5f7 28%,#8e8e93 46%,#ffffff 62%,#48484a 80%,#d1d1d6 100%);-webkit-background-clip:text;background-clip:text;color:transparent;padding-bottom:.12em}
+.slab{position:absolute;left:50%;bottom:8%;width:min(78%,520px);transform:translateX(-50%) rotate(-7deg);background:linear-gradient(145deg,#3b2b2e,#191214);border-radius:28px;padding:22px 26px;text-align:left;box-shadow:0 30px 60px rgba(0,0,0,.6),inset 0 1px 0 rgba(255,255,255,.18);color:var(--fog)}
+.slab small{font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--mute-d)}
+.slab b{display:block;font-size:clamp(20px,2.6vw,28px);font-weight:600;letter-spacing:-.02em;margin-top:2px}
+.slab ul{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.slab li{font-size:13px;padding:5px 12px;border-radius:980px;background:rgba(255,255,255,.12)}
+/* héros 2 : fiche */
+.fiche{width:min(100%,640px);background:var(--white);border-radius:30px 30px 0 0;padding:28px clamp(18px,3vw,34px) 36px;text-align:left;box-shadow:0 20px 60px rgba(0,0,0,.12)}
+.fiche small{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--mute)}
+.fiche b.t{display:block;font-size:26px;font-weight:600;letter-spacing:-.03em}
+.kp{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-top:18px}
+.kp div{background:var(--fog);border-radius:16px;padding:14px 12px}
+.kp b{display:block;font-size:clamp(18px,2.6vw,26px);font-weight:600;letter-spacing:-.03em;white-space:nowrap}
+.kp span{font-size:12px;color:var(--mute)}
+/* héros 3 : cadrans */
+.dials{display:flex;gap:clamp(16px,4vw,56px);justify-content:center;flex-wrap:wrap;padding-bottom:30px}
+.dial{width:min(42vw,230px);aspect-ratio:1/1.18;border-radius:44px;background:#0d0d0e;border:6px solid #3a3a3c;box-shadow:0 0 0 2px #1c1c1e,0 0 60px rgba(41,151,255,.18);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px}
+.dial svg{width:62%}
+.dial span{font-size:13px;color:var(--mute-d)}
+.dial b{font-size:15px;font-weight:600}
+/* finitions : retours au survol et à l'appui, repères du carrousel */
+.pill{transition:background .2s ease,color .2s ease,transform .12s ease}
+.pill:active{transform:scale(.96)}
+.gn a{transition:color .2s ease}
+.tile p,.hero .sub{text-wrap:balance}
+.tile .art,.slab,.fiche,.dial{transition:transform .6s cubic-bezier(.16,1,.3,1)}
+@media (hover:hover){
+  .tile:hover .art{transform:translateY(-8px)}
+  .hero:hover .fiche{transform:translateY(-8px)}
+  .hero:hover .dial{transform:translateY(-6px)}
+  .cols a:hover{color:var(--ink)}
+}
+.ctl button{transition:background .2s ease,transform .12s ease,opacity .2s ease}
+.ctl button:active{transform:scale(.92)}
+.ctl button:disabled{opacity:.35;cursor:default}
+.dots{display:flex;justify-content:center;gap:8px;margin-top:14px}
+.dots i{width:8px;height:8px;border-radius:50%;background:var(--line);transition:background .3s ease,width .3s ease}
+.dots i.on{background:var(--ink);width:22px;border-radius:4px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+/* fondus entre les blocs et apparition douce au défilement */
+.hero{margin-bottom:0}
+.hero::after{content:"";display:block;flex:none;align-self:stretch;margin-inline:-16px;height:clamp(70px,9vw,140px);background:linear-gradient(to bottom,var(--from) 0%,color-mix(in srgb,var(--from) 94%,var(--to)) 14%,color-mix(in srgb,var(--from) 80%,var(--to)) 28%,color-mix(in srgb,var(--from) 60%,var(--to)) 42%,color-mix(in srgb,var(--from) 40%,var(--to)) 56%,color-mix(in srgb,var(--from) 20%,var(--to)) 71%,color-mix(in srgb,var(--from) 6%,var(--to)) 86%,var(--to) 100%)}
+.hero.k{--from:#000000;--to:#f5f5f7}
+.hero.g{--from:#f5f5f7;--to:#000000}
+#verification{--to:#ffffff}
+.hero .fiche{border-radius:30px;margin-bottom:-80px;position:relative;z-index:1}
+.grid{padding-top:12px}
+.fx{opacity:.78;transform:translateY(10px);transition:opacity 2s cubic-bezier(.25,.6,.3,1),transform 2.2s cubic-bezier(.25,.6,.3,1)}
+.fx.in{opacity:1;transform:none}
+/* blocs rapprochés : le fondu sert déjà d'espace entre deux blocs */
+.hero+.hero{padding-top:8px}
+.hero .stage{margin-top:28px}
+.hero.g .stage{min-height:0;margin-top:34px}
+.hero .fiche{margin-bottom:-60px}
+#verification .btns{padding-bottom:8px!important}
+.hero.k>.stage .word{margin-bottom:-.1em}
+.grid{padding-top:0;margin-top:-16px;position:relative}
+.show{padding-top:44px}
+/* formulaire de démo */
+.demo{background:var(--fog);padding:clamp(56px,8vw,96px) 16px}
+.demo .in{max-width:860px;margin-inline:auto}
+.demo h2{text-align:center;font-size:clamp(34px,5vw,56px);font-weight:600;letter-spacing:-.03em;line-height:1.07}
+.demo .sub{text-align:center;font-size:clamp(18px,2vw,22px);color:var(--mute);margin-top:8px}
+.demo form{background:var(--white);border-radius:28px;padding:clamp(20px,4vw,40px);margin-top:34px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px 16px;box-shadow:0 20px 60px rgba(0,0,0,.08)}
+.fld{display:flex;flex-direction:column;gap:6px;min-width:0}
+.fld.w{grid-column:1/-1}
+.fld label{font-size:14px;font-weight:500}
+.fld label i{font-style:normal;color:var(--mute);font-weight:400}
+.fld input,.fld select,.fld textarea{font:inherit;font-size:16px;color:var(--ink);background:var(--white);border:1px solid #86868b;border-radius:12px;min-height:48px;padding:10px 14px;width:100%;transition:border-color .2s ease,box-shadow .2s ease}
+.fld select{appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='none' stroke='%236e6e73' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 7.5 10 12.5 15 7.5'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;background-size:16px;padding-right:38px;cursor:pointer}
+.fld textarea{min-height:110px;resize:vertical}
+.fld input:focus,.fld select:focus,.fld textarea:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 4px rgba(0,113,227,.2)}
+.fld.bad input,.fld.bad select{border-color:#b3261e}
+.fld .err{font-size:13px;line-height:1.3;min-height:17px;color:#b3261e;visibility:hidden}
+.fld.bad .err{visibility:visible}
+.demo .act{grid-column:1/-1;display:flex;flex-wrap:wrap;align-items:center;gap:12px 20px}
+.demo button.pill{cursor:pointer;font-family:inherit}
+.demo .hint{font-size:13px;color:var(--mute)}
+.demo .done{grid-column:1/-1;background:var(--fog);border-radius:16px;padding:18px 20px;font-size:16px}
+.demo .done b{display:block;font-size:19px;font-weight:600;margin-bottom:4px}
+@media (max-width:760px){.demo form{grid-template-columns:minmax(0,1fr);border-radius:22px}}
+/* Vérification premium sur le bleu clair de la tuile Zones publiques */
+.hero.s{background:linear-gradient(180deg,#cfe6fb,#eef6fd);color:var(--ink);--from:#eef6fd;--to:#ffffff}
+#analyse{--to:#cfe6fb}
+.dial{color:#f5f5f7}
+.hero.s .dial{box-shadow:0 0 0 2px #1c1c1e,0 24px 50px rgba(0,60,130,.22)}
+/* vidéo en arrière-plan du premier bloc ; fond noir si elle ne se charge pas */
+#top{position:relative;isolation:isolate;--from:transparent}
+#top .pill.o{color:#ffffff;border-color:#ffffff;background:rgba(0,0,0,.25)}
+#top .pill.o:hover{background:#ffffff;color:#1d1d1f}
+.bgv{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:-2;pointer-events:none}
+#top::before{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(180deg,rgba(0,0,0,.55) 0%,rgba(0,0,0,.38) 50%,rgba(0,0,0,.3) 100%)}
+#top h1,#top .sub{text-shadow:0 2px 24px rgba(0,0,0,.55)}
+/* confidentialité et cookies */
+.lnk{font:inherit;color:#424245;background:none;border:0;padding:8px 0;min-height:44px;cursor:pointer;text-decoration:underline;text-underline-offset:3px}
+.lnk:hover{color:var(--ink)}
+.legal .ls{display:flex;flex-wrap:wrap;gap:0 22px;align-items:center}
+.ck{position:fixed;left:16px;right:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:40;max-width:560px;background:var(--white);color:var(--ink);border-radius:28px;padding:22px 24px;box-shadow:0 24px 70px rgba(0,0,0,.28),0 0 0 1px rgba(0,0,0,.06);display:grid;grid-template-columns:auto minmax(0,1fr);gap:6px 20px;align-items:center;animation:ckin .7s cubic-bezier(.16,1,.3,1) both}
+.ck[hidden]{display:none}
+@keyframes ckin{from{opacity:0;transform:translateY(24px)}}
+.ck svg{width:96px;height:96px;grid-row:span 2;align-self:start}
+.ck b{font-size:20px;font-weight:600;letter-spacing:-.02em}
+.ck p{font-size:14px;line-height:1.45;color:#424245;margin-top:4px}
+.ck .bt{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px}
+.ck .pill{min-height:44px;padding:0 20px;font-size:15px;cursor:pointer;font-family:inherit}
+.ck .pill.o{color:var(--blue)}
+dialog.pol{border:0;border-radius:28px;padding:0;width:min(760px,calc(100% - 32px));max-height:86%;color:var(--ink);background:var(--white);box-shadow:0 40px 120px rgba(0,0,0,.4)}
+dialog.pol::backdrop{background:rgba(0,0,0,.55);backdrop-filter:blur(6px)}
+.pol .hd{position:sticky;top:0;background:rgba(255,255,255,.94);backdrop-filter:blur(12px);display:flex;justify-content:space-between;align-items:center;gap:16px;padding:18px clamp(18px,4vw,36px);border-bottom:1px solid var(--line)}
+.pol .hd h2{font-size:clamp(22px,3vw,30px);font-weight:600;letter-spacing:-.03em;line-height:1.1}
+.pol .x{width:44px;height:44px;border-radius:50%;border:0;background:#e8e8ed;font-size:20px;cursor:pointer;flex:none;color:var(--ink)}
+.pol .bd{padding:8px clamp(18px,4vw,36px) 36px;font-size:16px;line-height:1.6;color:#333336}
+.pol h3{font-size:19px;font-weight:600;letter-spacing:-.02em;color:var(--ink);margin-top:26px}
+.pol p,.pol ul{margin-top:8px}
+.pol ul{list-style:disc;padding-left:22px}
+.pol .maj{font-size:13px;color:var(--mute);margin-top:14px}
+@media (max-width:520px){.ck{grid-template-columns:minmax(0,1fr);border-radius:24px}.ck svg{width:76px;height:76px;grid-row:auto}}
+@media (prefers-reduced-motion:reduce){.ck{animation:none}}
+/* menu hamburger sur téléphone */
+.hb{display:none;width:44px;height:44px;border:0;background:none;padding:0;cursor:pointer;flex-direction:column;justify-content:center;align-items:center;gap:6px;flex:none}
+.hb i{display:block;width:20px;height:2px;border-radius:2px;background:#f5f5f7;transition:transform .35s cubic-bezier(.16,1,.3,1),opacity .2s ease}
+.hb[aria-expanded="true"] i:nth-child(1){transform:translateY(8px) rotate(45deg)}
+.hb[aria-expanded="true"] i:nth-child(2){opacity:0}
+.hb[aria-expanded="true"] i:nth-child(3){transform:translateY(-8px) rotate(-45deg)}
+.mm{display:none}
+@media (max-width:760px){
+  nav.gn>div{justify-content:flex-start;overflow:visible;gap:0 6px}
+  nav.gn .l{display:none}
+  nav.gn>div>a[href="#demo"]{margin-left:auto;font-size:14px;color:#ffffff}
+  .hb{display:flex}
+  .mm{display:block;position:absolute;left:0;right:0;top:100%;background:rgba(22,22,23,.98);padding:6px 24px 26px;max-height:calc(100vh - 60px);overflow-y:auto;animation:mmin .4s cubic-bezier(.16,1,.3,1) both;box-shadow:0 30px 60px rgba(0,0,0,.45)}
+  .mm[hidden]{display:none}
+  nav.gn .mm a{display:flex;align-items:center;min-height:54px;font-size:22px;font-weight:600;letter-spacing:-.02em;color:#f5f5f7;border-bottom:1px solid #2c2c2e}
+  nav.gn .mm a:hover{text-decoration:none;color:#ffffff}
+  nav.gn .mm li:last-child a{border-bottom:0;color:#2997ff}
+}
+@keyframes mmin{from{opacity:0;transform:translateY(-10px)}}
+@media (prefers-reduced-motion:reduce){.mm{animation:none}}
+/* veille sur téléphone : extraits empilés, sans carrousel */
+@media (max-width:760px){
+  .show .rail{flex-direction:column;overflow:visible;scroll-snap-type:none;padding:24px 16px 0;gap:12px}
+  .show .rail .slide{width:100%;min-height:300px;scroll-snap-align:none}
+  .show .ctl,.show .dots{display:none}
+  .show{padding-bottom:12px}
+}
+/* tuiles */
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;padding-inline:16px;margin-bottom:12px}
+.tile{min-width:0;text-align:center;padding:48px 20px 0;display:flex;flex-direction:column;align-items:center;overflow:hidden;min-height:520px;background:var(--fog);color:var(--ink)}
+.tile.k{background:var(--black);color:var(--fog)}
+.tile.s{background:linear-gradient(180deg,#cfe6fb,#eef6fd)}
+.tile h3{font-size:clamp(28px,3.4vw,40px);font-weight:600;letter-spacing:-.03em;line-height:1.1}
+.tile p{font-size:clamp(17px,1.7vw,21px);line-height:1.2;margin-top:6px;max-width:22em}
+.tile .art{margin-top:auto;width:100%;max-width:400px;padding-top:30px}
+.panel{background:var(--white);border-radius:24px 24px 0 0;padding:20px 22px 28px;text-align:left;box-shadow:0 14px 40px rgba(0,0,0,.1);color:var(--ink)}
+.k .panel{background:#161617;color:var(--fog);box-shadow:none}
+.rowl{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:11px 0;border-top:1px solid var(--line);font-size:15px}
+.k .rowl{border-color:#333336}
+.rowl:first-child{border-top:0}
+.rowl em{font-style:normal;font-size:12px;color:var(--mute);white-space:nowrap}
+.k .rowl em{color:var(--mute-d)}
+.bar{display:flex;height:34px;border-radius:10px;overflow:hidden;gap:2px}
+.bar i{display:block}
+.card{width:min(100%,330px);aspect-ratio:1.58/1;border-radius:18px;background:linear-gradient(135deg,#ffffff,#dfe1e6);box-shadow:0 24px 50px rgba(0,0,0,.18);transform:rotate(-12deg) translateY(12px);margin:0 auto 46px;padding:20px;text-align:left;display:flex;flex-direction:column;justify-content:space-between;color:var(--ink)}
+.card svg{width:36px;fill:var(--ink)}
+/* carrousel */
+.show{padding:64px 0 28px;overflow:hidden}
+.show h2{text-align:center;font-size:clamp(34px,5vw,56px);font-weight:600;letter-spacing:-.03em;padding-inline:16px}
+.rail{display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;padding:34px max(16px,calc(50% - 600px)) 20px;scrollbar-width:none}
+.rail::-webkit-scrollbar{display:none}
+.slide{flex:none;width:min(86vw,1200px);min-height:clamp(320px,44vw,560px);scroll-snap-align:center;position:relative;padding:clamp(22px,4vw,48px);display:flex;flex-direction:column;justify-content:flex-end;color:var(--white);overflow:hidden}
+.slide:nth-child(1){background:linear-gradient(120deg,#0a2a6b,#0071e3 55%,#f5a623)}
+.slide:nth-child(2){background:linear-gradient(120deg,#1d1d1f,#3a3a3c 60%,#2997ff)}
+.slide:nth-child(3){background:linear-gradient(120deg,#0b3d2e,#1f7a55 60%,#cfe6fb)}
+.slide .big{position:absolute;right:-.04em;top:-.12em;font-size:clamp(120px,30vw,400px);font-weight:700;letter-spacing:-.07em;line-height:1;opacity:.16}
+.slide small{font-size:13px;letter-spacing:.1em;text-transform:uppercase;opacity:.85;position:relative}
+.slide b{font-size:clamp(22px,3.4vw,40px);font-weight:600;letter-spacing:-.03em;line-height:1.1;max-width:18em;position:relative;margin-top:6px}
+.slide span.d{font-size:clamp(15px,1.6vw,19px);margin-top:10px;max-width:34em;position:relative}
+.ctl{display:flex;justify-content:center;gap:10px}
+.ctl button{width:44px;height:44px;border-radius:50%;border:0;background:#e8e8ed;color:var(--ink);font-size:18px;cursor:pointer}
+.ctl button:hover{background:var(--line)}
+/* pied */
+footer{background:var(--fog);color:var(--mute);font-size:12px;line-height:1.4}
+footer .in{max-width:1012px;margin-inline:auto;padding:18px 16px 26px}
+footer ol{padding-bottom:14px;border-bottom:1px solid var(--line);display:flex;flex-direction:column;gap:8px;list-style:decimal;padding-left:18px}
+.cols{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:22px 16px;padding:20px 0;border-bottom:1px solid var(--line)}
+.cols b{display:block;color:var(--ink);font-weight:600;margin-bottom:8px}
+.cols a{display:block;color:#424245;padding:4px 0}
+.legal{display:flex;flex-wrap:wrap;justify-content:space-between;gap:6px 20px;padding-top:14px}
+@media (max-width:760px){
+  .grid{grid-template-columns:minmax(0,1fr)}
+  .tile{min-height:460px}
+  .cols{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .kp{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .gn div{flex-wrap:nowrap;justify-content:flex-start;overflow-x:auto;scrollbar-width:none;gap:0 22px}
+  .gn div::-webkit-scrollbar{display:none}
+  .gn a{flex:none;font-size:13px}
+  .hero{padding-top:40px}
+  .stage{flex-direction:column;align-items:center;justify-content:flex-end;min-height:0;margin-top:30px}
+  .word{font-size:31vw}
+  .slab{position:static;transform:rotate(-4deg);width:92%;margin:-7vw 0 40px;border-radius:22px;padding:18px 20px}
+  .fiche{border-radius:24px 24px 0 0;padding:22px 16px 28px}
+  .dial{border-radius:34px;border-width:5px}
+  .tile{min-height:0;padding-top:40px}
+  .tile .art{padding-top:26px}
+  .rowl{font-size:14px}
+  .zrow{flex-direction:column;align-items:flex-start;gap:2px}
+  .zrow em{white-space:normal}
+  .card{margin-bottom:34px}
+  .show{padding-top:48px}
+  .rail{padding-top:24px}
+  .slide{width:88vw;min-height:400px}
+  .pill{font-size:16px;padding:0 20px}
+}
+.offres{text-align:center}
+.offres-toggle{display:inline-flex;background:var(--white);border:1px solid var(--line);border-radius:980px;padding:4px;gap:4px;margin:18px 0 8px}
+.offres-toggle button{border:0;background:transparent;border-radius:980px;padding:8px 20px;font:inherit;font-size:15px;color:var(--ink);cursor:pointer}
+.offres-toggle button[aria-pressed="true"]{background:var(--blue);color:var(--white)}
+.offres-badge{display:inline-block;margin-left:8px;font-size:12px;font-weight:600;color:var(--blue);background:#eaf3ff;border-radius:980px;padding:2px 10px;vertical-align:middle}
+.offres-toggle button[aria-pressed="true"] .offres-badge{background:rgba(255,255,255,.22);color:var(--white)}
+.plans{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;max-width:1080px;margin:28px auto 0;text-align:left}
+.plan{background:var(--white);border-radius:24px;padding:26px 22px;box-shadow:0 14px 40px rgba(0,0,0,.08);display:flex;flex-direction:column}
+.plan.pro{background:var(--ink);color:#fff;transform:translateY(-10px);box-shadow:0 24px 60px rgba(0,0,0,.22)}
+.plan h3{font-size:22px;font-weight:600;margin:0 0 4px}
+.plan .prix{font-size:28px;font-weight:600;letter-spacing:-.02em;margin:10px 0 0}
+.plan .fcfa{font-size:14px;color:var(--mute);margin:2px 0 14px}
+.plan.pro .fcfa{color:var(--mute-d)}
+.plan ul{list-style:none;padding:0;margin:0 0 18px;flex:1}
+.plan li{padding:7px 0;border-top:1px solid var(--line);font-size:14px}
+.plan.pro li{border-color:#3a3a3c}
+.plan li:first-child{border-top:0}
+.plan .pill,.plan .pill.o{align-self:flex-start}
+.offres-note{max-width:640px;margin:26px auto 0;font-size:14px;color:#424245}
+@media (max-width:760px){
+  .plans{grid-template-columns:minmax(0,1fr)}
+  .plan.pro{transform:none}
+}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
 </style>
+
 </head>
-<body>
+<body style="margin:0">
+<script src="content-legal.js"></script>
+<nav class="gn" aria-label="Navigation principale"><div>
+  <a href="#top" aria-label="inZONE, accueil"><svg viewBox="0 0 42 34" aria-hidden="true"><polygon points="12,0 30,0 33.2,3.2 15.2,3.2"/><polygon points="14.6,5.6 32.6,5.6 35.8,8.8 17.8,8.8"/><polygon points="17.2,11.2 35.2,11.2 38.4,14.4 20.4,14.4"/><polygon points="3.2,16.8 21.2,16.8 24.4,20 6.4,20"/><polygon points="5.8,22.4 23.8,22.4 27,25.6 9,25.6"/><polygon points="8.4,28 26.4,28 29.6,31.2 11.6,31.2"/></svg></a>
+  <a class="l" href="#analyse">Analyse</a><a class="l" href="#verification">Vérification</a><a class="l" href="#offres">Offres</a><a class="l" href="#tuiles">Veille</a><a class="l" href="#tuiles">Zones</a><a class="l" href="inzone-espace-client.html">Espace client</a><a class="l" href="#veille">Bulletin</a>
+  <a href="#demo">Compte démo</a>
+  <button type="button" class="hb" id="hb" aria-label="Ouvrir le menu" aria-expanded="false" aria-controls="mm"><i></i><i></i><i></i></button>
+</div>
+<ul class="mm" id="mm" hidden>
+  <li><a href="#analyse">Analyse standard</a></li>
+  <li><a href="#verification">Vérification premium</a></li>
+  <li><a href="#offres">Offres et tarifs</a></li>
+  <li><a href="#tuiles">Veille, zones et espace client</a></li>
+  <li><a href="#veille">Bulletin de veille</a></li>
+  <li><a href="#demo">Demander une démo</a></li>
+</ul></nav>
 
-<nav class="nav" id="nav">
-  <div class="nav-in">
-    <a class="brand" href="#top" aria-label="inZONE haut de page"><b>inZONE</b><small>un service d'Africand Consulting</small></a>
-    <div class="links" id="navlinks">
-      <a href="#produit">Produit</a>
-      <a href="#methode">Méthode</a>
-      <a href="#fiche">Exemple</a>
-      <a href="#tarifs">Tarifs</a>
-      <a href="#faq">FAQ</a>
-    </div>
-    <div class="cta-row">
-      <a class="btn btn-light" href="inzone-espace-client.html">Se connecter</a>
-      <a class="btn btn-dark" href="#demo">Demander une démo</a>
-    </div>
-    <button class="burger" id="burger" aria-expanded="false" aria-label="Ouvrir le menu">☰</button>
+<header class="hero k" id="top">
+  <video class="bgv" id="bgv" autoplay muted loop playsinline preload="metadata" aria-hidden="true" tabindex="-1" src="https://videos.pexels.com/video-files/33871750/14374678_1920_1080_24fps.mp4"></video>
+  <h1>inZONE</h1>
+  <p class="sub">Le foncier industriel, vérifié.</p>
+  <div class="btns"><a class="pill" href="#analyse">En savoir plus</a><a class="pill o" href="#demo">Compte démo</a></div>
+  <div class="stage" aria-hidden="true">
+    <div class="word">ZONE</div>
+    <div class="slab"><small>INZ-GBA-001 · Exemple</small><b>Grand-Bassam, 6 hectares</b><ul><li>Accès</li><li>Électricité</li><li>Relief</li><li>Voisinage</li><li>Zonage</li></ul></div>
   </div>
-</nav>
+</header>
 
-<main id="top" class="wrap">
-  <!-- HERO -->
-  <header class="hero">
-    <div class="nh">
-      <div class="nh-grid">
-        <div class="nh-collage" aria-hidden="true">
-          <svg viewBox="0 0 330 560" role="presentation">
-            <polygon points="60,0 330,55 255,365 15,325 0,120" fill="#7ba7c9"/>
-            <circle cx="115" cy="225" r="48" fill="#0a0a0a"/>
-            <rect x="20" y="272" width="220" height="6" fill="#0a0a0a"/>
-            <polygon points="70,40 115,40 305,265 275,290" fill="#0a0a0a"/>
-            <polygon points="88,0 128,0 118,345 96,345" fill="#ffffff"/>
-            <polygon points="0,420 255,375 295,560 0,560" fill="#0a0a0a"/>
-            <polygon points="0,470 215,445 225,460 0,488" fill="#ffffff"/>
-            <polygon points="235,432 252,428 246,452" fill="#ffffff"/>
-            <g stroke="#ffffff" stroke-width="3"><line x1="60" y1="505" x2="110" y2="490"/><line x1="90" y1="512" x2="140" y2="497"/><line x1="120" y1="519" x2="170" y2="504"/></g>
-          </svg>
-        </div>
-        <div>
-          <span class="nh-kicker">Intelligence foncière · Côte d'Ivoire</span>
-          <h1>Tout le foncier<br><span class="u">industriel, vérifié</span><br>au même endroit<span class="dot-yl">.</span></h1>
-          <div class="nh-sub">
-            <a class="btn-talk" href="#demo">Parler à un expert</a>
-            <p class="nh-desc">Superficies, attributions, prix et textes de 13 zones industrielles. Fiches terrain en 24–48h, recoupées cadastre + satellite. <a href="#fiche">Voir une fiche exemple →</a></p>
-          </div>
-          <div class="nh-stats"><span><b>13</b> zones recensées</span><span><b>3 283 ha</b> de foncier public</span><span><b>39 %</b> occupés au PK24</span></div>
-          <div class="nh-foot"><span>● ○ ◆</span><a href="#produit">Explorer ↓</a></div>
-        </div>
-      </div>
+<section class="hero g" id="analyse">
+  <h2>Analyse standard</h2>
+  <p class="sub">L'essentiel avant de vous déplacer.</p>
+  <p class="fine">La fiche complète d'un terrain, en 24 à 48 h. Catalogue et fiche standard, gratuits pour tous.</p>
+  <p class="fine">inZONE couvre les terrains privés et les terrains situés en zone industrielle publique.</p>
+  <div class="btns"><a class="pill" href="#demo">Faire analyser un terrain</a><a class="pill o" href="#offres">Voir les tarifs</a></div>
+  <div class="stage">
+    <div class="fiche"><small>Fiche du 9 octobre 2026 · Exemple</small><b class="t">Grand-Bassam, 6 hectares</b>
+      <div class="kp num"><div><b>6 ha</b><span>annoncés libres</span></div><div><b>60 000</b><span>FCFA par m², annoncé</span></div><div><b>35 min</b><span>de l'aéroport</span></div><div><b>1 h 11</b><span>du port</span></div></div>
     </div>
-  </header>
-
-  <div class="strip"><div class="strip-in"><b>Sources recoupées</b><span>SOGEDI</span><span>Fraternité Matin fév. 2026</span><span>Bilan gouv. nov. 2025</span><span>Abidjan.net déc. 2025</span><span>Afrik Soir mars 2026</span></div></div>
-
-  <!-- PRODUIT -->
-  <section id="produit" class="sec">
-    <div class="sec-head">
-      <span class="eyebrow">Produit</span>
-      <h2>Un seul outil pour écarter les mauvais terrains.</h2>
-      <p>Un lot attribué n'est pas un lot occupé. inZONE vous donne l'état réel avant visite.</p>
-    </div>
-    <div class="grid4">
-      <div class="card reveal"><h3>Zones</h3><p>13 zones publiques : superficies, hectares attribués, état d'avancement.</p><span class="n">Ex. PK24 : 1 000 ha, 284 ha attribués</span></div>
-      <div class="card reveal"><h3>Fiches terrain</h3><p>Public + privé. Accès, sol, riverains, prix vendeur, lecture inZONE.</p><span class="n">Ex. Grand-Bassam 6 ha, Attinguié 8,46 ha</span></div>
-      <div class="card dark reveal"><h3>Vérification premium</h3><p>CIE, SODECI, urbanisme + constat sur site. 1 à 3 semaines.</p><span class="n">Localisation exacte + risques</span></div>
-      <div class="card reveal"><h3>Veille mensuelle</h3><p>Lots, prix, travaux, textes. Bulletin n°0 oct. 2026 en accès libre.</p><span class="n">Ex. Y4 Anyama ouverte, 13 km</span></div>
-    </div>
-  </section>
-
-  <!-- METHODE -->
-  <section id="methode" class="sec">
-    <div class="sec-head"><span class="eyebrow">Méthode</span><h2>En 3 étapes, sans vous déplacer.</h2></div>
-    <div class="steps">
-      <div class="step reveal"><h3>Décrivez le besoin</h3><p>Surface, activité, calendrier. Réponse avec périmètre et délai.</p></div>
-      <div class="step reveal"><h3>Recevez la fiche 24–48h</h3><p>Analyse à distance : satellite, documents vendeur, sources publiques.</p></div>
-      <div class="step reveal"><h3>Vérifiez avant d'acheter</h3><p>Si go : premium sur site + organismes. Le juridique reste au notaire.</p></div>
-    </div>
-  </section>
-
-  <!-- FICHE EXEMPLE -->
-  <section id="fiche" class="sec">
-    <div class="sec-head"><span class="eyebrow">Exemple réel</span><h2>Fiche INZ-GBA-001 : Grand-Bassam, 6 ha.</h2><p>Analyse standard du 9 octobre 2026. Notre lecture : adapté à la logistique et à l'industrie légère.</p></div>
-    <div class="fiche">
-      <div class="fiche-left">
-        <div class="stats"><div><b>35 min</b><span>Aéroport, 24,7 km</span></div><div><b>1,5 km</b><span>Autoroute au minimum</span></div><div><b>60 000 FCFA/m²</b><span>Prix annoncé vendeur</span></div></div>
-        <div class="alert"><strong>Limite claire :</strong> analyse à distance, points à confirmer non vérifiés sur site. Ne constitue pas une vérification juridique du titre.</div>
-        <div><a class="btn btn-dark" href="#demo" data-niveau="Analyse standard d'un nouveau terrain">Vérifier ce terrain</a></div>
-      </div>
-      <div class="fiche-right">
-        <div class="frow"><h4>Riverains au contact</h4><p>Maisons au nord de la partie libre.</p><span>Vigilance 1</span></div>
-        <div class="frow"><h4>Sol bas et sableux</h4><p>Étude de sol et remblai à prévoir.</p><span>Vigilance 2</span></div>
-        <div class="frow"><h4>Port à plus d'une heure</h4><p>Coût si fort trafic conteneurs.</p><span>Vigilance 3</span></div>
-        <div class="frow"><h4>Accès en terre</h4><p>Voie non bitumée, piste traversante.</p><span>Vigilance 4</span></div>
-        <div class="frow"><h4>Mention « zone industrielle » non établie</h4><p>Aucun classement officiel trouvé.</p><span>Vigilance 5</span></div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ZONES + VEILLE condensées -->
-  <section class="sec">
-    <div class="sec-head"><span class="eyebrow">Couverture</span><h2>7 zones suivies, veille datée.</h2><p>PK24, Yamoussoukro 750 ha, Yopougon 469 ha, PEIA 431 ha, Koumassi/Vridi, Korhogo 28,7 ha, Attinguié PK31.</p></div>
-    <div class="grid3">
-      <div class="card reveal"><h3>PK24 Akoupé-Zeudji</h3><p>1 000 ha. 284,1 ha attribués, 173 entreprises dont 67 en activité.</p><span class="n">En exploitation — fév. 2026</span></div>
-      <div class="card reveal"><h3>Yamoussoukro</h3><p>750 ha. Tranche 250 ha occupée à 60 %. + 70 ha en aménagement.</p><span class="n">En extension — déc. 2025</span></div>
-      <div class="card reveal"><h3>Veille récente</h3><p>Biochar Attinguié juin 2026 · Y4 Anyama 13 km fév. 2026 · 1 450 ha / 370 Mds FCFA mars 2026.</p><span class="n">Bulletin mensuel</span></div>
-    </div>
-  </section>
-
-  <!-- TARIFS -->
-  <section id="tarifs" class="sec">
-    <div class="sec-head"><span class="eyebrow">Tarifs</span><h2>Simple, par besoin.</h2><p>Commencez par une fiche, vérifiez si le terrain mérite un déplacement.</p></div>
-    <div class="grid3">
-      <div class="price reveal"><h3>Analyse Standard</h3><div class="p">Prix fixe <small>/ terrain</small></div><ul><li>Fiche complète 24–48h</li><li>Accès, sol, prix, lecture</li><li>Livraison espace client</li></ul><a class="btn btn-light" href="#demo" data-niveau="Analyse standard d'un nouveau terrain">Commander</a></div>
-      <div class="price hl reveal"><h3>Vérification Premium</h3><div class="p">Sur devis <small>/ terrain</small></div><ul><li>CIE, SODECI, urbanisme</li><li>Constat sur site + localisation exacte</li><li>1 à 3 semaines</li></ul><a class="btn btn-white" href="#demo" data-niveau="Vérification premium d'un terrain">Vérifier un terrain</a></div>
-      <div class="price reveal"><h3>Veille + Sur-mesure</h3><div class="p">Abonnement <small>· dès 2 300 € mission</small></div><ul><li>Bulletin mensuel lots / prix / textes</li><li>Recherche site, étude implantation</li><li>Notaire partenaire si besoin</li></ul><a class="btn btn-light" href="#demo" data-niveau="Abonnement à la veille">Recevoir la veille</a></div>
-    </div>
-  </section>
-
-  <!-- FAQ -->
-  <section id="faq" class="sec faq">
-    <div class="sec-head"><span class="eyebrow">FAQ</span><h2>Questions fréquentes.</h2></div>
-    <details open><summary>Remplacez-vous le notaire ?</summary><p>Non. Nous vérifions le factuel (réseaux, urbanisme, site). La vérification juridique du titre relève du notaire de l'acquéreur.</p></details>
-    <details><summary>Quel délai ?</summary><p>Standard : 24–48h à distance. Premium : 1 à 3 semaines par terrain avec déplacements et organismes.</p></details>
-    <details><summary>Quelles zones couvrez-vous ?</summary><p>13 zones publiques recensées + terrains privés (Grand-Bassam, Attinguié, Anyama…). Devis pour autre localisation.</p></details>
-    <details><summary>D'où viennent les chiffres ?</summary><p>SOGEDI, presse 2025–2026, bilans officiels. Chaque fiche cite ses sources et distingue attribué vs occupé.</p></details>
-    <details><summary>Comment démarrer ?</summary><p>Formulaire ci-dessous : surface, activité, calendrier. Réponse avec périmètre et délai.</p></details>
-  </section>
-
-  <!-- DEMO -->
-  <section id="demo" class="sec">
-    <div class="demo">
-      <div class="demo-left">
-        <span class="eyebrow">Démo</span>
-        <h2>Demander une démo.</h2>
-        <p>Indiquez votre besoin. Contact direct : <a href="mailto:contact@africand.com">contact@africand.com</a> — Abidjan, Africand Consulting.</p>
-      </div>
-      <form id="demo-form" novalidate>
-        <div><label>Nom complet*<input name="nom" autocomplete="name" required /></label></div>
-        <div><label>Société<input name="societe" autocomplete="organization" /></label></div>
-        <div><label>Email*<input name="email" type="email" autocomplete="email" required /></label></div>
-        <div><label>Pays<input name="pays" value="Côte d'Ivoire" autocomplete="country-name" /></label></div>
-        <div class="full"><label>Niveau souhaité<select id="f-niv" name="niveau"><option>Démonstration de la plateforme</option><option>Analyse standard d'un nouveau terrain</option><option>Vérification premium d'un terrain</option><option>Abonnement à la veille</option><option>Mission sur mesure</option></select></label></div>
-        <div class="full"><label>Projet<textarea name="projet" rows="3" placeholder="Surface, activité, calendrier"></textarea></label></div>
-        <p id="f-err" class="full err" role="alert" hidden>Indiquez votre nom et un email valide.</p>
-        <p id="f-ok" class="full ok" role="status" hidden>Demande préparée (démo : non envoyée). Écrivez à <a href="mailto:contact@africand.com">contact@africand.com</a>.</p>
-        <div class="full"><button class="btn btn-dark" type="submit">Envoyer la demande</button></div>
-      </form>
-    </div>
-  </section>
-</main>
-
-<footer class="wrap">
-  <div class="foot">
-    <div><span style="font-size:22px;font-weight:800">inZONE</span><p style="font-size:13px;color:#d6d3d1;max-width:46ch;margin-top:8px">Un service d'Africand Consulting. Démo : comptes, paiement et envoi non actifs.</p></div>
-    <nav aria-label="Pied de page"><a href="#produit">Produit</a><a href="#methode">Méthode</a><a href="#tarifs">Tarifs</a><a href="#demo">Démo</a><a href="inzone-espace-client.html">Espace client</a><a href="mailto:contact@africand.com">Contact</a></nav>
-    <p class="rule">Ni pour ni contre le vendeur. Chaque affirmation recoupée cadastre + satellite + sources publiques.</p>
   </div>
-</footer>
+</section>
+
+<section class="hero s" id="verification">
+  <h2>Vérification premium</h2>
+  <div class="stage" style="min-height:0"><div class="dials" aria-hidden="true">
+    <div class="dial"><svg viewBox="0 0 120 120"><circle cx="60" cy="60" r="50" fill="none" stroke="#2c2c2e" stroke-width="10"/><circle cx="60" cy="60" r="50" fill="none" stroke="#2997ff" stroke-width="10" stroke-linecap="round" stroke-dasharray="209.4 314.2" transform="rotate(-90 60 60)"/><text x="60" y="70" text-anchor="middle" font-size="30" font-weight="600" fill="#f5f5f7" font-family="Inter,sans-serif">4/6</text></svg><span>Étape en cours</span></div>
+    <div class="dial"><b>CIE</b><span>Électricité</span><b style="margin-top:8px">SODECI</b><span>Eau</span><b style="margin-top:8px">Sur site</b><span>Constat</span></div>
+  </div></div>
+  <p class="sub" style="font-size:clamp(19px,2.2vw,26px);margin-top:0">Chaque point confirmé à la source, puis sur site.</p>
+  <p class="fine">2 000 € par terrain, incluses dans la formule Veille Pro selon votre durée d'engagement. Due que la vente se fasse ou non : indépendante de la vente, elle confirme sur place et auprès des organismes ce que l'analyse à distance ne fait que signaler.</p>
+  <div class="btns" style="padding-bottom:52px"><a class="pill" href="#demo">Demander une vérification</a><a class="pill o" href="#offres">Délais et tarifs</a></div>
+</section>
+
+<section class="hero g offres" id="offres">
+  <h2>Nos offres</h2>
+  <p class="sub">Abonnement à partir de 6 mois.</p>
+  <div class="offres-toggle" role="group" aria-label="Durée d'engagement">
+    <button type="button" data-duree="6" aria-pressed="true">6 mois</button>
+    <button type="button" data-duree="12" aria-pressed="false">12 mois<span class="offres-badge">2 mois offerts</span></button>
+  </div>
+  <div class="plans" id="plans"></div>
+  <p class="offres-note" id="offres-transp"></p>
+</section>
+
+<section class="grid" id="tuiles" aria-label="Offre inZONE">
+  <article class="tile k sm"><h3>Veille mensuelle</h3><p>Ce qui bouge autour de vos terrains.</p><div class="btns"><a class="pill" href="#veille">En savoir plus</a></div>
+    <div class="art"><div class="panel"><div class="rowl"><span>Attinguié : usine de biochar inaugurée au PK31</span><em>Juin 2026</em></div><div class="rowl"><span>Y4 : section Anyama-autoroute du Nord ouverte</span><em>Février 2026</em></div><div class="rowl"><span>Yamoussoukro : 70 ha en aménagement</span><em>Décembre 2025</em></div></div></div></article>
+  <article class="tile s sm"><h3>Zones publiques</h3><p>Un lot attribué n'est pas un lot occupé.</p><div class="btns"><a class="pill" href="#demo">Suivre une zone</a></div>
+    <div class="art"><div class="panel"><small style="font-size:12px;color:var(--mute)">Akoupé-Zeudji PK24 · 1 000 ha</small><div class="bar" style="margin-top:10px" role="img" aria-label="284,1 hectares attribués, 138,9 aménagés non attribués, 577 non aménagés"><i style="flex:284.1;background:#0071e3"></i><i style="flex:138.9;background:#6e6e73"></i><i style="flex:577;background:#d2d2d7"></i></div><div class="rowl zrow num" style="border:0;padding-bottom:0"><span><b>284,1 ha</b> attribués</span><em>138,9 ha aménagés · 577 ha non aménagés</em></div></div></div></article>
+  <article class="tile s sm"><h3>Espace client</h3><p>Vos dossiers, en un coup d'œil.</p><div class="btns"><a class="pill" href="inzone-espace-client.html">Se connecter</a></div>
+    <div class="art"><div class="panel"><div class="kp num" style="grid-template-columns:repeat(2,minmax(0,1fr));margin:0"><div><b>20,46 ha</b><span>Surface suivie</span></div><div><b>3</b><span>Terrains suivis</span></div><div><b>1</b><span>Vérification en cours</span></div><div><b>4</b><span>Alertes non lues</span></div></div></div></div></article>
+  <article class="tile sm"><h3>Mission sur mesure</h3><p>Recherche de site et risques de litige, sur devis.</p><div class="btns"><a class="pill" href="#demo">Nous consulter</a></div>
+    <div class="art"><div class="panel"><div class="rowl"><span>Votre demande</span><em>Terrain et niveau</em></div><div class="rowl"><span>Notre proposition</span><em>Périmètre, délai, prix</em></div><div class="rowl"><span>Les vérifications</span><em>Point par point</em></div><div class="rowl"><span>Rapport et restitution</span><em>Sources citées</em></div></div></div></article>
+  <article class="tile sm"><h3>Suivi en ligne</h3><p>De la demande à l'entretien de restitution.</p><div class="btns"><a class="pill" href="#demo">En savoir plus</a></div>
+    <div class="art" style="max-width:240px;padding-bottom:40px"><svg viewBox="0 0 120 120" role="img" aria-label="Exemple : étape 4 sur 6"><circle cx="60" cy="60" r="50" fill="none" stroke="#d2d2d7" stroke-width="12"/><circle cx="60" cy="60" r="50" fill="none" stroke="#0071e3" stroke-width="12" stroke-linecap="round" stroke-dasharray="209.4 314.2" transform="rotate(-90 60 60)"/><text x="60" y="70" text-anchor="middle" font-size="30" font-weight="600" fill="#1d1d1f" font-family="Inter,sans-serif">4/6</text></svg></div></article>
+  <article class="tile sm"><h3>Paiement en ligne</h3><p>Mobile Money, carte locale ou carte internationale.</p><div class="btns"><a class="pill" href="#demo">En savoir plus</a><a class="pill o" href="#demo">Virement</a></div>
+    <div class="art"><div class="card" aria-hidden="true"><svg viewBox="0 0 42 34"><polygon points="12,0 30,0 33.2,3.2 15.2,3.2"/><polygon points="14.6,5.6 32.6,5.6 35.8,8.8 17.8,8.8"/><polygon points="17.2,11.2 35.2,11.2 38.4,14.4 20.4,14.4"/><polygon points="3.2,16.8 21.2,16.8 24.4,20 6.4,20"/><polygon points="5.8,22.4 23.8,22.4 27,25.6 9,25.6"/><polygon points="8.4,28 26.4,28 29.6,31.2 11.6,31.2"/></svg><span style="font-size:13px;color:var(--mute)">Investisseur</span></div></div></article>
+</section>
+
+<section class="show" id="veille">
+  <h2>La veille, sans relâche.</h2>
+  <div class="rail" id="rail" tabindex="0" aria-label="Extraits du bulletin de veille">
+    <article class="slide"><span class="big" aria-hidden="true">PK31</span><small>Attinguié · Juin 2026</small><b>Une usine de biochar inaugurée au PK31</b><span class="d">20 000 tonnes de coques de cajou par an. La zone se confirme comme pôle industriel.</span></article>
+    <article class="slide"><span class="big" aria-hidden="true">PK24</span><small>Akoupé-Zeudji · Février 2026</small><b>284 hectares attribués, 67 entreprises en activité</b><span class="d">367 lots distribués à 173 entreprises, dont 106 n'ont pas démarré.</span></article>
+    <article class="slide"><span class="big" aria-hidden="true">Y4</span><small>Grand Abidjan · Février 2026</small><b>La section Anyama-autoroute du Nord ouverte</b><span class="d">13 km en service. La section vers Songon était annoncée à plus de 90 % fin 2025.</span></article>
+  </div>
+  <div class="ctl"><button type="button" id="prev" aria-label="Extrait précédent">‹</button><button type="button" id="next" aria-label="Extrait suivant">›</button></div>
+  <div class="dots" id="dots" aria-hidden="true"><i class="on"></i><i></i><i></i></div>
+</section>
+
+<section class="demo" id="demo"><div class="in">
+  <h2>Demandez une démo.</h2>
+  <p class="sub">Un compte d'essai pour explorer l'espace client avec des données d'exemple.</p>
+  <form id="demo-form" novalidate>
+    <div class="fld"><label for="d-nom">Nom complet</label><input id="d-nom" name="nom" type="text" autocomplete="name" required><span class="err">Indiquez votre nom complet.</span></div>
+    <div class="fld"><label for="d-soc">Société</label><input id="d-soc" name="societe" type="text" autocomplete="organization" required><span class="err">Indiquez le nom de votre société.</span></div>
+    <div class="fld"><label for="d-mail">Adresse électronique</label><input id="d-mail" name="email" type="email" autocomplete="email" inputmode="email" required><span class="err">Saisissez une adresse valide, par exemple nom@societe.com.</span></div>
+    <div class="fld"><label for="d-pays">Pays</label><input id="d-pays" name="pays" type="text" autocomplete="country-name" required><span class="err">Indiquez votre pays.</span></div>
+    <div class="fld"><label for="d-sect">Secteur d'activité <i>(facultatif)</i></label><select id="d-sect" name="secteur"><option value="">Choisir</option><option>Logistique et entreposage</option><option>Agro-industrie</option><option>Industrie légère</option><option>Matériaux de construction</option></select></div>
+    <div class="fld"><label for="d-surf">Surface recherchée <i>(facultatif)</i></label><select id="d-surf" name="surface"><option value="">Choisir</option><option>Moins de 2 ha</option><option>2 à 10 ha</option><option>Plus de 10 ha</option></select></div>
+    <div class="fld w"><label for="d-msg">Précisions <i>(facultatif)</i></label><textarea id="d-msg" name="precisions"></textarea></div>
+    <div class="act"><button class="pill" type="submit">Demander ma démo</button><span class="hint">Vous recevez une réponse avant tout engagement.</span></div>
+    <div class="done" id="demo-done" role="status" hidden></div>
+  </form>
+</div></section>
+
+<footer><div class="in">
+  <p style="padding:12px 0;border-bottom:1px solid var(--line)">Les chiffres d'espace client et de fiche affichés sur cette page proviennent d'un compte d'exemple. Surfaces et prix selon les vendeurs.</p>
+  <div class="cols">
+    <div><b>Offre</b><a href="#analyse">Analyse standard</a><a href="#verification">Vérification premium</a><a href="#veille">Veille mensuelle</a><a href="#tuiles">Mission sur mesure</a></div>
+    <div><b>Espace client</b><a href="inzone-espace-client.html">Tableau de bord</a><a href="inzone-espace-client.html">Mes terrains</a><a href="inzone-espace-client.html">Mes vérifications</a><a href="inzone-espace-client.html">Mes documents</a></div>
+    <div><b>Zones suivies</b><a href="#tuiles">Akoupé-Zeudji PK24</a><a href="#tuiles">Attinguié PK31</a></div>
+    <div><b>Paiement</b><a href="#tuiles">Mobile Money</a><a href="#tuiles">Carte locale</a><a href="#tuiles">Carte internationale</a><a href="#tuiles">Virement</a></div>
+    <div><b>Compte démo</b><a href="#demo">Demander une démo</a></div>
+  </div>
+  <div class="legal"><span>© 2026 inZONE, un service de Africand Consulting. Foncier industriel en Côte d'Ivoire.</span><span class="ls"><button type="button" class="lnk" data-pol>Politique de confidentialité</button><button type="button" class="lnk" data-ck>Gérer les cookies</button><a class="lnk" href="inzone-admin.html">Admin</a><span>Côte d'Ivoire</span></span></div>
+</div></footer>
 
 <script>
+(function(){var r=document.getElementById('rail');function go(d){var s=r.querySelector('.slide');r.scrollBy({left:d*(s.offsetWidth+12),behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'})}
+var p=document.getElementById('prev'),n=document.getElementById('next'),dots=[].slice.call(document.getElementById('dots').children),sl=[].slice.call(r.querySelectorAll('.slide'));
+p.addEventListener('click',function(){go(-1)});n.addEventListener('click',function(){go(1)});
+function sync(){var c=r.scrollLeft+r.clientWidth/2,best=0,bd=1e9;sl.forEach(function(e,i){var d=Math.abs(e.offsetLeft+e.offsetWidth/2-c);if(d<bd){bd=d;best=i}});dots.forEach(function(d,i){d.classList.toggle('on',i===best)});p.disabled=best===0;n.disabled=best===sl.length-1}
+r.addEventListener('scroll',function(){requestAnimationFrame(sync)},{passive:true});sync()})();
+</script>
+<script>
+(function(){if(!('IntersectionObserver' in window)||matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+var els=document.querySelectorAll('.hero>h1,.hero>h2,.hero>.sub,.hero>.fine,.hero>.btns,.hero>.stage,.tile,.show h2,.slide,footer .in');
+var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}})},{threshold:.12,rootMargin:'0px 0px -6% 0px'});
+[].forEach.call(els,function(el,i){el.classList.add('fx');el.style.transitionDelay=(i%4)*70+'ms';io.observe(el)});})();
+</script>
+<script>
 (function(){
-  var nav=document.getElementById('nav'),b=document.getElementById('burger');
-  b.addEventListener('click',function(){var o=nav.classList.toggle('open');b.setAttribute('aria-expanded',o);b.textContent=o?'✕':'☰';});
-  nav.querySelectorAll('a').forEach(function(a){a.addEventListener('click',function(){nav.classList.remove('open');});});
-  document.addEventListener('click',function(e){var a=e.target.closest('a[data-niveau]');if(a){document.getElementById('f-niv').value=a.dataset.niveau;}});
-  var f=document.getElementById('demo-form');
-  f.addEventListener('submit',function(e){e.preventDefault();
-    var okN=f.nom.value.trim().length>1,okM=/^[^@ ]+@[^@ ]+\.[^@ ]+$/.test(f.email.value.trim());
-    document.getElementById('f-err').hidden=okN&&okM;
-    if(!(okN&&okM)){document.getElementById('f-ok').hidden=true;if(!okN)f.nom.focus();else f.email.focus();return;}
-    fetch('http://localhost:8001/api/demandes',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:f.nom.value.trim(),email:f.email.value.trim(),objet:(f.societe.value.trim()+' '+f.pays.value.trim()).trim(),niveau:f.niveau.value,message:f.projet.value.trim()})}).then(function(r){if(!r.ok)throw 0;return r.json()}).then(function(d){var ok=document.getElementById('f-ok');ok.hidden=false;ok.textContent='Demande n° '+d.id+' bien reçue. Nous revenons vers vous avec un périmètre et un délai.';f.reset()}).catch(function(){document.getElementById('f-ok').hidden=false;});});
-  var io=new IntersectionObserver(function(es){es.forEach(function(x){if(x.isIntersecting){x.target.classList.add('in');io.unobserve(x.target);}});},{threshold:.12});
-  document.querySelectorAll('.reveal').forEach(function(el){io.observe(el);});
+  function API(){try{return localStorage.getItem('inz-api')||'http://localhost:8001'}catch(_){return'http://localhost:8001'}}
+  var EUR_XOF=655.957;
+  function fmtEur(v){return Math.round(v).toLocaleString('fr-FR')+' € HT'}
+  function fmtFcfa(v){return Math.round(v*EUR_XOF).toLocaleString('fr-FR')+' FCFA'}
+  var toggle=document.querySelector('.offres-toggle'),plansEl=document.getElementById('plans'),
+      note=document.getElementById('offres-transp'),tarifs=null;
+  if(note&&window.LEGAL)note.textContent=LEGAL.TRANSPARENCE;
+  function render(duree){
+    if(!tarifs||!plansEl)return;
+    var vp=tarifs.plans['Veille|'+duree],vpp=tarifs.plans['Veille Pro|'+duree],
+        vInc=tarifs.verifs_incluses['Veille Pro|'+duree]||0;
+    plansEl.innerHTML=
+      '<div class="plan"><h3>Veille</h3><p class="prix">'+fmtEur(vp)+'</p><p class="fcfa">≈ '+fmtFcfa(vp)+'</p>'+
+      '<ul><li>Toutes les fiches analysées</li><li>Alerte hebdomadaire sur les nouveaux terrains</li>'+
+      '<li>Note de veille mensuelle</li><li>Base des terrains vendus</li>'+
+      '<li>Mise en relation avec les propriétaires</li></ul>'+
+      '<a class="pill o" href="inzone-espace-client.html">S’abonner</a></div>'+
+      '<div class="plan pro"><h3>Veille Pro</h3><p class="prix">'+fmtEur(vpp)+'</p><p class="fcfa">≈ '+fmtFcfa(vpp)+'</p>'+
+      '<ul><li>Tout le contenu de la formule Veille</li>'+
+      '<li>Vérifications sur site incluses : '+vInc+' sur '+duree+' mois</li>'+
+      '<li>Recherche selon vos critères</li></ul>'+
+      '<a class="pill" href="inzone-espace-client.html">S’abonner</a></div>'+
+      '<div class="plan"><h3>Sur mesure</h3><p class="prix">À partir de '+fmtEur(10000)+'</p>'+
+      '<p class="fcfa">par an, sur devis</p>'+
+      '<ul><li>Mandat de recherche dédié</li><li>Interlocuteur attitré</li>'+
+      '<li>Rapport de synthèse</li></ul>'+
+      '<a class="pill o" href="#demo">Nous consulter</a></div>';
+  }
+  if(toggle)toggle.addEventListener('click',function(e){
+    var b=e.target.closest('button');if(!b)return;
+    [].forEach.call(toggle.querySelectorAll('button'),function(x){x.setAttribute('aria-pressed',String(x===b))});
+    render(b.dataset.duree);
+  });
+  fetch(API()+'/api/abonnements/tarifs').then(function(r){return r.json()})
+    .then(function(j){tarifs=j;render('6')}).catch(function(){});
+  var ENDPOINT=API()+'/api/demandes';
+  var f=document.getElementById('demo-form'),done=document.getElementById('demo-done');
+  function check(el){var bad=!el.checkValidity(),box=el.closest('.fld'),e=box.querySelector('.err');box.classList.toggle('bad',bad);el.setAttribute('aria-invalid',bad);return !bad}
+  [].forEach.call(f.querySelectorAll('[required]'),function(el){el.addEventListener('blur',function(){check(el)})});
+  f.addEventListener('submit',function(ev){ev.preventDefault();
+    var req=[].slice.call(f.querySelectorAll('[required]')),bad=req.filter(function(el){return !check(el)});
+    if(bad.length){bad[0].focus();return}
+    var data={};[].forEach.call(f.elements,function(el){if(el.name)data[el.name]=el.value.trim()});
+    var btn=f.querySelector('button');
+    function show(t,m){done.innerHTML='';var b=document.createElement('b');b.textContent=t;done.appendChild(b);done.appendChild(document.createTextNode(m));done.hidden=false}
+    var payload={
+      name:data.nom,
+      email:data.email,
+      objet:data.societe||'',
+      niveau:'Demande de démo'+(data.surface?' — '+data.surface:''),
+      message:['Pays : '+data.pays,data.secteur?'Secteur : '+data.secteur:'',data.precisions].filter(Boolean).join('. ')
+    };
+    btn.disabled=true;btn.textContent='Envoi en cours…';
+    fetch(ENDPOINT,{method:'POST',headers:{'Content-Type':'application/json','Accept':'application/json'},body:JSON.stringify(payload)})
+      .then(function(r){if(!r.ok)throw 0;f.reset();show('Demande envoyée','Merci '+data.nom+'. Nous revenons vers vous à l\u2019adresse '+data.email+'.')})
+      .catch(function(){show('Envoi impossible','Vérifiez votre connexion puis réessayez. Vos informations sont conservées dans le formulaire.')})
+      .then(function(){btn.disabled=false;btn.textContent='Demander ma démo'});
+  });
+})();
+</script>
+<script>
+(function(){var v=document.getElementById('bgv');if(!v)return;
+if(matchMedia('(prefers-reduced-motion: reduce)').matches){v.removeAttribute('autoplay');v.pause();return}
+v.addEventListener('error',function(){v.hidden=true});
+if('IntersectionObserver' in window){new IntersectionObserver(function(e){if(e[0].isIntersecting){var p=v.play();if(p&&p.catch)p.catch(function(){})}else v.pause()}).observe(v)}})();
+</script>
+<div class="ck" id="ck" role="region" aria-label="Cookies" hidden>
+  <svg viewBox="0 0 120 120" aria-hidden="true"><defs><mask id="bite"><rect width="120" height="120" fill="#fff"/><circle cx="96" cy="22" r="19" fill="#000"/><circle cx="110" cy="48" r="9" fill="#000"/></mask></defs><g mask="url(#bite)"><circle cx="60" cy="62" r="52" fill="#b9793a"/><circle cx="58" cy="59" r="50" fill="#dba25c"/><circle cx="50" cy="50" r="38" fill="#e7b672" opacity=".55"/><ellipse cx="38" cy="44" rx="10" ry="9" fill="#5a3216"/><ellipse cx="70" cy="50" rx="8" ry="7.5" fill="#6b3d1c"/><ellipse cx="52" cy="78" rx="11" ry="9.5" fill="#5a3216"/><ellipse cx="84" cy="80" rx="8" ry="7" fill="#6b3d1c"/><ellipse cx="26" cy="72" rx="6.5" ry="6" fill="#6b3d1c"/><ellipse cx="62" cy="26" rx="6" ry="5.5" fill="#5a3216"/><ellipse cx="35" cy="41" rx="3" ry="2" fill="#8a5a33"/><ellipse cx="49" cy="75" rx="3.4" ry="2.2" fill="#8a5a33"/><circle cx="76" cy="66" r="2" fill="#b9793a"/><circle cx="40" cy="62" r="1.8" fill="#b9793a"/><circle cx="66" cy="94" r="2" fill="#b9793a"/><circle cx="90" cy="60" r="1.6" fill="#b9793a"/></g><circle cx="108" cy="14" r="3" fill="#dba25c"/><circle cx="114" cy="30" r="2" fill="#b9793a"/></svg>
+  <div><b>Un cookie ?</b><p>Ce site utilise les cookies nécessaires à son fonctionnement. La mesure d'audience n'est activée qu'avec votre accord. <button type="button" class="lnk" style="padding:0;min-height:0;color:var(--blue)" data-pol>Politique de confidentialité</button></p></div>
+  <div class="bt"><button type="button" class="pill" id="ck-yes">Tout accepter</button><button type="button" class="pill o" id="ck-no">Refuser</button></div>
+</div>
+
+<dialog class="pol" id="pol" aria-labelledby="pol-t">
+  <div class="hd"><h2 id="pol-t">Politique de confidentialité</h2><button type="button" class="x" id="pol-x" aria-label="Fermer">×</button></div>
+  <div class="bd">
+    <p class="maj">Dernière mise à jour : 10 octobre 2026</p>
+    <h3>1. Qui traite vos données</h3>
+    <p>inZONE est un service de Africand Consulting, établi à Abidjan, Côte d'Ivoire. Africand Consulting est responsable du traitement des données collectées sur ce site.</p>
+    <h3>2. Les données que nous collectons</h3>
+    <ul><li>Les informations que vous saisissez dans le formulaire de demande de démo : nom complet, société, adresse électronique, pays et, si vous les indiquez, secteur d'activité, surface recherchée et précisions.</li><li>Votre choix concernant les cookies, enregistré dans votre navigateur.</li><li>Les données techniques transmises par votre navigateur lors de l'affichage du site, comme l'adresse IP.</li></ul>
+    <h3>3. Pourquoi nous les utilisons</h3>
+    <ul><li>Répondre à votre demande de démo et ouvrir un compte d'essai.</li><li>Vous recontacter au sujet des services inZONE que vous avez demandés.</li><li>Assurer le fonctionnement et la sécurité du site.</li></ul>
+    <p>Nous n'utilisons pas vos données pour de la prospection sans lien avec votre demande.</p>
+    <h3>4. Sur quelle base</h3>
+    <p>Les données du formulaire sont traitées à votre demande, pour y répondre. La mesure d'audience repose sur votre consentement, que vous pouvez retirer à tout moment.</p>
+    <h3>5. Qui y a accès</h3>
+    <p>Vos données sont destinées aux équipes de Africand Consulting chargées d'inZONE. Elles ne sont ni vendues ni louées. Des prestataires techniques interviennent pour le compte du site : l'hébergeur, Google Fonts pour les polices et Pexels pour la vidéo d'accueil. Ces services reçoivent les données techniques nécessaires à l'affichage, dont votre adresse IP.</p>
+    <h3>6. Combien de temps nous les conservons</h3>
+    <p>Les demandes de démo sont conservées pendant [durée à préciser], puis supprimées si aucune relation commerciale n'a suivi. Votre choix sur les cookies est conservé dans votre navigateur jusqu'à ce que vous le modifiiez ou l'effaciez.</p>
+    <h3>7. Vos droits</h3>
+    <p>Conformément à la loi ivoirienne n° 2013-450 du 19 juin 2013 relative à la protection des données à caractère personnel, vous pouvez demander l'accès à vos données, leur rectification ou leur suppression, et vous opposer à leur traitement. Vous pouvez aussi saisir l'Autorité de Régulation des Télécommunications de Côte d'Ivoire (ARTCI).</p>
+    <h3>8. Cookies</h3>
+    <p>Le site enregistre uniquement votre choix sur les cookies, ce qui est nécessaire à son fonctionnement. Aucun outil de mesure d'audience ni cookie publicitaire n'est déposé sans votre accord. Vous pouvez modifier votre choix à tout moment avec le lien « Gérer les cookies » en bas de page.</p>
+    <h3>9. Nous contacter</h3>
+    <p>Pour toute question ou pour exercer vos droits, écrivez-nous à jeaneliengoran@africandconsulting.com.</p>
+  </div>
+</dialog>
+<script>
+(function(){
+  var KEY='inzone-cookies',ck=document.getElementById('ck'),pol=document.getElementById('pol');
+  function get(){try{return localStorage.getItem(KEY)}catch(e){return null}}
+  function set(v){try{localStorage.setItem(KEY,v)}catch(e){}window.inzoneConsent=v;ck.hidden=true}
+  window.inzoneConsent=get();
+  if(!window.inzoneConsent)ck.hidden=false;
+  document.getElementById('ck-yes').addEventListener('click',function(){set('accepte')});
+  document.getElementById('ck-no').addEventListener('click',function(){set('refuse')});
+  [].forEach.call(document.querySelectorAll('[data-pol]'),function(b){b.addEventListener('click',function(){if(pol.showModal)pol.showModal();else pol.setAttribute('open','')})});
+  [].forEach.call(document.querySelectorAll('[data-ck]'),function(b){b.addEventListener('click',function(){ck.hidden=false;document.getElementById('ck-yes').focus()})});
+  document.getElementById('pol-x').addEventListener('click',function(){pol.close()});
+  pol.addEventListener('click',function(e){if(e.target===pol)pol.close()});
+})();
+</script>
+<script>
+(function(){var hb=document.getElementById('hb'),mm=document.getElementById('mm'),nav=hb.closest('nav');
+function set(o){mm.hidden=!o;hb.setAttribute('aria-expanded',o);hb.setAttribute('aria-label',o?'Fermer le menu':'Ouvrir le menu')}
+hb.addEventListener('click',function(){set(mm.hidden)});
+mm.addEventListener('click',function(e){if(e.target.closest('a'))set(false)});
+nav.addEventListener('keydown',function(e){if(e.key==='Escape'&&!mm.hidden){set(false);hb.focus()}});
+document.addEventListener('click',function(e){if(!mm.hidden&&!nav.contains(e.target))set(false)});
 })();
 </script>
 </body>

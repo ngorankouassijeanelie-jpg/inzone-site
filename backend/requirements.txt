@@ -4,3 +4,4 @@ pyjwt
 python-multipart
 pytest
 httpx
+stripe

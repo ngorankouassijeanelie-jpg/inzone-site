@@ -28,7 +28,7 @@ def client(tmp_path_factory):
 
 @pytest.fixture(scope="module")
 def admin(client):
-    r = client.post("/api/login", json={"email": "contact@africand.com",
+    r = client.post("/api/login", json={"email": "jeaneliengoran@africandconsulting.com",
                                         "password": "demonstration"})
     assert r.status_code == 200
     return {"Authorization": "Bearer " + r.json()["token"]}
@@ -47,7 +47,7 @@ def test_health(client):
 
 
 def test_login_wrong(client):
-    r = client.post("/api/login", json={"email": "contact@africand.com",
+    r = client.post("/api/login", json={"email": "jeaneliengoran@africandconsulting.com",
                                         "password": "faux"})
     assert r.status_code == 401
 
@@ -143,6 +143,29 @@ def test_kml_contour(client, admin):
     assert client.delete(f"/api/terrains/{ref}", headers=admin).status_code == 200
 
 
+def test_documents_targeting(client, admin, user):
+    r = client.post("/api/terrains", json={"name": "T Doc Cible", "zone": "Z",
+                                           "status": "Annoncé"}, headers=admin)
+    ref = r.json()["ref"]
+    pdf = ("d.pdf", io.BytesIO(b"%PDF-1.4 " + b"0" * 50), "application/pdf")
+    r = client.post(f"/api/terrains/{ref}/documents", files={"file": pdf},
+                    data={"type": "Rapport", "client_email": "investisseur@exemple.ma"},
+                    headers=admin)
+    assert r.status_code == 201 and r.json()["client_email"] == "investisseur@exemple.ma"
+    did = r.json()["id"]
+    assert any(d["id"] == did for d in client.get("/api/documents", headers=user).json())
+    autre = client.post("/api/signup", json={"name": "Autre", "email": "autre@exemple.ci",
+                                             "password": "motdepasse1"}).json()
+    autre_hdr = {"Authorization": "Bearer " + autre["token"]}
+    assert not any(d["id"] == did for d in client.get("/api/documents", headers=autre_hdr).json())
+    assert any(d["id"] == did for d in client.get("/api/documents", headers=admin).json())
+    pdf2 = ("d2.pdf", io.BytesIO(b"%PDF-1.4 " + b"0" * 50), "application/pdf")
+    r = client.post(f"/api/terrains/{ref}/documents", files={"file": pdf2},
+                    data={"client_email": "inconnu@x.ci"}, headers=admin)
+    assert r.status_code == 422
+    assert client.delete(f"/api/terrains/{ref}", headers=admin).status_code == 200
+
+
 def test_demandes_flow(client, admin, user):
     r = client.post("/api/demandes", json={"name": "Cli", "email": "cli@exemple.ci",
                                            "objet": "X", "niveau": "Y"})
@@ -173,6 +196,41 @@ def test_factures_flow(client, admin, user):
     assert pdf.status_code == 200 and pdf.headers["content-type"] == "application/pdf"
     r = client.put(f"/api/factures/{fid}", json={"status": "Payée"}, headers=admin)
     assert r.json()["status"] == "Payée"
+
+
+def test_paiement_non_configure(client, admin, user):
+    r = client.post("/api/demandes", json={"name": "Investisseur exemple",
+                                           "email": "investisseur@exemple.ma",
+                                           "objet": "GBA paiement"})
+    did = r.json()["id"]
+    r = client.post("/api/factures", json={"demande_id": did, "montant": "2 300 000 FCFA",
+                                           "montant_xof": 2300000}, headers=admin)
+    fid = r.json()["id"]
+    assert client.post(f"/api/factures/{fid}/pay/cinetpay", headers=user).status_code == 503
+    assert client.post(f"/api/factures/{fid}/pay/stripe", headers=user).status_code == 503
+
+
+def test_paiement_guards(client, admin, user, monkeypatch):
+    monkeypatch.setenv("STRIPE_SECRET_KEY", "sk_test_dummy")
+    monkeypatch.setenv("CINETPAY_APIKEY", "dummy")
+    monkeypatch.setenv("CINETPAY_SITE_ID", "dummy")
+    r = client.post("/api/demandes", json={"name": "Investisseur exemple",
+                                           "email": "investisseur@exemple.ma",
+                                           "objet": "GBA paiement 2"})
+    did = r.json()["id"]
+    r = client.post("/api/factures", json={"demande_id": did, "montant": "100 €"},
+                    headers=admin)
+    fid = r.json()["id"]
+    # montant_xof non défini -> 422 avant tout appel réseau vers CinetPay/Stripe
+    assert client.post(f"/api/factures/{fid}/pay/stripe", headers=user).status_code == 422
+    assert client.post(f"/api/factures/{fid}/pay/cinetpay", headers=user).status_code == 422
+    r2 = client.post("/api/factures", json={"demande_id": did, "montant": "2 300 000 FCFA",
+                                            "montant_xof": 2300000}, headers=admin)
+    fid2 = r2.json()["id"]
+    signup = client.post("/api/signup", json={"name": "Intrus", "email": "intrus@exemple.ci",
+                                              "password": "motdepasse1"}).json()
+    intrus_hdr = {"Authorization": "Bearer " + signup["token"]}
+    assert client.post(f"/api/factures/{fid2}/pay/stripe", headers=intrus_hdr).status_code == 403
 
 
 def test_rubriques(client, admin):
@@ -209,3 +267,210 @@ def test_forgot_reset(client):
     assert r.status_code == 200
     assert client.post("/api/reset", json={"token": tok,
                                            "password": "autrepass1"}).status_code == 422
+
+
+def _activer_abonnement(formule="Veille", duree_mois=6, email="investisseur@exemple.ma"):
+    """Active un abonnement payé directement en base, sans passer par le paiement en ligne."""
+    import sqlite3
+    con = sqlite3.connect(api.DB)
+    incl = {("Veille", 6): 0, ("Veille", 12): 0,
+            ("Veille Pro", 6): 1, ("Veille Pro", 12): 2}[(formule, duree_mois)]
+    con.execute(
+        "INSERT INTO abonnements(client_email,formule,duree_mois,prix_eur,statut_paiement,"
+        "date_debut,date_fin,verifs_incluses_total,verifs_incluses_utilisees,created,updated)"
+        " VALUES(?,?,?,?,?,?,?,?,?,?,?)",
+        (email, formule, duree_mois, 1400, "Payé", "2026-10-01", "2099-01-01",
+         incl, 0, "2026-10-01T00:00:00+00:00", "2026-10-01T00:00:00+00:00"))
+    con.commit()
+    con.close()
+
+
+def test_terrain_public_whitelist(client, admin, user):
+    r = client.post("/api/terrains", json={"name": "T Verrou", "zone": "Z",
+                                           "status": "Annoncé", "gps": "5.3,-3.9"},
+                    headers=admin)
+    ref = r.json()["ref"]
+    client.put(f"/api/terrains/{ref}/commission",
+               json={"commission_signed": "oui", "commission_taux": 2,
+                     "commission_payeur": "Propriétaire"}, headers=admin)
+    liste = client.get("/api/terrains").json()
+    row = next(t for t in liste if t["ref"] == ref)
+    assert "gps" not in row and "commission_signed" not in row
+    detail = client.get(f"/api/terrains/{ref}").json()
+    assert detail["locked"] is True
+    assert "gps" not in detail and "description" not in detail and "commission_signed" not in detail
+    assert detail["point_cle"] == ""
+    client.put(f"/api/terrains/{ref}", json={"exemple": 1}, headers=admin)
+    detail = client.get(f"/api/terrains/{ref}").json()
+    assert detail["locked"] is False
+    assert "gps" not in detail and "commission_signed" not in detail
+    client.put(f"/api/terrains/{ref}", json={"exemple": 0}, headers=admin)
+    assert client.get(f"/api/terrains/{ref}", headers=user).json()["locked"] is True
+    _activer_abonnement(email="investisseur@exemple.ma")
+    assert client.get(f"/api/terrains/{ref}", headers=user).json()["locked"] is False
+    assert client.delete(f"/api/terrains/{ref}", headers=admin).status_code == 200
+
+
+def _hdr_pour(email, name="Test", role="client"):
+    """Jeton signé directement pour un compte de test, sans passer par signup/login
+    (qui sont tous deux limités en débit par IP et partagés entre les tests du module)."""
+    return {"Authorization": "Bearer " + api.make_token(
+        {"email": email, "role": role, "name": name})}
+
+
+def test_abonnement_flow(client, admin):
+    client.post("/api/users", json={"email": "abonne@exemple.ci", "password": "motdepasse1",
+                                    "name": "Abonne"}, headers=admin)
+    hdr = _hdr_pour("abonne@exemple.ci", "Abonne")
+    r = client.post("/api/abonnements", json={"formule": "Veille", "duree_mois": 6}, headers=hdr)
+    assert r.status_code == 201
+    fid = r.json()["facture_id"]
+    assert r.json()["prix_eur"] == 1400
+    assert client.get("/api/abonnements/moi", headers=hdr).json()["actif"] is None
+    assert client.put(f"/api/factures/{fid}", json={"status": "Payée"},
+                      headers=admin).status_code == 200
+    moi = client.get("/api/abonnements/moi", headers=hdr).json()
+    assert moi["actif"] is not None and moi["actif"]["statut_paiement"] == "Payé"
+    import sqlite3
+    con = sqlite3.connect(api.DB)
+    con.execute("UPDATE abonnements SET date_fin='2020-01-01' WHERE client_email='abonne@exemple.ci'")
+    con.commit()
+    con.close()
+    moi = client.get("/api/abonnements/moi", headers=hdr).json()
+    assert moi["actif"] is None
+    assert len(moi["historique"]) == 1
+
+
+def test_tarif_fondateur(client, user):
+    # Le tarif fondateur se compte globalement (10 premiers abonnements Veille/12 mois,
+    # tous clients confondus), pas par client : le même compte peut donc souscrire
+    # plusieurs fois de suite pour les besoins du test.
+    for _ in range(10):
+        r = client.post("/api/abonnements", json={"formule": "Veille", "duree_mois": 12},
+                        headers=user)
+        assert r.json()["prix_eur"] == 1800
+    r = client.post("/api/abonnements", json={"formule": "Veille", "duree_mois": 12},
+                    headers=user)
+    assert r.json()["prix_eur"] == 2400
+
+
+def test_verification_pro_incluse(client, admin):
+    client.post("/api/users", json={"email": "pro@exemple.ci", "password": "motdepasse1",
+                                    "name": "Pro"}, headers=admin)
+    hdr = _hdr_pour("pro@exemple.ci", "Pro")
+    _activer_abonnement(formule="Veille Pro", duree_mois=6, email="pro@exemple.ci")
+    r = client.post("/api/terrains", json={"name": "T Pro", "status": "Annoncé"}, headers=admin)
+    ref = r.json()["ref"]
+    r = client.post("/api/verifications/demande",
+                    json={"terrain_ref": ref, "projet": "Entrepôt", "secteur": "Logistique",
+                          "delai": "Flexible"}, headers=hdr)
+    assert r.status_code == 201 and r.json()["incluse"] is True and r.json()["status"] == "Payée"
+    r = client.post("/api/verifications/demande",
+                    json={"terrain_ref": ref, "projet": "Entrepôt 2", "secteur": "Logistique",
+                          "delai": "Flexible"}, headers=hdr)
+    assert r.json()["incluse"] is False and r.json()["status"] == "Demandée"
+    demandes = client.get("/api/verifications/demandes", headers=hdr).json()
+    assert len(demandes) == 2
+    assert client.delete(f"/api/terrains/{ref}", headers=admin).status_code == 200
+
+
+def test_mise_en_relation_gating(client, admin):
+    client.post("/api/users", json={"email": "mer@exemple.ci", "password": "motdepasse1",
+                                    "name": "Mer"}, headers=admin)
+    hdr = _hdr_pour("mer@exemple.ci", "Mer")
+    r = client.post("/api/terrains", json={"name": "T Mer", "status": "Annoncé"}, headers=admin)
+    ref = r.json()["ref"]
+    assert client.post("/api/mises-en-relation", json={"terrain_ref": ref},
+                       headers=hdr).status_code == 403
+    _activer_abonnement(email="mer@exemple.ci")
+    assert client.post("/api/mises-en-relation", json={"terrain_ref": ref},
+                       headers=hdr).status_code == 403
+    assert client.post("/api/me/ncc-accept", headers=hdr).status_code == 200
+    r = client.post("/api/mises-en-relation", json={"terrain_ref": ref}, headers=hdr)
+    assert r.status_code == 201
+    assert len(client.get("/api/mises-en-relation", headers=admin).json()) >= 1
+    mine = client.get("/api/mises-en-relation", headers=hdr).json()
+    assert all(m["client_email"] == "mer@exemple.ci" for m in mine) and len(mine) == 1
+    assert client.delete(f"/api/terrains/{ref}", headers=admin).status_code == 200
+
+
+def test_commission_admin_only(client, admin, user):
+    r = client.post("/api/terrains", json={"name": "T Com", "status": "Annoncé"}, headers=admin)
+    ref = r.json()["ref"]
+    assert client.get(f"/api/terrains/{ref}/commission", headers=user).status_code == 403
+    assert client.put(f"/api/terrains/{ref}/commission", json={"commission_signed": "non"},
+                      headers=user).status_code == 403
+    assert client.put(f"/api/terrains/{ref}/commission",
+                      json={"commission_signed": "oui", "commission_taux": 5},
+                      headers=admin).status_code == 422
+    r = client.put(f"/api/terrains/{ref}/commission",
+                   json={"commission_signed": "oui", "commission_taux": 2,
+                         "commission_payeur": "Propriétaire"}, headers=admin)
+    assert r.status_code == 200
+    assert client.get(f"/api/terrains/{ref}/commission", headers=admin).json()["commission_taux"] == 2
+    assert client.delete(f"/api/terrains/{ref}", headers=admin).status_code == 200
+
+
+def test_agent_double_paiement(client, admin):
+    r = client.post("/api/terrains", json={"name": "T Agent", "status": "Annoncé"}, headers=admin)
+    ref = r.json()["ref"]
+    aid = client.post("/api/agents", json={"nom": "Agent K", "secteur": "Abidjan"},
+                      headers=admin).json()["id"]
+    r = client.post(f"/api/agents/{aid}/taches",
+                    json={"terrain_ref": ref, "type": "Terrain signalé", "montant": 20000},
+                    headers=admin)
+    assert r.status_code == 201
+    tid = r.json()["id"]
+    r = client.post(f"/api/agents/{aid}/taches",
+                    json={"terrain_ref": ref, "type": "Terrain signalé", "montant": 20000},
+                    headers=admin)
+    assert r.status_code == 422
+    assert client.put(f"/api/taches-agents/{tid}", json={"status": "Refusée"},
+                      headers=admin).status_code == 200
+    r = client.post(f"/api/agents/{aid}/taches",
+                    json={"terrain_ref": ref, "type": "Terrain signalé", "montant": 20000},
+                    headers=admin)
+    assert r.status_code == 201
+    assert client.delete(f"/api/terrains/{ref}", headers=admin).status_code == 200
+
+
+def test_apporteur_premier_arrive(client, admin):
+    r = client.post("/api/terrains", json={"name": "T Apport", "status": "Annoncé"}, headers=admin)
+    ref = r.json()["ref"]
+    client.put(f"/api/terrains/{ref}/commission",
+               json={"commission_signed": "oui", "commission_taux": 2,
+                     "commission_payeur": "Propriétaire"}, headers=admin)
+    a1 = client.post("/api/apporteurs", json={"nom": "Apporteur 1", "type": "Terrains"},
+                     headers=admin).json()["id"]
+    a2 = client.post("/api/apporteurs", json={"nom": "Apporteur 2", "type": "Terrains"},
+                     headers=admin).json()["id"]
+    r = client.post("/api/apports", json={"apporteur_id": a1, "type": "Terrains", "cible": ref},
+                    headers=admin)
+    assert r.status_code == 201
+    apid = r.json()["id"]
+    assert client.post("/api/apports", json={"apporteur_id": a2, "type": "Terrains", "cible": ref},
+                       headers=admin).status_code == 422
+    assert client.get("/api/apports", headers=admin).status_code == 200
+    assert client.get("/api/apports").status_code == 401
+    import sqlite3
+    con = sqlite3.connect(api.DB)
+    con.execute(
+        "INSERT INTO mises_en_relation(terrain_ref,client_email,status,issue,created,updated)"
+        " VALUES(?,?,?,?,?,?)",
+        (ref, "investisseur@exemple.ma", "Demandée", "En cours",
+         "2026-10-01T00:00:00+00:00", "2026-10-01T00:00:00+00:00"))
+    mid = con.execute("SELECT last_insert_rowid()").fetchone()[0]
+    con.commit()
+    con.close()
+    r = client.put(f"/api/mises-en-relation/{mid}",
+                   json={"issue": "Vente conclue", "commission_encaissee_eur": 1000},
+                   headers=admin)
+    assert r.status_code == 200
+    assert r.json()["apporteurs_du"]["terrain"]["du"] == 0
+    assert r.json()["apporteurs_du"]["terrain"]["raison"] == "convention non signée"
+    assert client.put(f"/api/apports/{apid}", json={"convention_signee": "oui"},
+                      headers=admin).status_code == 200
+    r = client.put(f"/api/mises-en-relation/{mid}",
+                   json={"commission_encaissee_eur": 1000}, headers=admin)
+    assert r.json()["apporteurs_du"]["terrain"]["du"] == 150
+    assert client.delete(f"/api/terrains/{ref}", headers=admin).status_code == 200

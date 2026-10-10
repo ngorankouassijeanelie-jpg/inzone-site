@@ -1,0 +1,4 @@
+backend
+.git
+.pytest_cache
+.DS_Store
