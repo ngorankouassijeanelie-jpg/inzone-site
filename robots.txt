@@ -1,0 +1,12 @@
+# inZONE — robots.txt
+# L'espace client et l'administration contiennent des comptes et des
+# données réservées aux abonnés : à ne pas indexer.
+User-agent: *
+Disallow: /inzone-espace-client.html
+Disallow: /inzone-admin.html
+Allow: /
+
+# sitemap.xml non généré : aucun nom de domaine de production n'est
+# encore confirmé pour ce projet (voir LEGAL_REVIEW.md). À ajouter ici
+# une fois le domaine réel connu, par ex. :
+# Sitemap: https://www.inzone.ci/sitemap.xml

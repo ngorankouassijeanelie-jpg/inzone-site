@@ -93,3 +93,27 @@ test.describe('client login (inzone-espace-client.html)', () => {
     expect(terrainsCalls.length - before).toBe(0);
   });
 });
+
+test.describe('public signup (inzone-espace-client.html)', () => {
+  test.beforeEach(async ({ page }) => {
+    await page.addInitScript(() => {
+      try { localStorage.setItem('inz-onb-seen', '1'); } catch (_) {}
+    });
+  });
+
+  // Regression test: the signup handler used to call setAv() before enter()
+  // ever ran (setAv is defined inside enter()'s own scope), which threw on
+  // every successful signup — the account was created server-side but the
+  // user saw a raw JS error instead of reaching their dashboard.
+  test('a new account reaches the dashboard instead of an error', async ({ page }) => {
+    await page.goto('/inzone-espace-client.html');
+    await page.click('#show-signup-a');
+    await page.fill('#s-nom', 'Test E2E');
+    await page.fill('#s-soc', 'Test Co');
+    await page.fill('#s-mail', `e2e-signup-${Date.now()}@example.com`);
+    await page.fill('#s-pass', 'motdepasse123');
+    await page.click('#sf button[type=submit]');
+    await expect(page.locator('#app')).toBeVisible();
+    await expect(page.locator('#s-msg')).not.toContainText('is not defined');
+  });
+});
