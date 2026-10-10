@@ -311,7 +311,7 @@ td strong,td .num{white-space:nowrap}
       <button class="btn" type="submit"><span>Se connecter</span><i><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 10h10.2M10.4 5.6 15.2 10l-4.8 4.4"/></svg></i></button>
       <p class="note" id="l-msg" role="alert" hidden></p>
     </form>
-    <p class="note">Version de démonstration : aucune identification réelle n'est effectuée. Avant la mise en ligne, cette page devra être protégée par une vraie connexion.</p>
+    <p class="note">Version de démonstration : l'adresse électronique est pré-remplie pour tester plus vite, mais la connexion vérifie bien le mot de passe auprès du serveur.</p>
     <a class="back" href="index.html">Retour au site</a>
   </div>
   <div class="lg-a adm">
@@ -400,7 +400,7 @@ td strong,td .num{white-space:nowrap}
     <div class="grid g2">
       <div class="panel"><h2>Données confidentielles</h2><p class="muted">Jamais affichées en accès libre. Réservées à l'équipe et au niveau premium.</p>
         <div class="rows"><div class="rowl"><div>Coordonnées GPS et bornes</div><span class="lock">Non affiché ici</span></div><div class="rowl"><div>Numéro du titre foncier</div><span class="lock">Non affiché ici</span></div><div class="rowl"><div>Nom du propriétaire et du mandataire</div><span class="lock">Non affiché ici</span></div><div class="rowl"><div>Nom des entreprises voisines et repères précis</div><span class="lock">Non affiché ici</span></div></div>
-        <p class="note">Cette démonstration ne contient aucune de ces données.</p></div>
+        <p class="note">La référence GPS peut être saisie à la création d'un terrain (champ confidentiel) ; le numéro de titre foncier et le nom du propriétaire/mandataire ne sont pas encore des champs du catalogue.</p></div>
       <div class="panel"><h2>Règle de publication</h2><div class="rows"><div class="rowl"><div>Annoncé<small>Données du vendeur uniquement.</small></div><span class="st idle">Annoncé</span></div><div class="rowl"><div>Analyse en cours<small>Analyse à distance commencée.</small></div><span class="st run">Analyse en cours</span></div><div class="rowl"><div>Analyse standard<small>Fiche complète publiée.</small></div><span class="st ok">Analyse standard</span></div><div class="rowl"><div>Vérifié premium<small>CIE, SODECI, urbanisme et constat sur site terminés.</small></div><span class="st blue">Vérifié premium</span></div></div>
         <p class="note">Ni pour ni contre le vendeur. Chaque affirmation est recoupée avec le plan cadastral, l'image satellite et des sources publiques.</p></div>
     </div>
@@ -423,7 +423,7 @@ td strong,td .num{white-space:nowrap}
     <div class="grid g32">
       <div class="panel"><div class="head"><div><h2>Grand-Bassam, INZ-GBA-001</h2><span class="muted">Investisseur exemple · Vérification premium</span></div><span class="st run">Étape 4 sur 6</span></div>
         <div class="tw"><table><thead><tr><th>Point à vérifier</th><th>Source</th><th>État</th></tr></thead><tbody id="pts"></tbody></table></div>
-        <p class="note" id="p-msg" role="status">Modifiez un état : le tableau de bord se met à jour. Rien n'est enregistré dans cette démonstration.</p></div>
+        <p class="note" id="p-msg" role="status">Modifiez un état : le tableau de bord se met à jour et l'état est enregistré côté serveur pour ce point de vérification.</p></div>
       <div class="panel"><h2>Étapes du dossier</h2><ol class="steps">
         <li class="done"><div><strong>Demande reçue</strong><small>Terrain et niveau souhaité enregistrés.</small></div><time>Exemple</time></li>
         <li class="done"><div><strong>Proposition envoyée</strong><small>Périmètre, délai et prix transmis.</small></div><time>Exemple</time></li>
@@ -601,7 +601,7 @@ const API=()=>{try{return localStorage.getItem("inz-api")||"http://localhost:800
 async function apiPost(p,body,tok){const r=await fetch(API()+p,{method:"POST",headers:Object.assign({"Content-Type":"application/json"},tok?{Authorization:"Bearer "+tok}:{}),body:JSON.stringify(body)});if(!r.ok){let m="";try{m=(await r.json()).detail||""}catch(e){}throw new Error(r.status===401?(m||"Identifiants incorrects"):"Serveur injoignable ("+r.status+")")}return r.json()}
 async function apiPut(p,body){let tok="";try{tok=localStorage.getItem("inz-token")||""}catch(_){}const r=await fetch(API()+p,{method:"PUT",headers:Object.assign({"Content-Type":"application/json"},tok?{Authorization:"Bearer "+tok}:{}),body:JSON.stringify(body)});if(!r.ok)throw new Error("Serveur injoignable ("+r.status+")");return r.json()}
 function setAv(url,name){const initials=(name||"?").trim().split(/\s+/).map(w=>w[0]).join("").slice(0,2).toUpperCase();const el=$("av");if(el)el.innerHTML=url?`<img src="${API()+url}" alt="" style="width:100%;height:100%;object-fit:cover;display:block">`:esc(initials)}
-$("lf").addEventListener("submit",async e=>{e.preventDefault();const m=$("l-msg");m.hidden=true;try{const d=await apiPost("/api/login",{email:$("l-mail").value.trim(),password:$("l-pass").value});if(d.role!=="admin")throw new Error("Identifiants incorrects");try{localStorage.setItem("inz-token",d.token);localStorage.setItem("inz-role",d.role)}catch(_){}setAv(d.avatar,d.name);enter("bord")}catch(err){if(/Identifiants/.test(err.message)){m.textContent=err.message+" — accès réservé à l'équipe.";m.hidden=false}else{enter("bord")}}});
+$("lf").addEventListener("submit",async e=>{e.preventDefault();const m=$("l-msg");m.hidden=true;try{const d=await apiPost("/api/login",{email:$("l-mail").value.trim(),password:$("l-pass").value});if(d.role!=="admin")throw new Error("Identifiants incorrects");try{localStorage.setItem("inz-token",d.token);localStorage.setItem("inz-role",d.role)}catch(_){}setAv(d.avatar,d.name);enter("bord")}catch(err){m.hidden=false;m.textContent=/Identifiants/.test(err.message)?err.message+" — accès réservé à l'équipe.":"Connexion impossible : "+err.message}});
 $("out").addEventListener("click",()=>{try{localStorage.removeItem("inz-token");localStorage.removeItem("inz-role")}catch(_){}$("app").hidden=true;$("login").hidden=false;try{history.replaceState(null,"","#")}catch(e){}});
 const mob=()=>matchMedia("(max-width:860px)").matches;
 try{if(localStorage.getItem("inz-menu")==="min")$("app").classList.add("min")}catch(e){}
