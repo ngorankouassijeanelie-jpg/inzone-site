@@ -339,7 +339,7 @@ footer ol{padding-bottom:14px;border-bottom:1px solid var(--line);display:flex;f
     <div class="dial"><b>CIE</b><span>Électricité</span><b style="margin-top:8px">SODECI</b><span>Eau</span><b style="margin-top:8px">Sur site</b><span>Constat</span></div>
   </div></div>
   <p class="sub" style="font-size:clamp(19px,2.2vw,26px);margin-top:0">Chaque point confirmé à la source, puis sur site.</p>
-  <p class="fine">2 000 € par terrain, incluses dans la formule Veille Pro selon votre durée d'engagement. Due que la vente se fasse ou non : indépendante de la vente, elle confirme sur place et auprès des organismes ce que l'analyse à distance ne fait que signaler.</p>
+  <p class="fine">2 000 € par terrain, incluses dans la formule Veille Pro. Due que la vente se fasse ou non, elle confirme sur place et auprès des organismes ce que l'analyse à distance ne fait que signaler.</p>
   <div class="btns" style="padding-bottom:52px"><a class="pill" href="#demo">Demander une vérification</a><a class="pill o" href="#offres">Délais et tarifs</a></div>
 </section>
 
@@ -351,7 +351,6 @@ footer ol{padding-bottom:14px;border-bottom:1px solid var(--line);display:flex;f
     <button type="button" data-duree="12" aria-pressed="false">12 mois<span class="offres-badge">2 mois offerts</span></button>
   </div>
   <div class="plans" id="plans"></div>
-  <p class="offres-note" id="offres-transp"></p>
 </section>
 
 <section class="grid" id="tuiles" aria-label="Offre inZONE">
@@ -397,7 +396,6 @@ footer ol{padding-bottom:14px;border-bottom:1px solid var(--line);display:flex;f
 </div></section>
 
 <footer><div class="in">
-  <p style="padding:12px 0;border-bottom:1px solid var(--line)">Les chiffres d'espace client et de fiche affichés sur cette page proviennent d'un compte d'exemple. Surfaces et prix selon les vendeurs.</p>
   <div class="cols">
     <div><b>Offre</b><a href="#analyse">Analyse standard</a><a href="#verification">Vérification premium</a><a href="#veille">Veille mensuelle</a><a href="#tuiles">Mission sur mesure</a></div>
     <div><b>Espace client</b><a href="inzone-espace-client.html">Tableau de bord</a><a href="inzone-espace-client.html">Mes terrains</a><a href="inzone-espace-client.html">Mes vérifications</a><a href="inzone-espace-client.html">Mes documents</a></div>
@@ -427,9 +425,7 @@ var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isInter
   var EUR_XOF=655.957;
   function fmtEur(v){return Math.round(v).toLocaleString('fr-FR')+' € HT'}
   function fmtFcfa(v){return Math.round(v*EUR_XOF).toLocaleString('fr-FR')+' FCFA'}
-  var toggle=document.querySelector('.offres-toggle'),plansEl=document.getElementById('plans'),
-      note=document.getElementById('offres-transp'),tarifs=null;
-  if(note&&window.LEGAL)note.textContent=LEGAL.TRANSPARENCE;
+  var toggle=document.querySelector('.offres-toggle'),plansEl=document.getElementById('plans'),tarifs=null;
   function render(duree){
     if(!tarifs||!plansEl)return;
     var vp=tarifs.plans['Veille|'+duree],vpp=tarifs.plans['Veille Pro|'+duree],
