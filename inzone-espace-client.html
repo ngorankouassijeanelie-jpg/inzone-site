@@ -458,7 +458,7 @@ td strong,td .num{white-space:nowrap}
   <section class="view" id="v-nouveaux" hidden>
     <div class="head"><div><span class="eyebrow">Veille</span><h1>Nouveaux terrains identifiés</h1><p class="muted">Du plus récent au plus ancien, avec leurs atouts.</p></div></div>
     <div class="panel" id="nv-locked" hidden><h2>Réservé aux abonnés</h2><p class="muted">Les nouveaux terrains identifiés, avec filtres et alertes, font partie des formules Veille et Veille Pro.</p><button class="btn" data-go="abo">S'abonner</button></div>
-    <div id="nv-unlocked" hidden>
+    <div id="nv-unlocked" hidden style="display:flex;flex-direction:column;gap:20px">
       <div class="panel">
         <div class="grid g2">
           <label>Zone<select id="nv-zone" class="fancy"><option value="">Toutes zones</option></select></label>
@@ -478,7 +478,7 @@ td strong,td .num{white-space:nowrap}
     <p class="note" id="f-relation-msg" hidden></p>
     <div class="grid g4" id="f-kpis"><div class="kpi"><b class="num">6 ha</b><span>annoncés libres</span></div><div class="kpi"><b class="num">60 000</b><span>FCFA par m², annoncé</span></div><div class="kpi"><b class="num">35 min</b><span>de l'aéroport, 24,7 km</span></div><div class="kpi"><b class="num">1 h 11</b><span>du port, 39,1 km</span></div></div>
     <div class="panel" id="f-locked" hidden><h2>Fiche réservée aux abonnés</h2><p class="muted">Les points de vigilance restent visibles ci-dessous. Le détail complet (voisinage, accès, relief, zonage, vérification) fait partie des formules Veille et Veille Pro.</p><div class="rows" id="f-vigilance"></div><button class="btn" data-go="abo">S'abonner</button></div>
-    <div id="f-detail">
+    <div id="f-detail" style="display:flex;flex-direction:column;gap:20px">
     <div class="grid g2">
       <div class="panel" id="f-gen-det" hidden><h2>Détails du terrain</h2><div class="rows" id="f-rows"></div></div>
       <div class="panel" id="f-gba-det"><h2>Compris dans votre formule</h2><span class="st ok">Analyse standard débloquée</span>
@@ -538,7 +538,7 @@ td strong,td .num{white-space:nowrap}
   <section class="view" id="v-veille" hidden>
     <div class="head"><div><span class="eyebrow">Veille et alertes</span><h1>Ce qui bouge sur ce que vous suivez</h1><p class="muted">Lots, prix, travaux et textes : l'essentiel du mois, sourcé.</p></div><button class="btn ghost" id="read">Tout marquer comme lu</button></div>
     <div class="panel" id="vl-locked" hidden><h2>Alertes et terrains vendus, réservés aux abonnés</h2><p class="muted">Les alertes de la semaine, les notes de veille et la base des terrains vendus font partie des formules Veille et Veille Pro.</p><button class="btn" data-go="abo">S'abonner</button></div>
-    <div id="vl-unlocked" hidden>
+    <div id="vl-unlocked" hidden style="display:flex;flex-direction:column;gap:20px">
       <div class="panel"><h2>Alertes de la semaine</h2><p class="muted">Nouveaux terrains et changements de statut des sept derniers jours.</p><div class="rows" id="va-rows"><div class="rowl"><div>Aucune alerte<small>Rien de nouveau ces sept derniers jours.</small></div></div></div></div>
       <div class="panel"><h2>Notes de veille</h2><p class="muted">Archive des notes mensuelles, publiées par l'administrateur.</p><div class="rows" id="vn-rows"><div class="rowl"><div>Aucune note<small>Les notes mensuelles apparaîtront ici dès leur publication.</small></div></div></div></div>
       <div class="panel"><h2>Veille : terrains vendus</h2><div class="tw"><table><thead><tr><th>Terrain</th><th>Statut</th><th>Date</th></tr></thead><tbody id="vv-rows"><tr><td colspan="3"><span class="muted">Aucun terrain vendu pour l'instant.</span></td></tr></tbody></table></div></div>
