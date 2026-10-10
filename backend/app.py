@@ -22,6 +22,13 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
+from constants import (
+    BAREME_SEED, EUR_TO_XOF, PLANS, PRIX_VERIF_SUP, STATUTS_VENTE,
+    TARIF_FONDATEUR, TARIF_FONDATEUR_MAX, TYPES_TERRAIN, VERIF_STATUTS,
+    VERIFS_INCLUSES,
+)
+from utils import add_months, eur_to_xof, label_prix
+
 BASE = os.path.dirname(os.path.abspath(__file__))
 DB = os.path.join(BASE, "inzone.db")
 UPLOAD_DIR = os.path.join(BASE, "uploads")
@@ -345,14 +352,6 @@ def backfill_projets(con):
         con.commit()
 
 
-BAREME_SEED = {
-    "agent_terrain_signale": 20000, "agent_visite_constat": 40000,
-    "agent_mise_a_jour": 5000, "agent_prime_vente_pct": 5,
-    "apporteur_client_premier_pct": 12, "apporteur_client_commission_pct": 10,
-    "apporteur_terrain_pct": 15,
-}
-
-
 def backfill_bareme(con):
     if con.execute("SELECT COUNT(*) FROM bareme").fetchone()[0] == 0:
         con.executemany(
@@ -425,30 +424,6 @@ def abonnement_actif(con, email: str) -> Optional[dict]:
 
 def rows(con, q, args=()):
     return [dict(r) for r in con.execute(q, args).fetchall()]
-
-
-# ---------- tarifs (source unique, en euros, converti en FCFA au taux fixe) ----------
-EUR_TO_XOF = 655.957
-PLANS = {
-    ("Veille", 6): 1400, ("Veille", 12): 2400,
-    ("Veille Pro", 6): 3100, ("Veille Pro", 12): 5400,
-}
-VERIFS_INCLUSES = {("Veille", 6): 0, ("Veille", 12): 0,
-                    ("Veille Pro", 6): 1, ("Veille Pro", 12): 2}
-TARIF_FONDATEUR = 1800          # Veille 12 mois, 10 premiers abonnés seulement
-TARIF_FONDATEUR_MAX = 10
-PRIX_VERIF_SUP = 2000           # € par vérification hors formule ou au-delà de l'incluse
-STATUTS_VENTE = ("Disponible", "Réservé", "Vendu")
-TYPES_TERRAIN = ("Terrain privé", "Zone industrielle publique")
-VERIF_STATUTS = ("Demandée", "Payée", "En cours", "Livrée")
-
-
-def eur_to_xof(montant_eur) -> int:
-    return round(montant_eur * EUR_TO_XOF)
-
-
-def label_prix(montant_eur) -> str:
-    return f"{montant_eur:,.0f} € HT".replace(",", " ") + f" (≈ {eur_to_xof(montant_eur):,} FCFA)".replace(",", " ")
 
 
 # ---------- routes ----------
@@ -1104,15 +1079,6 @@ def upload_document(ref: str, file: UploadFile = File(...),
     did = cur.lastrowid
     con.close()
     return {"id": did, "url": saved["file"], "client_email": client_email or None}
-
-
-def add_months(dt: datetime, months: int) -> datetime:
-    month = dt.month - 1 + months
-    year = dt.year + month // 12
-    month = month % 12 + 1
-    leap = year % 4 == 0 and (year % 100 != 0 or year % 400 == 0)
-    last_day = [31, 29 if leap else 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31][month - 1]
-    return dt.replace(year=year, month=month, day=min(dt.day, last_day))
 
 
 def on_facture_payee(con, fid: int):
