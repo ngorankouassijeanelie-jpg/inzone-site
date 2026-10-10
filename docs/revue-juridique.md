@@ -115,18 +115,13 @@ reversements internes aux agents et apporteurs, modifiables par l'admin
 | `agent_prime_vente_pct` | 5 % | Prime sur commission encaissée à la vente |
 | `apporteur_terrain_pct` | 15 % | Apporteur ayant apporté le terrain, sur commission encaissée |
 | `apporteur_client_commission_pct` | 10 % | Apporteur ayant apporté le client, sur commission encaissée |
-| `apporteur_client_premier_pct` | 12 % | **Défini mais non appliqué dans le calcul actuel** — voir ci-dessous |
+| `apporteur_client_premier_pct` | 12 % | Apporteur de client, premier versement de commission pour ce client |
 
-**⚠️ Écart constaté dans le code (pas une question juridique, mais à
-signaler) :** le taux « premier abonnement » (12 %) existe dans la
-configuration et dans le libellé affiché à l'admin, mais la fonction qui
-calcule la commission d'un apporteur de client (`commission_apporteur`)
-n'utilise que le taux fixe de 10 %, quel que soit le rang de
-l'abonnement. Le bonus « premier abonnement » n'est donc jamais
-appliqué en pratique. À corriger côté développement si la règle doit
-réellement s'appliquer — mentionné ici pour que l'avocat sache que la
-règle écrite (barème) et la règle appliquée (code) divergent sur ce
-point.
+~~Écart constaté dans le code~~ — corrigé : le premier versement de
+commission pour un client apporté utilise désormais le taux « premier
+abonnement » (12 %), les versements suivants pour ce même client
+retombent sur le taux générique (10 %). Vérifié par un test automatisé
+(`test_apporteur_client_premier_abonnement`).
 
 Chaque apport (terrain ou client) exige une **« convention signée »**
 avant tout versement — sans cette signature enregistrée, le calcul

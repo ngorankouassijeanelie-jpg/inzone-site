@@ -1831,7 +1831,8 @@ def list_mises_en_relation(user: dict = Depends(current_user)):
     return out
 
 
-def commission_apporteur(con, cible: str, type_apporteur: str, montant_encaisse: float) -> dict:
+def commission_apporteur(con, cible: str, type_apporteur: str, montant_encaisse: float,
+                         exclude_mid: int = 0) -> dict:
     row = con.execute(
         "SELECT a.*, ap.nom AS apporteur_nom FROM apports a "
         "JOIN apporteurs ap ON ap.id=a.apporteur_id "
@@ -1842,8 +1843,14 @@ def commission_apporteur(con, cible: str, type_apporteur: str, montant_encaisse:
     row = dict(row)
     if row["convention_signee"] != "oui":
         return {"apporteur": row["apporteur_nom"], "du": 0, "raison": "convention non signée"}
-    cle = ("apporteur_terrain_pct" if type_apporteur == "Terrains"
-           else "apporteur_client_commission_pct")
+    if type_apporteur == "Terrains":
+        cle = "apporteur_terrain_pct"
+    else:
+        deja_paye = con.execute(
+            "SELECT COUNT(*) FROM mises_en_relation WHERE client_email=? AND id!=? "
+            "AND commission_encaissee_eur IS NOT NULL AND commission_encaissee_eur>=0",
+            (cible, exclude_mid)).fetchone()[0]
+        cle = "apporteur_client_commission_pct" if deja_paye else "apporteur_client_premier_pct"
     taux_row = con.execute("SELECT valeur FROM bareme WHERE cle=?", (cle,)).fetchone()
     taux = taux_row["valeur"] if taux_row else 0
     return {"apporteur": row["apporteur_nom"], "du": round(montant_encaisse * taux / 100, 2)}
@@ -1907,7 +1914,7 @@ def update_mise_en_relation(mid: int, body: MiseEnRelationPatch, _: dict = Depen
         apporteurs_du["terrain"] = commission_apporteur(
             con, row["terrain_ref"], "Terrains", body.commission_encaissee_eur)
         apporteurs_du["client"] = commission_apporteur(
-            con, row["client_email"], "Clients", body.commission_encaissee_eur)
+            con, row["client_email"], "Clients", body.commission_encaissee_eur, exclude_mid=mid)
     con.close()
     return {"id": mid, "updated": sets, "apporteurs_du": apporteurs_du}
 

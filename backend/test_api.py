@@ -474,3 +474,45 @@ def test_apporteur_premier_arrive(client, admin):
                    json={"commission_encaissee_eur": 1000}, headers=admin)
     assert r.json()["apporteurs_du"]["terrain"]["du"] == 150
     assert client.delete(f"/api/terrains/{ref}", headers=admin).status_code == 200
+
+
+def test_apporteur_client_premier_abonnement(client, admin):
+    """Le taux apporteur_client_premier_pct (12%) s'applique au premier versement de
+    commission pour un client apporté ; les suivants retombent sur apporteur_client_commission_pct (10%)."""
+    email = "apporteur-client-test@exemple.ma"
+    a = client.post("/api/apporteurs", json={"nom": "Apporteur Client", "type": "Clients"},
+                    headers=admin).json()["id"]
+    r = client.post("/api/apports", json={"apporteur_id": a, "type": "Clients", "cible": email},
+                    headers=admin)
+    assert r.status_code == 201
+    apid = r.json()["id"]
+    assert client.put(f"/api/apports/{apid}", json={"convention_signee": "oui"},
+                      headers=admin).status_code == 200
+
+    refs = []
+    mids = []
+    for i in range(2):
+        ref = client.post("/api/terrains", json={"name": f"T Client Apport {i}", "status": "Annoncé"},
+                          headers=admin).json()["ref"]
+        refs.append(ref)
+        import sqlite3
+        con = sqlite3.connect(api.DB)
+        con.execute(
+            "INSERT INTO mises_en_relation(terrain_ref,client_email,status,issue,created,updated)"
+            " VALUES(?,?,?,?,?,?)",
+            (ref, email, "Demandée", "En cours",
+             "2026-10-01T00:00:00+00:00", "2026-10-01T00:00:00+00:00"))
+        mids.append(con.execute("SELECT last_insert_rowid()").fetchone()[0])
+        con.commit()
+        con.close()
+
+    r1 = client.put(f"/api/mises-en-relation/{mids[0]}",
+                    json={"commission_encaissee_eur": 10000}, headers=admin)
+    assert r1.json()["apporteurs_du"]["client"]["du"] == 1200
+
+    r2 = client.put(f"/api/mises-en-relation/{mids[1]}",
+                    json={"commission_encaissee_eur": 10000}, headers=admin)
+    assert r2.json()["apporteurs_du"]["client"]["du"] == 1000
+
+    for ref in refs:
+        assert client.delete(f"/api/terrains/{ref}", headers=admin).status_code == 200
