@@ -6,6 +6,7 @@ Lancement :  backend/venv/bin/uvicorn app:app --port 8001
 import hashlib
 import hmac
 import json
+import logging
 import os
 import secrets
 import sqlite3
@@ -19,8 +20,15 @@ import jwt
 import stripe
 from fastapi import Depends, FastAPI, File, Form, Header, HTTPException, Request, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
+
+logging.basicConfig(
+    level=os.environ.get("INZONE_LOG_LEVEL", "INFO"),
+    format="%(asctime)s %(levelname)s %(name)s %(message)s",
+)
+logger = logging.getLogger("inzone")
 
 from constants import (
     BAREME_SEED, EUR_TO_XOF, PLANS, PRIX_VERIF_SUP, STATUTS_VENTE,
@@ -62,6 +70,15 @@ app.add_middleware(
     allow_headers=["*"],
 )
 app.mount("/uploads", StaticFiles(directory=UPLOAD_DIR), name="uploads")
+
+
+@app.exception_handler(Exception)
+async def unhandled_exception_handler(request: Request, exc: Exception):
+    """Trace toute erreur non prévue (bug) avec son contexte avant de répondre
+    502 — HTTPException (erreurs métier volontaires) n'est pas concernée, elle
+    garde son propre statut et message via le gestionnaire intégré de FastAPI."""
+    logger.exception("Erreur non gérée sur %s %s", request.method, request.url.path)
+    return JSONResponse(status_code=500, content={"detail": "Erreur interne du serveur"})
 
 
 # ---------- base SQLite ----------

@@ -6,7 +6,11 @@ backend/inzone.db
 backend/.secret
 backend/uploads/
 backend/reset-links.log
+backend/backups/
 backend/.env
 .env
 *.pyc
 .vercel
+tests/e2e/node_modules/
+tests/e2e/test-results/
+tests/e2e/playwright-report/

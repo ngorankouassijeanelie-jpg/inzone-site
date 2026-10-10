@@ -1,0 +1,12 @@
+{
+  "name": "inzone-e2e",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Tests de bout en bout (navigateur) pour inZONE : parcours client et admin, servis par le vrai backend FastAPI sur une base de test jetable.",
+  "scripts": {
+    "test": "playwright test"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.64.0"
+  }
+}
